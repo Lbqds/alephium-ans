@@ -1,0 +1,21 @@
+import "constants.ral"
+
+Contract PubkeyInfo(
+  parentId: ByteVec,
+  mut pubkey: ByteVec
+) extends Constants() {
+  pub fn getPubkey() -> ByteVec {
+    return pubkey
+  }
+
+  pub fn setPubkey(newPubkey: ByteVec) -> () {
+    assert!(callerContractId!() == parentId, ErrorCodes.InvalidCaller)
+    pubkey = newPubkey
+  }
+
+  @using(assetsInContract = true)
+  pub fn destroy(refundAddress: Address) -> () {
+    assert!(callerContractId!() == parentId, ErrorCodes.InvalidCaller)
+    destroySelf!(refundAddress)
+  }
+}

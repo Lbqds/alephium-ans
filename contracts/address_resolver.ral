@@ -1,0 +1,54 @@
+import "resolver_base.ral"
+import "address_info.ral"
+import "constants.ral"
+
+Abstract Contract AddressResolver(
+  ansRegistryId: ByteVec,
+  addressInfoTemplateId: ByteVec
+) extends ResolverBase(ansRegistryId), Constants() {
+  const AlphId = 1234
+  const EthId = 60
+
+  @using(preapprovedAssets = true)
+  pub fn createAddressInfo(node: ByteVec, payer: Address, alphAddress: Address) -> () {
+    let owner = getOwner(node)
+    assert!(callerAddress!() == owner, ErrorCodes.InvalidCaller)
+    let addressBytes = toByteVec!(alphAddress)
+    let payload = u256To2Byte!(AlphId) ++ u256To1Byte!(size!(addressBytes)) ++ addressBytes
+    let encodedState = encodeToByteVec!(selfContractId!(), payload)
+    copyCreateSubContract!{payer -> 1 alph}(PathPrefix.AddressInfo ++ node, addressInfoTemplateId, encodedState)
+  }
+
+  pub fn setAlphAddress(node: ByteVec, address: Address) -> () {
+    setAddress(node, AlphId, toByteVec!(address))
+  }
+
+  pub fn setEthAddress(node: ByteVec, address: ByteVec) -> () {
+    setAddress(node, EthId, address)
+  }
+
+  pub fn setAddress(node: ByteVec, chainId: U256, address: ByteVec) -> () {
+    assert!(callerAddress!() == getOwner(node), ErrorCodes.InvalidCaller)
+    let addressInfo = AddressInfo(subContractId!(PathPrefix.AddressInfo ++ node))
+    addressInfo.setAddress(chainId, address)
+  }
+
+  pub fn getAlphAddress(node: ByteVec) -> Address {
+    return byteVecToAddress!(getAddress(node, AlphId))
+  }
+
+  pub fn getEthAddress(node: ByteVec) -> ByteVec {
+    return getAddress(node, EthId)
+  }
+
+  pub fn getAddress(node: ByteVec, chainId: U256) -> ByteVec {
+    let addressInfo = AddressInfo(subContractId!(PathPrefix.AddressInfo ++ node))
+    return addressInfo.getAddress(chainId)
+  }
+
+  pub fn removeAddressInfo(node: ByteVec, refundAddress: Address) -> () {
+    assert!(callerAddress!() == getOwner(node), ErrorCodes.InvalidCaller)
+    let addressInfo = AddressInfo(subContractId!(PathPrefix.AddressInfo ++ node))
+    addressInfo.destroy(refundAddress)
+  }
+}

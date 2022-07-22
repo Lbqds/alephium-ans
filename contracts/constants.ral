@@ -1,0 +1,7 @@
+Abstract Contract Constants() {
+  enum ErrorCodes {
+    InvalidCaller      = 0
+    InvalidArgs        = 1
+    ExpectAssetAddress = 2
+  }
+}

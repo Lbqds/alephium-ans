@@ -1,0 +1,24 @@
+{
+  "sourceCodeSha256": "ce6c64127c4dd809210b6a3a8f9957aa8ae94faabb9ebc24744d3cabf024af12",
+  "bytecodeTemplate": "0101030003000fb41700{0}1701144020b2453cbabd12c58b21d32b6c70e6c41c8ca2918d7f56c1b88e838edf168776bf1702160013c40de0b6b3a7640000a21602{1}0e0c16010101",
+  "fieldsSig": {
+    "signature": "TxScript Main(ansRegistryId:ByteVec,registrarId:ByteVec)",
+    "names": [
+      "ansRegistryId",
+      "registrarId"
+    ],
+    "types": [
+      "ByteVec",
+      "ByteVec"
+    ]
+  },
+  "functions": [
+    {
+      "name": "main",
+      "signature": "@using(preapprovedAssets=true) pub main()->()",
+      "argNames": [],
+      "argTypes": [],
+      "returnTypes": []
+    }
+  ]
+}

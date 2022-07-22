@@ -1,0 +1,21 @@
+import "constants.ral"
+
+Contract NameInfo(
+  parentId: ByteVec,
+  mut name: ByteVec
+) extends Constants() {
+  pub fn getName() -> ByteVec {
+    return name
+  }
+
+  pub fn setName(newName: ByteVec) -> () {
+    assert!(callerContractId!() == parentId, ErrorCodes.InvalidCaller)
+    name = newName
+  }
+
+  @using(assetsInContract = true)
+  pub fn destroy(refundAddress: Address) -> () {
+    assert!(callerContractId!() == parentId, ErrorCodes.InvalidCaller)
+    destroySelf!(refundAddress)
+  }
+}

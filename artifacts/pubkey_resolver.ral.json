@@ -1,0 +1,86 @@
+{
+  "sourceCodeSha256": "36ac612a992a8ca6a6535caa310e24b490842a138b7968724ae4b00fefedb3e9",
+  "bytecode": "02051a404d4070408a40b101000103010da0001600444e4e1701160117020c0d1602010102010303050017160000001703b41603450c7bb116011302641704160213c40de0b6b3a7640000a2140102160044a0011604c118010002030014b416000000450c7b140102160044b17c444e4e170216010d0c1602010101000102010e140102160044b17c444e4e17010c0d1601010002010002040016160000001702b41602450c7b140102160044b17c444e4e170316010d0c16030102",
+  "codeHash": "7790b557ff9856c28db37ed488f6fcc193972a768235db88aba321a21b284f1e",
+  "fieldsSig": {
+    "signature": "Contract PubkeyResolver(ansRegistryId:ByteVec,pubkeyInfoTemplateId:ByteVec)",
+    "names": [
+      "ansRegistryId",
+      "pubkeyInfoTemplateId"
+    ],
+    "types": [
+      "ByteVec",
+      "ByteVec"
+    ]
+  },
+  "eventsSig": [],
+  "functions": [
+    {
+      "name": "getOwner",
+      "signature": "pub getOwner(node:ByteVec)->(Address)",
+      "argNames": [
+        "node"
+      ],
+      "argTypes": [
+        "ByteVec"
+      ],
+      "returnTypes": [
+        "Address"
+      ]
+    },
+    {
+      "name": "createPubkeyInfo",
+      "signature": "@using(preapprovedAssets=true) pub createPubkeyInfo(node:ByteVec,pubkey:ByteVec,payer:Address)->()",
+      "argNames": [
+        "node",
+        "pubkey",
+        "payer"
+      ],
+      "argTypes": [
+        "ByteVec",
+        "ByteVec",
+        "Address"
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "setPubkey",
+      "signature": "pub setPubkey(node:ByteVec,pubkey:ByteVec)->()",
+      "argNames": [
+        "node",
+        "pubkey"
+      ],
+      "argTypes": [
+        "ByteVec",
+        "ByteVec"
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "getPubkey",
+      "signature": "pub getPubkey(node:ByteVec)->(ByteVec)",
+      "argNames": [
+        "node"
+      ],
+      "argTypes": [
+        "ByteVec"
+      ],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "removePubkeyInfo",
+      "signature": "pub removePubkeyInfo(node:ByteVec,refundAddress:Address)->()",
+      "argNames": [
+        "node",
+        "refundAddress"
+      ],
+      "argTypes": [
+        "ByteVec",
+        "Address"
+      ],
+      "returnTypes": []
+    }
+  ]
+}

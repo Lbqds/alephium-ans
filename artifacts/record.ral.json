@@ -1,0 +1,110 @@
+{
+  "sourceCodeSha256": "5a6fed883afb68facfdcb39bcd128aebe4ea034d6b69203926681e14c64a51a2",
+  "bytecode": "050909124022402b403b40444054405d4070010000000102a00002010000000102a00102010001010007b4a001450c7b1600a101010000000102a00202010001010007b3a000410c7b1600a102010000000102a00302010001010007b4a001450c7b1600a103010000000102a0040201020000000bb3a000410c7bb2b10dbda004b0",
+  "codeHash": "9825ee2fd0d22ad1b22d28bff66d22fed7d5a7f57a9b182ec1529122701417d8",
+  "fieldsSig": {
+    "signature": "Contract Record(registrar:ByteVec,mut owner:Address,mut ttl:U256,mut resolver:ByteVec,refundAddress:Address)",
+    "names": [
+      "registrar",
+      "owner",
+      "ttl",
+      "resolver",
+      "refundAddress"
+    ],
+    "types": [
+      "ByteVec",
+      "Address",
+      "U256",
+      "ByteVec",
+      "Address"
+    ]
+  },
+  "eventsSig": [],
+  "functions": [
+    {
+      "name": "getRegistrar",
+      "signature": "pub getRegistrar()->(ByteVec)",
+      "argNames": [],
+      "argTypes": [],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "getOwner",
+      "signature": "pub getOwner()->(Address)",
+      "argNames": [],
+      "argTypes": [],
+      "returnTypes": [
+        "Address"
+      ]
+    },
+    {
+      "name": "setOwner",
+      "signature": "pub setOwner(newOwner:Address)->()",
+      "argNames": [
+        "newOwner"
+      ],
+      "argTypes": [
+        "Address"
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "getTTL",
+      "signature": "pub getTTL()->(U256)",
+      "argNames": [],
+      "argTypes": [],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "setTTL",
+      "signature": "pub setTTL(newTTL:U256)->()",
+      "argNames": [
+        "newTTL"
+      ],
+      "argTypes": [
+        "U256"
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "getResolver",
+      "signature": "pub getResolver()->(ByteVec)",
+      "argNames": [],
+      "argTypes": [],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "setResolver",
+      "signature": "pub setResolver(newResolver:ByteVec)->()",
+      "argNames": [
+        "newResolver"
+      ],
+      "argTypes": [
+        "ByteVec"
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "getRefundAddress",
+      "signature": "pub getRefundAddress()->(Address)",
+      "argNames": [],
+      "argTypes": [],
+      "returnTypes": [
+        "Address"
+      ]
+    },
+    {
+      "name": "destroy",
+      "signature": "@using(assetsInContract=true) pub destroy()->()",
+      "argNames": [],
+      "argTypes": [],
+      "returnTypes": []
+    }
+  ]
+}

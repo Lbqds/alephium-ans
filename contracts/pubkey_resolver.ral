@@ -1,0 +1,34 @@
+import "resolver_base.ral"
+import "pubkey_info.ral"
+import "constants.ral"
+
+Abstract Contract PubkeyResolver(
+  ansRegistryId: ByteVec,
+  pubkeyInfoTemplateId: ByteVec
+) extends ResolverBase(ansRegistryId), Constants() {
+  @using(preapprovedAssets = true)
+  pub fn createPubkeyInfo(node: ByteVec, pubkey: ByteVec, payer: Address) -> () {
+    let owner = getOwner(node)
+    assert!(callerAddress!() == owner, ErrorCodes.InvalidCaller)
+    let encodedState = encodeToByteVec!(selfContractId!(), pubkey)
+    copyCreateSubContract!{payer -> 1 alph}(PathPrefix.PubkeyInfo ++ node, pubkeyInfoTemplateId, encodedState)
+  }
+
+  pub fn setPubkey(node: ByteVec, pubkey: ByteVec) -> () {
+    assert!(callerAddress!() == getOwner(node), ErrorCodes.InvalidCaller)
+    let pubkeyInfo = PubkeyInfo(subContractId!(PathPrefix.PubkeyInfo ++ node))
+    pubkeyInfo.setPubkey(pubkey)
+  }
+
+  pub fn getPubkey(node: ByteVec) -> ByteVec {
+    let pubkeyInfo = PubkeyInfo(subContractId!(PathPrefix.PubkeyInfo ++ node))
+    return pubkeyInfo.getPubkey()
+  }
+
+  pub fn removePubkeyInfo(node: ByteVec, refundAddress: Address) -> () {
+    let owner = getOwner(node)
+    assert!(callerAddress!() == owner, ErrorCodes.InvalidCaller)
+    let pubkeyInfo = PubkeyInfo(subContractId!(PathPrefix.PubkeyInfo ++ node))
+    pubkeyInfo.destroy(refundAddress)
+  }
+}

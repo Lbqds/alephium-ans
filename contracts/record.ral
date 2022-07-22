@@ -1,0 +1,51 @@
+import "constants.ral"
+
+Contract Record(
+  registrar: ByteVec,
+  mut owner: Address, // The owner can be a contract address
+  mut ttl: U256,
+  mut resolver: ByteVec,
+  refundAddress: Address
+) extends Constants() {
+  pub fn getRegistrar() -> ByteVec {
+    return registrar
+  }
+
+  pub fn getOwner() -> Address {
+    return owner
+  }
+
+  pub fn setOwner(newOwner: Address) -> () {
+    assert!(callerAddress!() == owner, ErrorCodes.InvalidCaller)
+    owner = newOwner
+  }
+
+  pub fn getTTL() -> U256 {
+    return ttl
+  }
+
+  pub fn setTTL(newTTL: U256) -> () {
+    assert!(callerContractId!() == registrar, ErrorCodes.InvalidCaller)
+    ttl = newTTL
+  }
+ 
+  pub fn getResolver() -> ByteVec {
+    return resolver
+  }
+
+  pub fn setResolver(newResolver: ByteVec) -> () {
+    assert!(callerAddress!() == owner, ErrorCodes.InvalidCaller)
+    resolver = newResolver
+  }
+
+  pub fn getRefundAddress() -> Address {
+    return refundAddress
+  }
+
+  @using(assetsInContract = true)
+  pub fn destroy() -> () {
+    assert!(callerContractId!() == registrar, ErrorCodes.InvalidCaller)
+    burnToken!(selfAddress!(), selfContractId!(), 1)
+    destroySelf!(refundAddress)
+  }
+}

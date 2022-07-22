@@ -1,0 +1,50 @@
+{
+  "sourceCodeSha256": "3a00777f4bd5bec8f19020211475e9eb32945978fd07700ff96292dab463f4d4",
+  "bytecode": "020309194028010000000102a00102010001010007b3a000410c7b1600a101010201010007b3a000410c7b1600b0",
+  "codeHash": "319f1758e9391118033507f13d9362f4968d6dd652ed707f024608b9865317a1",
+  "fieldsSig": {
+    "signature": "Contract PubkeyInfo(parentId:ByteVec,mut pubkey:ByteVec)",
+    "names": [
+      "parentId",
+      "pubkey"
+    ],
+    "types": [
+      "ByteVec",
+      "ByteVec"
+    ]
+  },
+  "eventsSig": [],
+  "functions": [
+    {
+      "name": "getPubkey",
+      "signature": "pub getPubkey()->(ByteVec)",
+      "argNames": [],
+      "argTypes": [],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "setPubkey",
+      "signature": "pub setPubkey(newPubkey:ByteVec)->()",
+      "argNames": [
+        "newPubkey"
+      ],
+      "argTypes": [
+        "ByteVec"
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "destroy",
+      "signature": "@using(assetsInContract=true) pub destroy(refundAddress:Address)->()",
+      "argNames": [
+        "refundAddress"
+      ],
+      "argTypes": [
+        "Address"
+      ],
+      "returnTypes": []
+    }
+  ]
+}

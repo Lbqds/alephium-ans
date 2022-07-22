@@ -1,0 +1,75 @@
+import "ans_registry.ral"
+import "resolver.ral"
+import "constants.ral"
+
+Contract Registrar(
+  registrarOwner: Address,
+  ansRegistryId: ByteVec,
+  defaultResolverId: ByteVec
+) extends Constants() {
+  // namehash("alph")
+  const RootNode = #b2453cbabd12c58b21d32b6c70e6c41c8ca2918d7f56c1b88e838edf168776bf
+  const MinRentDuration = 2592000000 // 3 months in ms
+
+  fn rentPrice(duration: U256) -> U256 {
+    return 1e-15 alph * duration
+  }
+
+  @using(preapprovedAssets = true)
+  pub fn register(
+    name: ByteVec,
+    owner: Address,
+    duration: U256,
+    payer: Address
+  ) -> () {
+    registerWithResolver{payer -> alphRemaining!(payer)}(name, owner, duration, payer, defaultResolverId)
+  }
+
+  @using(preapprovedAssets = true, assetsInContract = true)
+  pub fn registerWithResolver(
+    name: ByteVec,
+    owner: Address,
+    duration: U256,
+    payer: Address,
+    resolverId: ByteVec
+  ) -> () {
+    assert!(size!(name) != 0, ErrorCodes.InvalidArgs)
+    assert!(duration >= MinRentDuration, ErrorCodes.InvalidArgs)
+    let ttl = blockTimeStamp!() + duration
+    transferAlphToSelf!(payer, rentPrice(duration))
+
+    // TODO: remove the old record if it's expired
+    let label = keccak256!(name)
+    let ansRegistry = ANSRegistry(ansRegistryId)
+    ansRegistry.setSubNodeRecord{payer -> 1 alph}(RootNode, label, owner, ttl, resolverId, payer)
+  }
+
+  pub fn unregister(node: ByteVec) -> () {
+    let subNodeRecordId = subContractIdOf!(ANSRegistry(ansRegistryId), node)
+    let record = Record(subNodeRecordId)
+    assert!(callerAddress!() == record.getOwner(), ErrorCodes.InvalidCaller)
+
+    // TODO: check if the contract exists
+    // let resolver = Resolver(record.getResolver())
+    // let refundAddress = record.getRefundAddress()
+    // resolver.removeNode(node, refundAddress)
+    record.destroy()
+  }
+
+  @using(preapprovedAssets = true, assetsInContract = true)
+  pub fn renew(node: ByteVec, duration: U256, payer: Address) -> () {
+    let record = Record(subContractIdOf!(ANSRegistry(ansRegistryId), node))
+    assert!(callerAddress!() == record.getOwner(), ErrorCodes.InvalidCaller)
+    assert!(duration >= MinRentDuration, ErrorCodes.InvalidArgs)
+    let newTTL = record.getTTL() + duration
+    record.setTTL(newTTL)
+    assert!(newTTL > blockTimeStamp!(), ErrorCodes.InvalidArgs)
+    transferAlphToSelf!(payer, rentPrice(duration))
+  }
+
+  @using(preapprovedAssets = true, assetsInContract = true)
+  pub fn withdraw(to: Address, amount: U256) -> () {
+    assert!(callerAddress!() == registrarOwner, ErrorCodes.InvalidCaller)
+    transferAlphFromSelf!(to, amount)
+  }
+}
