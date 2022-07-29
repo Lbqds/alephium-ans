@@ -8,6 +8,7 @@ import {
   Fields
 } from '@alephium/web3'
 import { testWallet, testAddress } from '@alephium/web3/test'
+import * as fs from 'fs'
 
 const DummyAddress = addressFromContractId('0'.repeat(64))
 
@@ -105,7 +106,7 @@ async function deployRegistrar(
   signer: SignerWithNodeProvider,
   ansRegistryId: string,
   registrarOwner: string
-): Promise<string> {
+): Promise<{defaultResolverId: string, registrarId: string}> {
   const defaultResolverId = await deployDefaultResolver(signer, ansRegistryId)
   const registrar = await Contract.fromSource(signer.provider, 'registrar.ral')
   const registrarId = await deployContract(signer, registrar, {
@@ -114,7 +115,7 @@ async function deployRegistrar(
     "defaultResolverId": defaultResolverId
   })
 
-  const setupScript = await Script.fromSource(signer.provider, 'setup_ans.ral')
+  const setupScript = await Script.fromSource(signer.provider, 'scripts/setup_ans.ral')
   const scriptTx = await setupScript.transactionForDeployment(signer, {
     initialFields: {
       "ansRegistryId": ansRegistryId,
@@ -123,23 +124,45 @@ async function deployRegistrar(
   })
   const submitResult = await signer.submitTransaction(scriptTx.unsignedTx, scriptTx.txId)
   await waitTxConfirmed(signer.provider, submitResult.txId)
-  return registrarId
+  return {defaultResolverId, registrarId}
+}
+
+async function compileScripts(provider: NodeProvider) {
+  await Script.fromSource(provider, 'scripts/register.ral')
+}
+
+export async function getContractGroup(
+  provider: NodeProvider,
+  contractId: string
+): Promise<number> {
+  const address = addressFromContractId(contractId)
+  const response = await provider.addresses.getAddressesAddressGroup(address)
+  return response.group
 }
 
 export async function deploy(
   signer: SignerWithNodeProvider,
   registrarOwner: string
-): Promise<string> {
+): Promise<{ansRegistryId: string, defaultResolverId: string, registrarId: string}> {
   const ansRegistryId = await deployANSRegistry(signer)
-  console.log("ANSRegistry id: " + ansRegistryId)
-  return await deployRegistrar(signer, ansRegistryId, registrarOwner)
+  return {
+    ansRegistryId,
+    ...(await deployRegistrar(signer, ansRegistryId, registrarOwner))
+  }
 }
 
 export async function deployOnDevnet() {
-  const provider = new NodeProvider("http://127.0.0.1:22973")
+  const nodeUrl = "http://127.0.0.1:22973"
+  const provider = new NodeProvider(nodeUrl)
   const signer = await testWallet(provider)
-  const registrarId = await deploy(signer, testAddress)
-  console.log("Registrar contract id: " + registrarId)
+  const contractIds = await deploy(signer, testAddress)
+  const group = await getContractGroup(provider, contractIds.ansRegistryId)
+  fs.writeFileSync('configs/contractIds.json', JSON.stringify({
+    ...contractIds,
+    group: group,
+    nodeUrl: nodeUrl
+  }, null, 2))
+  await compileScripts(provider)
 }
 
 deployOnDevnet()
