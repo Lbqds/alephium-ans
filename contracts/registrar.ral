@@ -7,6 +7,11 @@ Contract Registrar(
   ansRegistryId: ByteVec,
   defaultResolverId: ByteVec
 ) extends Constants() {
+  event NewNode(node: ByteVec, owner: Address)
+  event Transfer(node: ByteVec, oldOwner: Address, newOwner: Address)
+  event NewTTL(node: ByteVec, owner: Address, ttl: U256)
+  event NewResolver(node: ByteVec, owner: Address, resolverId: ByteVec)
+
   // namehash("alph")
   const RootNode = #b2453cbabd12c58b21d32b6c70e6c41c8ca2918d7f56c1b88e838edf168776bf
   const MinRentDuration = 2592000000 // 3 months in ms
@@ -42,6 +47,9 @@ Contract Registrar(
     let label = keccak256!(name)
     let ansRegistry = ANSRegistry(ansRegistryId)
     ansRegistry.setSubNodeRecord{payer -> 1 alph}(RootNode, label, owner, ttl, resolverId, payer)
+
+    let subNode = keccak256!(RootNode ++ label)
+    emit NewNode(subNode, owner)
   }
 
   pub fn unregister(node: ByteVec) -> () {
@@ -51,7 +59,6 @@ Contract Registrar(
 
     // TODO: check if the contract exists
     // let resolver = Resolver(record.getResolver())
-    // let refundAddress = record.getRefundAddress()
     // resolver.removeNode(node, refundAddress)
     record.destroy()
   }
@@ -59,12 +66,30 @@ Contract Registrar(
   @using(preapprovedAssets = true, assetsInContract = true)
   pub fn renew(node: ByteVec, duration: U256, payer: Address) -> () {
     let record = Record(subContractIdOf!(ANSRegistry(ansRegistryId), node))
-    assert!(callerAddress!() == record.getOwner(), ErrorCodes.InvalidCaller)
+    let owner = callerAddress!()
+    assert!(owner == record.getOwner(), ErrorCodes.InvalidCaller)
     assert!(duration >= MinRentDuration, ErrorCodes.InvalidArgs)
     let newTTL = record.getTTL() + duration
     record.setTTL(newTTL)
     assert!(newTTL > blockTimeStamp!(), ErrorCodes.InvalidArgs)
     transferAlphToSelf!(payer, rentPrice(duration))
+    emit NewTTL(node, owner, newTTL)
+  }
+
+  pub fn setOwner(node: ByteVec, newOwner: Address) -> () {
+    let record = Record(subContractIdOf!(ANSRegistry(ansRegistryId), node))
+    let owner = callerAddress!()
+    assert!(owner == record.getOwner(), ErrorCodes.InvalidCaller)
+    record.setOwner(newOwner)
+    emit Transfer(node, owner, newOwner)
+  }
+
+  pub fn setResolver(node: ByteVec, resolverId: ByteVec) -> () {
+    let record = Record(subContractIdOf!(ANSRegistry(ansRegistryId), node))
+    let owner = callerAddress!()
+    assert!(owner == record.getOwner(), ErrorCodes.InvalidCaller)
+    record.setResolver(resolverId)
+    emit NewResolver(node, owner, resolverId)
   }
 
   @using(preapprovedAssets = true, assetsInContract = true)

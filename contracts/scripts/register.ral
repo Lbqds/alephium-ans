@@ -1,0 +1,7 @@
+import "../registrar.ral"
+
+TxScript Main(registrarId: ByteVec, name: ByteVec, rentalPeriod: U256) {
+  let registrar = Registrar(registrarId)
+  let owner = callerAddress!()
+  registrar.register{owner -> alphRemaining!(owner)}(name, owner, rentalPeriod, owner)
+}

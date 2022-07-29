@@ -16,7 +16,7 @@ Contract Record(
   }
 
   pub fn setOwner(newOwner: Address) -> () {
-    assert!(callerAddress!() == owner, ErrorCodes.InvalidCaller)
+    assert!(callerContractId!() == registrar, ErrorCodes.InvalidCaller)
     owner = newOwner
   }
 
@@ -34,7 +34,7 @@ Contract Record(
   }
 
   pub fn setResolver(newResolver: ByteVec) -> () {
-    assert!(callerAddress!() == owner, ErrorCodes.InvalidCaller)
+    assert!(callerContractId!() == registrar, ErrorCodes.InvalidCaller)
     resolver = newResolver
   }
 

@@ -1,5 +1,6 @@
 import {
   addressFromContractId,
+  Arguments,
   binToHex,
   Contract,
   subContractId,
@@ -16,14 +17,15 @@ import {
   testProvider,
   expectAssertionFailed,
   subContractAddress,
-  createDefaultResolver
+  createDefaultResolver,
+  randomContractId
 } from "./fixtures/ANSFixture"
 import { keccak256 } from "ethers/lib/utils"
 
 describe("test registrar", () => {
   const RootNode = "b2453cbabd12c58b21d32b6c70e6c41c8ca2918d7f56c1b88e838edf168776bf"
   const MaxTTL = BigInt(1) << BigInt(255)
-  const MinRentDuration = 2592000000
+  const MinRentalPeriod = 2592000000
   const RentPrice = BigInt("1000")
 
   const encoder = new TextEncoder()
@@ -81,15 +83,15 @@ describe("test registrar", () => {
       })
     }
 
-    const subNode = "test"
+    const name = "test"
     const subNodeOwner = randomAssetAddress()
-    const testResult = await register(subNode, subNodeOwner, MinRentDuration)
+    const testResult = await register(name, subNodeOwner, MinRentalPeriod)
     const subRecordContract = testResult.contracts[0]
     expect(subRecordContract.fields["owner"]).toEqual(subNodeOwner)
     expect(subRecordContract.fields["registrar"]).toEqual(registrarInfo.state.contractId)
-    const label = keccak256(encoder.encode(subNode)).slice(2)
-    const path = keccak256(Buffer.from(RootNode + label, 'hex')).slice(2)
-    const expectedContractId = subContractId(ansRegistryInfo.state.contractId, path)
+    const label = keccak256(encoder.encode(name)).slice(2)
+    const subNode = keccak256(Buffer.from(RootNode + label, 'hex')).slice(2)
+    const expectedContractId = subContractId(ansRegistryInfo.state.contractId, subNode)
     expect(subRecordContract.contractId).toEqual(expectedContractId)
 
     const contractOutput = testResult.txOutputs[0]
@@ -98,11 +100,18 @@ describe("test registrar", () => {
       amount: 1
     }])
 
-    const rentFee = RentPrice * BigInt(MinRentDuration)
+    const rentFee = RentPrice * BigInt(MinRentalPeriod)
     const registrarOutput = testResult.txOutputs[1]
     expect(registrarOutput.alphAmount).toEqual(rentFee + oneAlph)
 
-    await expectAssertionFailed(async () => register(subNode, subNodeOwner, MinRentDuration - 1))
+    const newNodeEvents = testResult.events.filter(e => e.name === "NewNode")
+    expect(newNodeEvents.length).toEqual(1)
+    expect(newNodeEvents[0].fields).toEqual({
+      "node": subNode,
+      "owner": subNodeOwner
+    })
+
+    await expectAssertionFailed(async () => register(name, subNodeOwner, MinRentalPeriod - 1))
   })
 
   it('should renew sub record', async () => {
@@ -148,17 +157,22 @@ describe("test registrar", () => {
     }
 
     const ttl = Date.now()
-    const testResult = await renew(subNodeOwner, MinRentDuration, ttl)
+    const testResult = await renew(subNodeOwner, MinRentalPeriod, ttl)
     const subRecordContract = testResult.contracts.filter(c => c.address === subRecordAddress)[0]
-    expect(subRecordContract.fields["ttl"]).toEqual(ttl + MinRentDuration)
+    expect(subRecordContract.fields["ttl"]).toEqual(ttl + MinRentalPeriod)
 
-    const rentFee = RentPrice * BigInt(MinRentDuration)
+    const rentFee = RentPrice * BigInt(MinRentalPeriod)
     const registrarOutput = testResult.txOutputs[0]
     expect(registrarOutput.alphAmount).toEqual(rentFee + oneAlph)
+    expect(testResult.events[0].fields).toEqual({
+      "node": subNode,
+      "owner": subNodeOwner,
+      "ttl": ttl + MinRentalPeriod
+    })
 
-    await expectAssertionFailed(async () => renew(randomAssetAddress(), MinRentDuration, ttl))
-    await expectAssertionFailed(async () => renew(randomAssetAddress(), MinRentDuration - 1, ttl))
-    await expectAssertionFailed(async () => renew(randomAssetAddress(), MinRentDuration, ttl - MinRentDuration * 2))
+    await expectAssertionFailed(async () => renew(randomAssetAddress(), MinRentalPeriod, ttl))
+    await expectAssertionFailed(async () => renew(randomAssetAddress(), MinRentalPeriod - 1, ttl))
+    await expectAssertionFailed(async () => renew(randomAssetAddress(), MinRentalPeriod, ttl - MinRentalPeriod * 2))
   })
 
   it('should unregister sub record', async () => {
@@ -199,6 +213,67 @@ describe("test registrar", () => {
 
     const testResult = await unregister(subNodeOwner)
     const subRecordContract = testResult.contracts.filter(c => c.address === subRecordAddress)
-    console.log(subRecordContract)
+    expect(subRecordContract.length).toEqual(0)
+  })
+
+  it('should update record profile', async () => {
+    const ansRegistryInfo = await createANSRegistry(randomAssetAddress())
+    const registrarOwner = randomAssetAddress()
+    const registrarInfo = await createRegistrar(registrarOwner, ansRegistryInfo)
+    const subNodeLabel = keccak256(encoder.encode("test")).slice(2)
+    const subNode = keccak256(Buffer.from(RootNode + subNodeLabel)).slice(2)
+    const subNodeOwner = randomAssetAddress()
+    const subRecordAddress = subContractAddress(ansRegistryInfo.state.contractId, subNode)
+
+    async function test(caller: string, method: string, args: Arguments): Promise<TestContractResult> {
+      const subRecord = await createRecord({
+        "registrar": registrarInfo.state.contractId,
+        "owner": subNodeOwner,
+        "ttl": 0,
+        "resolver": "",
+        "refundAddress": subNodeOwner
+      }, subRecordAddress)
+
+      const registrar = registrarInfo.contract
+      return registrar.testPublicMethod(testProvider, method, {
+        address: registrarInfo.state.address,
+        initialFields: registrarInfo.state.fields,
+        initialAsset: defaultInitialAsset,
+        inputAssets: [{
+          address: caller,
+          asset: {
+            alphAmount: oneAlph
+          }
+        }],
+        testArgs: args,
+        existingContracts: [subRecord, ...registrarInfo.dependencies]
+      })
+    }
+
+    const newOwner = randomAssetAddress()
+    const setOwnerArgs = {"node": subNode, "newOwner": newOwner}
+    const setOwnerResult = await test(subNodeOwner, "setOwner", setOwnerArgs)
+    let subNodeState = setOwnerResult.contracts.filter(c => c.address === subRecordAddress)[0]
+    expect(subNodeState.fields["owner"]).toEqual(newOwner)
+    expect(setOwnerResult.events[0].fields).toEqual({
+      "node": subNode,
+      "oldOwner": subNodeOwner,
+      "newOwner": newOwner
+    })
+
+    await expectAssertionFailed(async () => test(randomAssetAddress(), "setOwner", setOwnerArgs))
+
+    const newResolverId = randomContractId()
+    const setResolverArgs = {"node": subNode, "resolverId": newResolverId}
+    const setResolverResult = await test(subNodeOwner, "setResolver", setResolverArgs)
+    subNodeState = setResolverResult.contracts.filter(c => c.address === subRecordAddress)[0]
+    expect(subNodeState.fields["resolver"]).toEqual(newResolverId)
+    expect(setResolverResult.events[0].fields).toEqual({
+      "node": subNode,
+      "owner": subNodeOwner,
+      "resolverId": newResolverId
+    })
+
+    await expectAssertionFailed(async () => test(randomAssetAddress(), "setResolver", setResolverArgs))
   })
 })
