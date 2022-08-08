@@ -7,18 +7,23 @@ Abstract Contract NameResolver(
   nameInfoTemplateId: ByteVec
 ) extends ResolverBase(ansRegistryId), Constants() {
   @using(preapprovedAssets = true)
-  pub fn createNameInfo(node: ByteVec, name: ByteVec, payer: Address) -> () {
-    let owner = getOwner(node)
-    assert!(callerAddress!() == owner, ErrorCodes.InvalidCaller)
+  fn createNameInfo(node: ByteVec, name: ByteVec, payer: Address) -> () {
+    assert!(callerAddress!() == getOwner(node), ErrorCodes.InvalidCaller)
     let encodedState = encodeToByteVec!(selfContractId!(), name)
     copyCreateSubContract!{payer -> 1 alph}(PathPrefix.NameInfo ++ node, nameInfoTemplateId, encodedState)
   }
 
+  @using(preapprovedAssets = true)
   pub fn setName(node: ByteVec, name: ByteVec) -> () {
-    let owner = getOwner(node)
-    assert!(callerAddress!() == owner, ErrorCodes.InvalidCaller)
-    let nameInfo = NameInfo(subContractId!(PathPrefix.NameInfo ++ node))
-    nameInfo.setName(name)
+    let caller = callerAddress!()
+    assert!(caller == getOwner(node), ErrorCodes.InvalidCaller)
+    let contractId = subContractId!(PathPrefix.NameInfo ++ node)
+    if (contractExists!(contractId)) {
+      let nameInfo = NameInfo(contractId)
+      nameInfo.setName(name)
+    } else {
+      createNameInfo{caller -> 1 alph}(node, name, caller)
+    }
   }
 
   pub fn getName(node: ByteVec) -> ByteVec {
@@ -27,9 +32,11 @@ Abstract Contract NameResolver(
   }
 
   pub fn removeNameInfo(node: ByteVec, refundAddress: Address) -> () {
-    let owner = getOwner(node)
-    assert!(callerAddress!() == owner, ErrorCodes.InvalidCaller)
-    let nameInfo = NameInfo(subContractId!(PathPrefix.NameInfo ++ node))
-    nameInfo.destroy(refundAddress)
+    assert!(callerAddress!() == getOwner(node), ErrorCodes.InvalidCaller)
+    let contractId = subContractId!(PathPrefix.NameInfo ++ node)
+    if (contractExists!(contractId)) {
+      let nameInfo = NameInfo(contractId)
+      nameInfo.destroy(refundAddress)
+    }
   }
 }

@@ -10,27 +10,35 @@ Abstract Contract AddressResolver(
   const EthId = 60
 
   @using(preapprovedAssets = true)
-  pub fn createAddressInfo(node: ByteVec, payer: Address, alphAddress: Address) -> () {
+  fn createAddressInfo(node: ByteVec, payload: ByteVec, payer: Address) -> () {
     let owner = getOwner(node)
     assert!(callerAddress!() == owner, ErrorCodes.InvalidCaller)
-    let addressBytes = toByteVec!(alphAddress)
-    let payload = u256To2Byte!(AlphId) ++ u256To1Byte!(size!(addressBytes)) ++ addressBytes
     let encodedState = encodeToByteVec!(selfContractId!(), payload)
     copyCreateSubContract!{payer -> 1 alph}(PathPrefix.AddressInfo ++ node, addressInfoTemplateId, encodedState)
   }
 
+  @using(preapprovedAssets = true)
   pub fn setAlphAddress(node: ByteVec, address: Address) -> () {
-    setAddress(node, AlphId, toByteVec!(address))
+    setAddress{callerAddress!() -> 1 alph}(node, AlphId, toByteVec!(address))
   }
 
+  @using(preapprovedAssets = true)
   pub fn setEthAddress(node: ByteVec, address: ByteVec) -> () {
-    setAddress(node, EthId, address)
+    setAddress{callerAddress!() -> 1 alph}(node, EthId, address)
   }
 
+  @using(preapprovedAssets = true)
   pub fn setAddress(node: ByteVec, chainId: U256, address: ByteVec) -> () {
-    assert!(callerAddress!() == getOwner(node), ErrorCodes.InvalidCaller)
-    let addressInfo = AddressInfo(subContractId!(PathPrefix.AddressInfo ++ node))
-    addressInfo.setAddress(chainId, address)
+    let caller = callerAddress!()
+    assert!(caller == getOwner(node), ErrorCodes.InvalidCaller)
+    let contractId = subContractId!(PathPrefix.AddressInfo ++ node)
+    if (contractExists!(contractId)) {
+      let addressInfo = AddressInfo(contractId)
+      addressInfo.setAddress(chainId, address)
+    } else {
+      let payload =u256To2Byte!(chainId) ++ u256To1Byte!(size!(address)) ++ address
+      createAddressInfo{caller -> 1 alph}(node, payload, caller)
+    }
   }
 
   pub fn getAlphAddress(node: ByteVec) -> Address {
@@ -48,7 +56,10 @@ Abstract Contract AddressResolver(
 
   pub fn removeAddressInfo(node: ByteVec, refundAddress: Address) -> () {
     assert!(callerAddress!() == getOwner(node), ErrorCodes.InvalidCaller)
-    let addressInfo = AddressInfo(subContractId!(PathPrefix.AddressInfo ++ node))
-    addressInfo.destroy(refundAddress)
+    let contractId = subContractId!(PathPrefix.AddressInfo ++ node)
+    if (contractExists!(contractId)) {
+      let addressInfo = AddressInfo(contractId)
+      addressInfo.destroy(refundAddress)
+    }
   }
 }

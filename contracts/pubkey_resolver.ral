@@ -7,17 +7,23 @@ Abstract Contract PubkeyResolver(
   pubkeyInfoTemplateId: ByteVec
 ) extends ResolverBase(ansRegistryId), Constants() {
   @using(preapprovedAssets = true)
-  pub fn createPubkeyInfo(node: ByteVec, pubkey: ByteVec, payer: Address) -> () {
-    let owner = getOwner(node)
-    assert!(callerAddress!() == owner, ErrorCodes.InvalidCaller)
+  fn createPubkeyInfo(node: ByteVec, pubkey: ByteVec, payer: Address) -> () {
+    assert!(callerAddress!() == getOwner(node), ErrorCodes.InvalidCaller)
     let encodedState = encodeToByteVec!(selfContractId!(), pubkey)
     copyCreateSubContract!{payer -> 1 alph}(PathPrefix.PubkeyInfo ++ node, pubkeyInfoTemplateId, encodedState)
   }
 
+  @using(preapprovedAssets = true)
   pub fn setPubkey(node: ByteVec, pubkey: ByteVec) -> () {
-    assert!(callerAddress!() == getOwner(node), ErrorCodes.InvalidCaller)
-    let pubkeyInfo = PubkeyInfo(subContractId!(PathPrefix.PubkeyInfo ++ node))
-    pubkeyInfo.setPubkey(pubkey)
+    let caller = callerAddress!()
+    assert!(caller == getOwner(node), ErrorCodes.InvalidCaller)
+    let contractId = subContractId!(PathPrefix.PubkeyInfo ++ node)
+    if (contractExists!(contractId)) {
+      let pubkeyInfo = PubkeyInfo(contractId)
+      pubkeyInfo.setPubkey(pubkey)
+    } else {
+      createPubkeyInfo{caller -> 1 alph}(node, pubkey, caller)
+    }
   }
 
   pub fn getPubkey(node: ByteVec) -> ByteVec {
@@ -26,9 +32,11 @@ Abstract Contract PubkeyResolver(
   }
 
   pub fn removePubkeyInfo(node: ByteVec, refundAddress: Address) -> () {
-    let owner = getOwner(node)
-    assert!(callerAddress!() == owner, ErrorCodes.InvalidCaller)
-    let pubkeyInfo = PubkeyInfo(subContractId!(PathPrefix.PubkeyInfo ++ node))
-    pubkeyInfo.destroy(refundAddress)
+    assert!(callerAddress!() == getOwner(node), ErrorCodes.InvalidCaller)
+    let contractId = subContractId!(PathPrefix.PubkeyInfo ++ node)
+    if (contractExists!(contractId)) {
+      let pubkeyInfo = PubkeyInfo(contractId)
+      pubkeyInfo.destroy(refundAddress)
+    }
   }
 }

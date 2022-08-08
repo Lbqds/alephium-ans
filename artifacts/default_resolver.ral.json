@@ -1,7 +1,7 @@
 {
-  "sourceCodeSha256": "e32a5b1a657c10a5d4281a69d6283df7408f6c49c1c506336e512fc97ae5ffe8",
-  "bytecode": "0412404740574065408a409940a640c240e540ff413241594173419a41cd41f0420a4231425501030307004023160000081703b41603450c7b16024717041344d26716044366441604441705b116051302641706160113c40de0b6b3a7640000a2140100160044a0011606c11801000202000516001344d216014700030100020200041600133c16010003010003040015b416000008450c7b140100160044b17c444e4e1703160116020e0c1603010001000101010516001344d2000663020100010101041600133c00060201000203010f140100160044b17c444e4e170216010d0d1602010102010002030014b416000008450c7b140100160044b17c444e4e170216010d0c1602010201000103010da0001600444e4e1701160117020c0d1602010102010303050017160000081703b41603450c7bb116011302641704160213c40de0b6b3a7640000a2140101160044a0021604c118010002040016160000081702b41602450c7b140101160044b17c444e4e170316010d0c1603010101000102010e140101160044b17c444e4e17010c0d1601010002010002040016160000081702b41602450c7b140101160044b17c444e4e170316010d0c16030102010303050017160000081703b41603450c7bb116011302641704160213c40de0b6b3a7640000a2140102160044a0031604c118010002030014b416000008450c7b140102160044b17c444e4e170216010d0c1602010101000102010e140102160044b17c444e4e17010c0d1601010002010002040016160000081702b41602450c7b140102160044b17c444e4e170316010d0c16030102010002030011160000081702b41602450c7b16001601000716001601000c160016010010",
-  "codeHash": "8664a45d1846fbe7cde7780ca14095d20c45ee019f5fc6240271ff5e0c2423d6",
+  "sourceCodeSha256": "ac1e5c233e62e1880810d50e96d84b138b9958379ddae6d72bd420e23eb334d1",
+  "bytecode": "04124033404f406940c040cf40dc40f84124413e416d41b541cf41fb422a4272428c42b842dc000303050017160000081703b41603450c7bb116011302641704160213c40de0b6b3a7640000a2140100160044a0011604c118010302020008b413c40de0b6b3a7640000a216001344d21601470003010302020007b413c40de0b6b3a7640000a21600133c160100030103030700402db41703160316000008450c7b140100160044b17c444e4e17041604c54c0916041705160116020e0c160501004a1016016716024366441602441706160313c40de0b6b3a7640000a2160016061603000001000101010516001344d2000663020100010101041600133c00060201000203010f140100160044b17c444e4e170216010d0d1602010102010002040019b416000008450c7b140100160044b17c444e4e17021602c54c071602170316010d0c1603010201000103010da0001600444e4e1701160117020c0d1602010102000303040015b416000008450c7bb116011302641703160213c40de0b6b3a7640000a2140101160044a0021603c11801030205004023b41702160216000008450c7b140101160044b17c444e4e17031603c54c081603170416010d0c160401014a07160213c40de0b6b3a7640000a2160016011602000901000102010e140101160044b17c444e4e17010c0d1601010002010002040019b416000008450c7b140101160044b17c444e4e17021602c54c071602170316010d0c16030102000303040015b416000008450c7bb116011302641703160213c40de0b6b3a7640000a2140102160044a0031603c11801030205004023b41702160216000008450c7b140102160044b17c444e4e17031603c54c081603170416010d0c160401014a07160213c40de0b6b3a7640000a2160016011602000d01000102010e140102160044b17c444e4e17010c0d1601010002010002040019b416000008450c7b140102160044b17c444e4e17021602c54c071602170316010d0c16030102010002030011160000081702b41602450c7b16001601000716001601000c160016010010",
+  "codeHash": "a7f7be785251ff461ce36e5bc3700d5aaaf1bcd7389b706117f967b0fb635e8a",
   "fieldsSig": {
     "signature": "Contract DefaultResolver(ansRegistryId:ByteVec,addressInfoTemplateId:ByteVec,nameInfoTemplateId:ByteVec,pubkeyInfoTemplateId:ByteVec)",
     "names": [
@@ -21,22 +21,22 @@
   "functions": [
     {
       "name": "createAddressInfo",
-      "signature": "@using(preapprovedAssets=true) pub createAddressInfo(node:ByteVec,payer:Address,alphAddress:Address)->()",
+      "signature": "@using(preapprovedAssets=true) createAddressInfo(node:ByteVec,payload:ByteVec,payer:Address)->()",
       "argNames": [
         "node",
-        "payer",
-        "alphAddress"
+        "payload",
+        "payer"
       ],
       "argTypes": [
         "ByteVec",
-        "Address",
+        "ByteVec",
         "Address"
       ],
       "returnTypes": []
     },
     {
       "name": "setAlphAddress",
-      "signature": "pub setAlphAddress(node:ByteVec,address:Address)->()",
+      "signature": "@using(preapprovedAssets=true) pub setAlphAddress(node:ByteVec,address:Address)->()",
       "argNames": [
         "node",
         "address"
@@ -49,7 +49,7 @@
     },
     {
       "name": "setEthAddress",
-      "signature": "pub setEthAddress(node:ByteVec,address:ByteVec)->()",
+      "signature": "@using(preapprovedAssets=true) pub setEthAddress(node:ByteVec,address:ByteVec)->()",
       "argNames": [
         "node",
         "address"
@@ -62,7 +62,7 @@
     },
     {
       "name": "setAddress",
-      "signature": "pub setAddress(node:ByteVec,chainId:U256,address:ByteVec)->()",
+      "signature": "@using(preapprovedAssets=true) pub setAddress(node:ByteVec,chainId:U256,address:ByteVec)->()",
       "argNames": [
         "node",
         "chainId",
@@ -144,7 +144,7 @@
     },
     {
       "name": "createNameInfo",
-      "signature": "@using(preapprovedAssets=true) pub createNameInfo(node:ByteVec,name:ByteVec,payer:Address)->()",
+      "signature": "@using(preapprovedAssets=true) createNameInfo(node:ByteVec,name:ByteVec,payer:Address)->()",
       "argNames": [
         "node",
         "name",
@@ -159,7 +159,7 @@
     },
     {
       "name": "setName",
-      "signature": "pub setName(node:ByteVec,name:ByteVec)->()",
+      "signature": "@using(preapprovedAssets=true) pub setName(node:ByteVec,name:ByteVec)->()",
       "argNames": [
         "node",
         "name"
@@ -198,7 +198,7 @@
     },
     {
       "name": "createPubkeyInfo",
-      "signature": "@using(preapprovedAssets=true) pub createPubkeyInfo(node:ByteVec,pubkey:ByteVec,payer:Address)->()",
+      "signature": "@using(preapprovedAssets=true) createPubkeyInfo(node:ByteVec,pubkey:ByteVec,payer:Address)->()",
       "argNames": [
         "node",
         "pubkey",
@@ -213,7 +213,7 @@
     },
     {
       "name": "setPubkey",
-      "signature": "pub setPubkey(node:ByteVec,pubkey:ByteVec)->()",
+      "signature": "@using(preapprovedAssets=true) pub setPubkey(node:ByteVec,pubkey:ByteVec)->()",
       "argNames": [
         "node",
         "pubkey"

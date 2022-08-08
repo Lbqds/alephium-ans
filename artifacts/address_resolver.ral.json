@@ -1,7 +1,7 @@
 {
-  "sourceCodeSha256": "b57b0ac048eb6f236b51eb673068a4fd4fa401b4b33d7bdf22c2935d85d6154c",
-  "bytecode": "02091a40614071407f40a440b340c040dc40ff01000103010da0001600444e4e1701160117020c0d160201010201030307004023160000001703b41603450c7b16024717041344d26716044366441604441705b116051302641706160113c40de0b6b3a7640000a2140100160044a0011606c11801000202000516001344d216014700040100020200041600133c16010004010003040015b416000000450c7b140100160044b17c444e4e1703160116020e0c1603010001000101010516001344d2000763020100010101041600133c00070201000203010f140100160044b17c444e4e170216010d0d1602010102010002030014b416000000450c7b140100160044b17c444e4e170216010d0c16020102",
-  "codeHash": "7d77d369b6600d6ae1485de03fa48286fd4034ccdcef9a5e569dffc26d126892",
+  "sourceCodeSha256": "24093e71952dd6c0b878d7b65753b55641dc5cfd982ed11df4e9c4eaba4b29e3",
+  "bytecode": "02091a404d4069408340da40e940f64112413e01000103010da0001600444e4e1701160117020c0d1602010102000303050017160000001703b41603450c7bb116011302641704160213c40de0b6b3a7640000a2140100160044a0011604c118010302020008b413c40de0b6b3a7640000a216001344d21601470004010302020007b413c40de0b6b3a7640000a21600133c160100040103030700402db41703160316000000450c7b140100160044b17c444e4e17041604c54c0916041705160116020e0c160501004a1016016716024366441602441706160313c40de0b6b3a7640000a2160016061603000101000101010516001344d2000763020100010101041600133c00070201000203010f140100160044b17c444e4e170216010d0d1602010102010002040019b416000000450c7b140100160044b17c444e4e17021602c54c071602170316010d0c16030102",
+  "codeHash": "fd915f7693175973978ebdf4231b6951c2d156b8a1897c1db84dd166839989cc",
   "fieldsSig": {
     "signature": "Contract AddressResolver(ansRegistryId:ByteVec,addressInfoTemplateId:ByteVec)",
     "names": [
@@ -30,22 +30,22 @@
     },
     {
       "name": "createAddressInfo",
-      "signature": "@using(preapprovedAssets=true) pub createAddressInfo(node:ByteVec,payer:Address,alphAddress:Address)->()",
+      "signature": "@using(preapprovedAssets=true) createAddressInfo(node:ByteVec,payload:ByteVec,payer:Address)->()",
       "argNames": [
         "node",
-        "payer",
-        "alphAddress"
+        "payload",
+        "payer"
       ],
       "argTypes": [
         "ByteVec",
-        "Address",
+        "ByteVec",
         "Address"
       ],
       "returnTypes": []
     },
     {
       "name": "setAlphAddress",
-      "signature": "pub setAlphAddress(node:ByteVec,address:Address)->()",
+      "signature": "@using(preapprovedAssets=true) pub setAlphAddress(node:ByteVec,address:Address)->()",
       "argNames": [
         "node",
         "address"
@@ -58,7 +58,7 @@
     },
     {
       "name": "setEthAddress",
-      "signature": "pub setEthAddress(node:ByteVec,address:ByteVec)->()",
+      "signature": "@using(preapprovedAssets=true) pub setEthAddress(node:ByteVec,address:ByteVec)->()",
       "argNames": [
         "node",
         "address"
@@ -71,7 +71,7 @@
     },
     {
       "name": "setAddress",
-      "signature": "pub setAddress(node:ByteVec,chainId:U256,address:ByteVec)->()",
+      "signature": "@using(preapprovedAssets=true) pub setAddress(node:ByteVec,chainId:U256,address:ByteVec)->()",
       "argNames": [
         "node",
         "chainId",

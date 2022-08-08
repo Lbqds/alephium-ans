@@ -40,27 +40,41 @@ Contract Registrar(
   ) -> () {
     assert!(size!(name) != 0, ErrorCodes.InvalidArgs)
     assert!(duration >= MinRentDuration, ErrorCodes.InvalidArgs)
-    let ttl = blockTimeStamp!() + duration
+
+    let currentTs = blockTimeStamp!()
+    let label = keccak256!(name)
+    let subNode = keccak256!(RootNode ++ label)
+    let subNodeContractId = subContractIdOf!(ANSRegistry(ansRegistryId), subNode)
+    if (contractExists!(subNodeContractId)) {
+      let record = Record(subNodeContractId)
+      if (currentTs < record.getTTL()) {
+        assert!(false, ErrorCodes.NameHasBeenRegistered)
+      } else {
+        removeRecord(subNode, record)
+      }
+    }
+
+    let ttl = currentTs + duration
     transferAlphToSelf!(payer, rentPrice(duration))
 
-    // TODO: remove the old record if it's expired
-    let label = keccak256!(name)
     let ansRegistry = ANSRegistry(ansRegistryId)
     ansRegistry.setSubNodeRecord{payer -> 1 alph}(RootNode, label, owner, ttl, resolverId, payer)
-
-    let subNode = keccak256!(RootNode ++ label)
     emit NewNode(subNode, owner)
+  }
+
+  fn removeRecord(node: ByteVec, record: Record) -> () {
+    let resolverId = record.getResolver()
+    if (resolverId == defaultResolverId) {
+      Resolver(resolverId).removeNode(node, record.getRefundAddress())
+    }
+    record.destroy()
   }
 
   pub fn unregister(node: ByteVec) -> () {
     let subNodeRecordId = subContractIdOf!(ANSRegistry(ansRegistryId), node)
     let record = Record(subNodeRecordId)
     assert!(callerAddress!() == record.getOwner(), ErrorCodes.InvalidCaller)
-
-    // TODO: check if the contract exists
-    // let resolver = Resolver(record.getResolver())
-    // resolver.removeNode(node, refundAddress)
-    record.destroy()
+    removeRecord(node, record)
   }
 
   @using(preapprovedAssets = true, assetsInContract = true)

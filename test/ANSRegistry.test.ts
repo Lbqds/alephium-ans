@@ -18,7 +18,6 @@ import {
   testProvider
 } from './fixtures/ANSFixture'
 import { ethers } from 'ethers'
-import { keccak256 } from 'ethers/lib/utils'
 
 describe('test registrar', () => {
   it('should test update admin', async () => {

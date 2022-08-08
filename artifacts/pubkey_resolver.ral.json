@@ -1,7 +1,7 @@
 {
-  "sourceCodeSha256": "01db0baff11339d2d261e007f1cb6ef9d65cd0711b99b985a259706b4579db2b",
-  "bytecode": "02051a404d4070408a40b101000103010da0001600444e4e1701160117020c0d1602010102010303050017160000001703b41603450c7bb116011302641704160213c40de0b6b3a7640000a2140102160044a0011604c118010002030014b416000000450c7b140102160044b17c444e4e170216010d0c1602010101000102010e140102160044b17c444e4e17010c0d1601010002010002040016160000001702b41602450c7b140102160044b17c444e4e170316010d0c16030102",
-  "codeHash": "7790b557ff9856c28db37ed488f6fcc193972a768235db88aba321a21b284f1e",
+  "sourceCodeSha256": "b0d9a763892123b3aca079224b2f70af3dcfc115127d814cd2148cdf4301264d",
+  "bytecode": "02051a4049409140ab40d701000103010da0001600444e4e1701160117020c0d1602010102000303040015b416000000450c7bb116011302641703160213c40de0b6b3a7640000a2140102160044a0011603c11801030205004023b41702160216000000450c7b140102160044b17c444e4e17031603c54c081603170416010d0c160401014a07160213c40de0b6b3a7640000a2160016011602000101000102010e140102160044b17c444e4e17010c0d1601010002010002040019b416000000450c7b140102160044b17c444e4e17021602c54c071602170316010d0c16030102",
+  "codeHash": "d3767c4c3e511a7bb128f3a7dad8195395f3ca78b9bc5413b72644cf472c7ef2",
   "fieldsSig": {
     "signature": "Contract PubkeyResolver(ansRegistryId:ByteVec,pubkeyInfoTemplateId:ByteVec)",
     "names": [
@@ -30,7 +30,7 @@
     },
     {
       "name": "createPubkeyInfo",
-      "signature": "@using(preapprovedAssets=true) pub createPubkeyInfo(node:ByteVec,pubkey:ByteVec,payer:Address)->()",
+      "signature": "@using(preapprovedAssets=true) createPubkeyInfo(node:ByteVec,pubkey:ByteVec,payer:Address)->()",
       "argNames": [
         "node",
         "pubkey",
@@ -45,7 +45,7 @@
     },
     {
       "name": "setPubkey",
-      "signature": "pub setPubkey(node:ByteVec,pubkey:ByteVec)->()",
+      "signature": "@using(preapprovedAssets=true) pub setPubkey(node:ByteVec,pubkey:ByteVec)->()",
       "argNames": [
         "node",
         "pubkey"

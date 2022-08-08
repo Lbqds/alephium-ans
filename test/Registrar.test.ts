@@ -114,6 +114,79 @@ describe("test registrar", () => {
     await expectAssertionFailed(async () => register(name, subNodeOwner, MinRentalPeriod - 1))
   })
 
+  it('should remove the expired record on registration', async () => {
+    const ansRegistryInfo = await createANSRegistry(randomAssetAddress())
+    const resolverInfo = await createDefaultResolver(ansRegistryInfo)
+    const registrarOwner = randomAssetAddress()
+    const registrarInfo = await createRegistrar(registrarOwner, ansRegistryInfo)
+    const name = "test"
+    const previousOwner = randomAssetAddress()
+    const newOwner = randomAssetAddress()
+    const subNodeLabel = keccak256(encoder.encode(name)).slice(2)
+    const subNode = keccak256(Buffer.from(RootNode + subNodeLabel, 'hex')).slice(2)
+    const subRecordAddress = subContractAddress(ansRegistryInfo.state.contractId, subNode)
+
+    async function register(
+      subNode: string,
+      newOwner: string,
+      rentDuration: number
+    ): Promise<TestContractResult> {
+      const subRecord = await createRecord({
+        "registrar": registrarInfo.state.contractId,
+        "owner": previousOwner,
+        "ttl": 0,
+        "resolver": resolverInfo.state.contractId,
+        "refundAddress": previousOwner
+      }, subRecordAddress)
+      const registrar = registrarInfo.contract
+      return registrar.testPublicMethod(testProvider, 'register', {
+        address: registrarInfo.state.address,
+        initialFields: registrarInfo.state.fields,
+        initialAsset: defaultInitialAsset,
+        inputAssets: [{
+          address: newOwner,
+          asset: {
+            alphAmount: alph(2)
+          }
+        }],
+        testArgs: {
+          "name": binToHex(encoder.encode(subNode)),
+          "owner": newOwner,
+          "duration": rentDuration,
+          "payer": newOwner
+        },
+        existingContracts: [subRecord, ...registrarInfo.dependencies]
+      })
+    }
+
+    const testResult = await register(name, newOwner, MinRentalPeriod)
+    const expectedContractId = subContractId(ansRegistryInfo.state.contractId, subNode)
+    const subRecordContract = testResult.contracts.filter(c => c.contractId === expectedContractId)[0]
+    expect(subRecordContract.fields["owner"]).toEqual(newOwner)
+    expect(subRecordContract.fields["registrar"]).toEqual(registrarInfo.state.contractId)
+    expect(subRecordContract.contractId).toEqual(expectedContractId)
+
+    const contractOutput = testResult.txOutputs.filter(c => c.address === subRecordAddress)[0]
+    expect(contractOutput.tokens).toEqual([{
+      id: subRecordContract.contractId,
+      amount: 1
+    }])
+
+    const refundOutput = testResult.txOutputs.filter(c => c.address === previousOwner)[0]
+    expect(refundOutput.alphAmount).toEqual(oneAlph)
+
+    const rentFee = RentPrice * BigInt(MinRentalPeriod)
+    const registrarOutput = testResult.txOutputs.filter(c => c.address == registrarInfo.state.address)[0]
+    expect(registrarOutput.alphAmount).toEqual(rentFee + oneAlph)
+
+    const newNodeEvents = testResult.events.filter(e => e.name === "NewNode")
+    expect(newNodeEvents.length).toEqual(1)
+    expect(newNodeEvents[0].fields).toEqual({
+      "node": subNode,
+      "owner": newOwner
+    })
+  })
+
   it('should renew sub record', async () => {
     const ansRegistryInfo = await createANSRegistry(randomAssetAddress())
     const registrarOwner = randomAssetAddress()

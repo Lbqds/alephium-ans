@@ -1,8 +1,0 @@
-import "ans_registry.ral"
-
-TxScript Main(ansRegistryId: ByteVec, registrarId: ByteVec) {
-  let caller = callerAddress!()
-  let ansRegistry = ANSRegistry(ansRegistryId)
-  let alphNode = #b2453cbabd12c58b21d32b6c70e6c41c8ca2918d7f56c1b88e838edf168776bf
-  ansRegistry.newNode{caller -> 1 alph}(alphNode, registrarId)
-}

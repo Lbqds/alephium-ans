@@ -10,14 +10,11 @@ import {
 import { randomBytes } from "crypto"
 import {
   alph,
-  oneAlph,
   createANSRegistry,
   createRecord,
   defaultInitialAsset,
   randomAssetAddress,
   testProvider,
-  defaultGasFee,
-  expectAssertionFailed,
   subContractAddress,
   zeroPad,
   createAddressResolver
@@ -35,58 +32,6 @@ describe("test address resolver", () => {
       "addresses": data
     }, defaultInitialAsset, address)
   }
-
-  it('should create address info', async () => {
-    const ansRegistryInfo = await createANSRegistry(randomAssetAddress())
-    const addressResolverInfo = await createAddressResolver(ansRegistryInfo)
-    const ansRegistryId = ansRegistryInfo.state.contractId
-    const nodeOwner = randomAssetAddress()
-    const node = binToHex(randomBytes(4))
-    const record = await createRecord({
-      "registrar": '',
-      "owner": nodeOwner,
-      "ttl": 0,
-      "resolver": '',
-      "refundAddress": nodeOwner
-    }, addressFromContractId(subContractId(ansRegistryId, node)))
-
-    async function test(caller: string): Promise<TestContractResult> {
-      const addressResolver = addressResolverInfo.contract
-      return addressResolver.testPublicMethod(testProvider, 'createAddressInfo', {
-        address: addressResolverInfo.state.address,
-        initialFields: addressResolverInfo.initialFields(),
-        initialAsset: defaultInitialAsset,
-        inputAssets: [{
-          address: caller,
-          asset: {
-            alphAmount: alph(2)
-          }
-        }],
-        testArgs: {
-          "node": node,
-          "payer": caller,
-          "alphAddress": nodeOwner
-        },
-        existingContracts: [record, ...addressResolverInfo.dependencies]
-      })
-    }
-
-    const testResult = await test(nodeOwner)
-    const addressInfoContract = testResult.contracts[0]
-    expect(addressInfoContract.fields["parentId"]).toEqual(addressResolverInfo.state.contractId)
-    expect(addressInfoContract.fields["addresses"]).toEqual(
-      zeroPad(AlphChainId.toString(16), 2) +
-      "21" + // 33 bytes
-      binToHex(base58.decode(nodeOwner))
-    )
-    const expectContractId = subContractId(addressResolverInfo.state.contractId, '00' + node)
-    expect(addressInfoContract.contractId).toEqual(expectContractId)
-
-    const assetOutput = testResult.txOutputs[1]
-    expect(assetOutput.alphAmount).toEqual(alph(2) - oneAlph - defaultGasFee)
-
-    await expectAssertionFailed(() => test(randomAssetAddress()))
-  })
 
   it('should set/get addresses', async () => {
     const ansRegistryInfo = await createANSRegistry(randomAssetAddress())
