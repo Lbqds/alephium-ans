@@ -1,9 +1,9 @@
 {
-  "sourceCodeSha256": "35967dcb370fcfd0281d9ba7f8c94c5db84130c81eb321cc630cb121680e4e1b",
-  "bytecode": "020310404d40a8010001010007b4a000450c7b1600a10001030205001db4a000450c7b16017717020d1340ff3b17031601160216031400a0001305641704a00013c40de0b6b3a7640000a21600a00116040dc218010306090040341600b17c444e4e1706b40c0d16060101450c7b16030c0d16060103320d7b1605480e7b0c0d160601001602160316041605130564170716001601444f1708160513c40de0b6b3a7640000a21608a00116070dc218",
-  "codeHash": "c8e09b6ffb6856184c583ce24e2808e4d716fdca2d89fa541270448c12466cc6",
+  "version": "v2.1.0",
+  "name": "ANSRegistry",
+  "bytecode": "020310405540b3010001010007b4a000450c7b1600a10001030206004021b4a000450c7b16017717020d1340ff3b17031601a00013026417041602160314001303641705a00013c40de0b6b3a7640000a21600ce00160416050dc2180103060a0040341600cb1706b40c0d16060101450c7b16030c0d16060103320d7b1605480e7b16001601444f17070c0d16060100160513026417081602160316041303641709160513c40de0b6b3a7640000a21607ce00160816090dc218",
+  "codeHash": "0508f26fc13862c0d1b1e86ea54daae6bc588c3d32cb9c9ceb6d988e3a5b9ecc",
   "fieldsSig": {
-    "signature": "Contract ANSRegistry(mut admin:Address,recordTemplateId:ByteVec)",
     "names": [
       "admin",
       "recordTemplateId"
@@ -11,38 +11,55 @@
     "types": [
       "Address",
       "ByteVec"
+    ],
+    "isMutable": [
+      true,
+      false
     ]
   },
   "eventsSig": [],
   "functions": [
     {
       "name": "updateAdmin",
-      "signature": "pub updateAdmin(newAdmin:Address)->()",
-      "argNames": [
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
         "newAdmin"
       ],
-      "argTypes": [
+      "paramTypes": [
         "Address"
+      ],
+      "paramIsMutable": [
+        false
       ],
       "returnTypes": []
     },
     {
       "name": "newNode",
-      "signature": "@using(preapprovedAssets=true) pub newNode(node:ByteVec,ownerContractId:ByteVec)->()",
-      "argNames": [
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
         "node",
         "ownerContractId"
       ],
-      "argTypes": [
+      "paramTypes": [
         "ByteVec",
         "ByteVec"
+      ],
+      "paramIsMutable": [
+        false,
+        false
       ],
       "returnTypes": []
     },
     {
       "name": "setSubNodeRecord",
-      "signature": "@using(preapprovedAssets=true) pub setSubNodeRecord(node:ByteVec,label:ByteVec,owner:Address,ttl:U256,resolver:ByteVec,payer:Address)->()",
-      "argNames": [
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
         "node",
         "label",
         "owner",
@@ -50,13 +67,21 @@
         "resolver",
         "payer"
       ],
-      "argTypes": [
+      "paramTypes": [
         "ByteVec",
         "ByteVec",
         "Address",
         "U256",
         "ByteVec",
         "Address"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "returnTypes": []
     }

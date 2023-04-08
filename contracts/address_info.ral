@@ -1,11 +1,10 @@
-import "constants.ral"
-
 Contract AddressInfo(
   parentId: ByteVec,
   mut addresses: ByteVec // chainId + length + address
 ) extends Constants() {
+  @using(updateFields = true)
   pub fn setAddress(chainId: U256, address: ByteVec) -> () {
-    assert!(callerContractId!() == parentId, ErrorCodes.InvalidCaller)
+    checkCaller!(callerContractId!() == parentId, ErrorCodes.InvalidCaller)
     let newAddress = u256To2Byte!(chainId) ++ u256To1Byte!(size!(address)) ++ address
     let length = size!(addresses)
     let mut index = 0
@@ -41,7 +40,7 @@ Contract AddressInfo(
 
   @using(assetsInContract = true)
   pub fn destroy(refundAddress: Address) -> () {
-    assert!(callerContractId!() == parentId, ErrorCodes.InvalidCaller)
+    checkCaller!(callerContractId!() == parentId, ErrorCodes.InvalidCaller)
     destroySelf!(refundAddress)
   }
 }

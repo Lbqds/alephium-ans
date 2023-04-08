@@ -1,9 +1,9 @@
 {
-  "sourceCodeSha256": "637074d39123e8b09bf6e243d3f79d626d6a0c7f7e4773514baaaec26344baf8",
-  "bytecode": "020309194028010000000102a00102010001010007b3a000410c7b1600a101010201010007b3a000410c7b1600b0",
-  "codeHash": "319f1758e9391118033507f13d9362f4968d6dd652ed707f024608b9865317a1",
+  "version": "v2.1.0",
+  "name": "NameInfo",
+  "bytecode": "020309194028010000000102a00002010001010007b3ce00410c7b1600a100010201010007b3ce00410c7b1600b0",
+  "codeHash": "6da0796e66ff0bf8f85ba2282b7870cf7e16b5da614040dcb3512777c906f3bd",
   "fieldsSig": {
-    "signature": "Contract NameInfo(parentId:ByteVec,mut name:ByteVec)",
     "names": [
       "parentId",
       "name"
@@ -11,38 +11,55 @@
     "types": [
       "ByteVec",
       "ByteVec"
+    ],
+    "isMutable": [
+      false,
+      true
     ]
   },
   "eventsSig": [],
   "functions": [
     {
       "name": "getName",
-      "signature": "pub getName()->(ByteVec)",
-      "argNames": [],
-      "argTypes": [],
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
       "returnTypes": [
         "ByteVec"
       ]
     },
     {
       "name": "setName",
-      "signature": "pub setName(newName:ByteVec)->()",
-      "argNames": [
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
         "newName"
       ],
-      "argTypes": [
+      "paramTypes": [
         "ByteVec"
+      ],
+      "paramIsMutable": [
+        false
       ],
       "returnTypes": []
     },
     {
       "name": "destroy",
-      "signature": "@using(assetsInContract=true) pub destroy(refundAddress:Address)->()",
-      "argNames": [
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": true,
+      "isPublic": true,
+      "paramNames": [
         "refundAddress"
       ],
-      "argTypes": [
+      "paramTypes": [
         "Address"
+      ],
+      "paramIsMutable": [
+        false
       ],
       "returnTypes": []
     }

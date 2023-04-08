@@ -1,19 +1,24 @@
-import "record.ral"
-import "constants.ral"
-
 Contract ANSRegistry(mut admin: Address, recordTemplateId: ByteVec) extends Constants() {
+  @using(updateFields = true)
   pub fn updateAdmin(newAdmin: Address) -> () {
-    assert!(callerAddress!() == admin, ErrorCodes.InvalidCaller)
+    checkCaller!(callerAddress!() == admin, ErrorCodes.InvalidCaller)
     admin = newAdmin
   }
 
   @using(preapprovedAssets = true)
   pub fn newNode(node: ByteVec, ownerContractId: ByteVec) -> () {
-    assert!(callerAddress!() == admin, ErrorCodes.InvalidCaller)
+    checkCaller!(callerAddress!() == admin, ErrorCodes.InvalidCaller)
     let ownerAddress = contractIdToAddress!(ownerContractId)
     let maxTTL = 1 << 255
-    let encodedState = encodeToByteVec!(ownerContractId, ownerAddress, maxTTL, #, admin)
-    copyCreateSubContractWithToken!{admin -> 1 alph}(node, recordTemplateId, encodedState, 1)
+    let encodedImmutableFields = Record.encodeImmFields!(ownerContractId, admin)
+    let encodedMutableFields = Record.encodeMutFields!(ownerAddress, maxTTL, #)
+    copyCreateSubContractWithToken!{admin -> ALPH: 1 alph}(
+      node,
+      recordTemplateId,
+      encodedImmutableFields,
+      encodedMutableFields,
+      1
+    )
   }
 
   @using(preapprovedAssets = true)
@@ -26,11 +31,18 @@ Contract ANSRegistry(mut admin: Address, recordTemplateId: ByteVec) extends Cons
     payer: Address
   ) -> () {
     let record = Record(subContractId!(node))
-    assert!(callerAddress!() == record.getOwner(), ErrorCodes.InvalidCaller)
+    checkCaller!(callerAddress!() == record.getOwner(), ErrorCodes.InvalidCaller)
     assert!(ttl <= record.getTTL(), ErrorCodes.InvalidArgs)
     assert!(isAssetAddress!(payer), ErrorCodes.ExpectAssetAddress)
-    let encodedState = encodeToByteVec!(record.getRegistrar(), owner, ttl, resolver, payer)
     let subNode = keccak256!(node ++ label)
-    copyCreateSubContractWithToken!{payer -> 1 alph}(subNode, recordTemplateId, encodedState, 1)
+    let encodedImmutableFields = Record.encodeImmFields!(record.getRegistrar(), payer)
+    let encodedMutableFields = Record.encodeMutFields!(owner, ttl, resolver)
+    copyCreateSubContractWithToken!{payer -> ALPH: 1 alph}(
+      subNode,
+      recordTemplateId,
+      encodedImmutableFields,
+      encodedMutableFields,
+      1
+    )
   }
 }

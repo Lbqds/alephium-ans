@@ -1,9 +1,9 @@
 {
-  "sourceCodeSha256": "2599d737d5fc1fb8445cb0a752a2ed525f658678377fbc8e4e97e32b52e39cb0",
-  "bytecode": "050909124022402b403b40444054405d4070010000000102a00002010000000102a00102010001010007b3a000410c7b1600a101010000000102a00202010001010007b3a000410c7b1600a102010000000102a00302010001010007b3a000410c7b1600a103010000000102a0040201020000000bb3a000410c7bb2b10dbda004b0",
-  "codeHash": "99e49043dcb8e583d35950461f66064a2eb935043f631685b1bbd78e2b29a845",
+  "version": "v2.1.0",
+  "name": "Record",
+  "bytecode": "050909124022402b403b40444054405d4070010000000102ce0002010000000102a00002010001010007b3ce00410c7b1600a100010000000102a00102010001010007b3ce00410c7b1600a101010000000102a00202010001010007b3ce00410c7b1600a102010000000102ce010201020000000bb3ce00410c7bb2b10dbdce01b0",
+  "codeHash": "db1b74b79b7a21500c4ae9b072987b594192e2e751fb8160f24800824f71663d",
   "fieldsSig": {
-    "signature": "Contract Record(registrar:ByteVec,mut owner:Address,mut ttl:U256,mut resolver:ByteVec,refundAddress:Address)",
     "names": [
       "registrar",
       "owner",
@@ -17,93 +17,133 @@
       "U256",
       "ByteVec",
       "Address"
+    ],
+    "isMutable": [
+      false,
+      true,
+      true,
+      true,
+      false
     ]
   },
   "eventsSig": [],
   "functions": [
     {
       "name": "getRegistrar",
-      "signature": "pub getRegistrar()->(ByteVec)",
-      "argNames": [],
-      "argTypes": [],
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
       "returnTypes": [
         "ByteVec"
       ]
     },
     {
       "name": "getOwner",
-      "signature": "pub getOwner()->(Address)",
-      "argNames": [],
-      "argTypes": [],
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
       "returnTypes": [
         "Address"
       ]
     },
     {
       "name": "setOwner",
-      "signature": "pub setOwner(newOwner:Address)->()",
-      "argNames": [
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
         "newOwner"
       ],
-      "argTypes": [
+      "paramTypes": [
         "Address"
+      ],
+      "paramIsMutable": [
+        false
       ],
       "returnTypes": []
     },
     {
       "name": "getTTL",
-      "signature": "pub getTTL()->(U256)",
-      "argNames": [],
-      "argTypes": [],
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
       "returnTypes": [
         "U256"
       ]
     },
     {
       "name": "setTTL",
-      "signature": "pub setTTL(newTTL:U256)->()",
-      "argNames": [
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
         "newTTL"
       ],
-      "argTypes": [
+      "paramTypes": [
         "U256"
+      ],
+      "paramIsMutable": [
+        false
       ],
       "returnTypes": []
     },
     {
       "name": "getResolver",
-      "signature": "pub getResolver()->(ByteVec)",
-      "argNames": [],
-      "argTypes": [],
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
       "returnTypes": [
         "ByteVec"
       ]
     },
     {
       "name": "setResolver",
-      "signature": "pub setResolver(newResolver:ByteVec)->()",
-      "argNames": [
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
         "newResolver"
       ],
-      "argTypes": [
+      "paramTypes": [
         "ByteVec"
+      ],
+      "paramIsMutable": [
+        false
       ],
       "returnTypes": []
     },
     {
       "name": "getRefundAddress",
-      "signature": "pub getRefundAddress()->(Address)",
-      "argNames": [],
-      "argTypes": [],
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
       "returnTypes": [
         "Address"
       ]
     },
     {
       "name": "destroy",
-      "signature": "@using(assetsInContract=true) pub destroy()->()",
-      "argNames": [],
-      "argTypes": [],
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": true,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
       "returnTypes": []
     }
   ]

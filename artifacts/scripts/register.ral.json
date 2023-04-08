@@ -1,8 +1,8 @@
 {
-  "sourceCodeSha256": "7495e3c28f3f1bfdb01e8a8f2f64952870f1f2dead6a5aac5d80a65041a29cb6",
+  "version": "v2.1.0",
+  "name": "Register",
   "bytecodeTemplate": "01010300020010{0}1700b4170116011601a4a2{1}1601{2}1601100c16000101",
   "fieldsSig": {
-    "signature": "TxScript Main(registrarId:ByteVec,name:ByteVec,rentalPeriod:U256)",
     "names": [
       "registrarId",
       "name",
@@ -12,14 +12,22 @@
       "ByteVec",
       "ByteVec",
       "U256"
+    ],
+    "isMutable": [
+      false,
+      false,
+      false
     ]
   },
   "functions": [
     {
       "name": "main",
-      "signature": "@using(preapprovedAssets=true) pub main()->()",
-      "argNames": [],
-      "argTypes": [],
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
       "returnTypes": []
     }
   ]

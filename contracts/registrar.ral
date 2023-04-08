@@ -1,7 +1,3 @@
-import "ans_registry.ral"
-import "resolver.ral"
-import "constants.ral"
-
 Contract Registrar(
   registrarOwner: Address,
   ansRegistryId: ByteVec,
@@ -27,7 +23,7 @@ Contract Registrar(
     duration: U256,
     payer: Address
   ) -> () {
-    registerWithResolver{payer -> alphRemaining!(payer)}(name, owner, duration, payer, defaultResolverId)
+    registerWithResolver{payer -> ALPH: tokenRemaining!(payer, ALPH)}(name, owner, duration, payer, defaultResolverId)
   }
 
   @using(preapprovedAssets = true, assetsInContract = true)
@@ -55,10 +51,10 @@ Contract Registrar(
     }
 
     let ttl = currentTs + duration
-    transferAlphToSelf!(payer, rentPrice(duration))
+    transferTokenToSelf!(payer, ALPH, rentPrice(duration))
 
     let ansRegistry = ANSRegistry(ansRegistryId)
-    ansRegistry.setSubNodeRecord{payer -> 1 alph}(RootNode, label, owner, ttl, resolverId, payer)
+    ansRegistry.setSubNodeRecord{payer -> ALPH: 1 alph}(RootNode, label, owner, ttl, resolverId, payer)
     emit NewNode(subNode, owner)
   }
 
@@ -73,7 +69,7 @@ Contract Registrar(
   pub fn unregister(node: ByteVec) -> () {
     let subNodeRecordId = subContractIdOf!(ANSRegistry(ansRegistryId), node)
     let record = Record(subNodeRecordId)
-    assert!(callerAddress!() == record.getOwner(), ErrorCodes.InvalidCaller)
+    checkCaller!(callerAddress!() == record.getOwner(), ErrorCodes.InvalidCaller)
     removeRecord(node, record)
   }
 
@@ -81,19 +77,19 @@ Contract Registrar(
   pub fn renew(node: ByteVec, duration: U256, payer: Address) -> () {
     let record = Record(subContractIdOf!(ANSRegistry(ansRegistryId), node))
     let owner = callerAddress!()
-    assert!(owner == record.getOwner(), ErrorCodes.InvalidCaller)
+    checkCaller!(owner == record.getOwner(), ErrorCodes.InvalidCaller)
     assert!(duration >= MinRentDuration, ErrorCodes.InvalidArgs)
     let newTTL = record.getTTL() + duration
     record.setTTL(newTTL)
     assert!(newTTL > blockTimeStamp!(), ErrorCodes.InvalidArgs)
-    transferAlphToSelf!(payer, rentPrice(duration))
+    transferTokenToSelf!(payer, ALPH, rentPrice(duration))
     emit NewTTL(node, owner, newTTL)
   }
 
   pub fn setOwner(node: ByteVec, newOwner: Address) -> () {
     let record = Record(subContractIdOf!(ANSRegistry(ansRegistryId), node))
     let owner = callerAddress!()
-    assert!(owner == record.getOwner(), ErrorCodes.InvalidCaller)
+    checkCaller!(owner == record.getOwner(), ErrorCodes.InvalidCaller)
     record.setOwner(newOwner)
     emit Transfer(node, owner, newOwner)
   }
@@ -101,14 +97,14 @@ Contract Registrar(
   pub fn setResolver(node: ByteVec, resolverId: ByteVec) -> () {
     let record = Record(subContractIdOf!(ANSRegistry(ansRegistryId), node))
     let owner = callerAddress!()
-    assert!(owner == record.getOwner(), ErrorCodes.InvalidCaller)
+    checkCaller!(owner == record.getOwner(), ErrorCodes.InvalidCaller)
     record.setResolver(resolverId)
     emit NewResolver(node, owner, resolverId)
   }
 
   @using(preapprovedAssets = true, assetsInContract = true)
   pub fn withdraw(to: Address, amount: U256) -> () {
-    assert!(callerAddress!() == registrarOwner, ErrorCodes.InvalidCaller)
-    transferAlphFromSelf!(to, amount)
+    checkCaller!(callerAddress!() == registrarOwner, ErrorCodes.InvalidCaller)
+    transferTokenFromSelf!(to, ALPH, amount)
   }
 }

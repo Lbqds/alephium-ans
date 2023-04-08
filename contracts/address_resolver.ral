@@ -1,7 +1,3 @@
-import "resolver_base.ral"
-import "address_info.ral"
-import "constants.ral"
-
 Abstract Contract AddressResolver(
   ansRegistryId: ByteVec,
   addressInfoTemplateId: ByteVec
@@ -12,32 +8,36 @@ Abstract Contract AddressResolver(
   @using(preapprovedAssets = true)
   fn createAddressInfo(node: ByteVec, payload: ByteVec, payer: Address) -> () {
     let owner = getOwner(node)
-    assert!(callerAddress!() == owner, ErrorCodes.InvalidCaller)
-    let encodedState = encodeToByteVec!(selfContractId!(), payload)
-    copyCreateSubContract!{payer -> 1 alph}(PathPrefix.AddressInfo ++ node, addressInfoTemplateId, encodedState)
+    checkCaller!(callerAddress!() == owner, ErrorCodes.InvalidCaller)
+    copyCreateSubContract!{payer -> ALPH: 1 alph}(
+      PathPrefix.AddressInfo ++ node,
+      addressInfoTemplateId,
+      AddressInfo.encodeImmFields!(selfContractId!()),
+      AddressInfo.encodeMutFields!(payload)
+    )
   }
 
   @using(preapprovedAssets = true)
   pub fn setAlphAddress(node: ByteVec, address: Address) -> () {
-    setAddress{callerAddress!() -> 1 alph}(node, AlphId, toByteVec!(address))
+    setAddress{callerAddress!() -> ALPH: 1 alph}(node, AlphId, toByteVec!(address))
   }
 
   @using(preapprovedAssets = true)
   pub fn setEthAddress(node: ByteVec, address: ByteVec) -> () {
-    setAddress{callerAddress!() -> 1 alph}(node, EthId, address)
+    setAddress{callerAddress!() -> ALPH: 1 alph}(node, EthId, address)
   }
 
   @using(preapprovedAssets = true)
   pub fn setAddress(node: ByteVec, chainId: U256, address: ByteVec) -> () {
     let caller = callerAddress!()
-    assert!(caller == getOwner(node), ErrorCodes.InvalidCaller)
+    checkCaller!(caller == getOwner(node), ErrorCodes.InvalidCaller)
     let contractId = subContractId!(PathPrefix.AddressInfo ++ node)
     if (contractExists!(contractId)) {
       let addressInfo = AddressInfo(contractId)
       addressInfo.setAddress(chainId, address)
     } else {
       let payload =u256To2Byte!(chainId) ++ u256To1Byte!(size!(address)) ++ address
-      createAddressInfo{caller -> 1 alph}(node, payload, caller)
+      createAddressInfo{caller -> ALPH: 1 alph}(node, payload, caller)
     }
   }
 
@@ -55,7 +55,7 @@ Abstract Contract AddressResolver(
   }
 
   pub fn removeAddressInfo(node: ByteVec, refundAddress: Address) -> () {
-    assert!(callerAddress!() == getOwner(node), ErrorCodes.InvalidCaller)
+    checkCaller!(callerAddress!() == getOwner(node), ErrorCodes.InvalidCaller)
     let contractId = subContractId!(PathPrefix.AddressInfo ++ node)
     if (contractExists!(contractId)) {
       let addressInfo = AddressInfo(contractId)

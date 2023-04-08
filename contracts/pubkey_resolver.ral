@@ -1,28 +1,28 @@
-import "resolver_base.ral"
-import "pubkey_info.ral"
-import "constants.ral"
-
 Abstract Contract PubkeyResolver(
   ansRegistryId: ByteVec,
   pubkeyInfoTemplateId: ByteVec
 ) extends ResolverBase(ansRegistryId), Constants() {
   @using(preapprovedAssets = true)
   fn createPubkeyInfo(node: ByteVec, pubkey: ByteVec, payer: Address) -> () {
-    assert!(callerAddress!() == getOwner(node), ErrorCodes.InvalidCaller)
-    let encodedState = encodeToByteVec!(selfContractId!(), pubkey)
-    copyCreateSubContract!{payer -> 1 alph}(PathPrefix.PubkeyInfo ++ node, pubkeyInfoTemplateId, encodedState)
+    checkCaller!(callerAddress!() == getOwner(node), ErrorCodes.InvalidCaller)
+    copyCreateSubContract!{payer -> ALPH: 1 alph}(
+      PathPrefix.PubkeyInfo ++ node,
+      pubkeyInfoTemplateId,
+      PubkeyInfo.encodeImmFields!(selfContractId!()),
+      PubkeyInfo.encodeMutFields!(pubkey)
+    )
   }
 
   @using(preapprovedAssets = true)
   pub fn setPubkey(node: ByteVec, pubkey: ByteVec) -> () {
     let caller = callerAddress!()
-    assert!(caller == getOwner(node), ErrorCodes.InvalidCaller)
+    checkCaller!(caller == getOwner(node), ErrorCodes.InvalidCaller)
     let contractId = subContractId!(PathPrefix.PubkeyInfo ++ node)
     if (contractExists!(contractId)) {
       let pubkeyInfo = PubkeyInfo(contractId)
       pubkeyInfo.setPubkey(pubkey)
     } else {
-      createPubkeyInfo{caller -> 1 alph}(node, pubkey, caller)
+      createPubkeyInfo{caller -> ALPH: 1 alph}(node, pubkey, caller)
     }
   }
 
@@ -32,7 +32,7 @@ Abstract Contract PubkeyResolver(
   }
 
   pub fn removePubkeyInfo(node: ByteVec, refundAddress: Address) -> () {
-    assert!(callerAddress!() == getOwner(node), ErrorCodes.InvalidCaller)
+    checkCaller!(callerAddress!() == getOwner(node), ErrorCodes.InvalidCaller)
     let contractId = subContractId!(PathPrefix.PubkeyInfo ++ node)
     if (contractExists!(contractId)) {
       let pubkeyInfo = PubkeyInfo(contractId)

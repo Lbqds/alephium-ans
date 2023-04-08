@@ -1,9 +1,9 @@
 {
-  "sourceCodeSha256": "ac1e5c233e62e1880810d50e96d84b138b9958379ddae6d72bd420e23eb334d1",
-  "bytecode": "04124033404f406940c040cf40dc40f84124413e416d41b541cf41fb422a4272428c42b842dc000303050017160000081703b41603450c7bb116011302641704160213c40de0b6b3a7640000a2140100160044a0011604c118010302020008b413c40de0b6b3a7640000a216001344d21601470003010302020007b413c40de0b6b3a7640000a21600133c160100030103030700402db41703160316000008450c7b140100160044b17c444e4e17041604c54c0916041705160116020e0c160501004a1016016716024366441602441706160313c40de0b6b3a7640000a2160016061603000001000101010516001344d2000663020100010101041600133c00060201000203010f140100160044b17c444e4e170216010d0d1602010102010002040019b416000008450c7b140100160044b17c444e4e17021602c54c071602170316010d0c1603010201000103010da0001600444e4e1701160117020c0d1602010102000303040015b416000008450c7bb116011302641703160213c40de0b6b3a7640000a2140101160044a0021603c11801030205004023b41702160216000008450c7b140101160044b17c444e4e17031603c54c081603170416010d0c160401014a07160213c40de0b6b3a7640000a2160016011602000901000102010e140101160044b17c444e4e17010c0d1601010002010002040019b416000008450c7b140101160044b17c444e4e17021602c54c071602170316010d0c16030102000303040015b416000008450c7bb116011302641703160213c40de0b6b3a7640000a2140102160044a0031603c11801030205004023b41702160216000008450c7b140102160044b17c444e4e17031603c54c081603170416010d0c160401014a07160213c40de0b6b3a7640000a2160016011602000d01000102010e140102160044b17c444e4e17010c0d1601010002010002040019b416000008450c7b140102160044b17c444e4e17021602c54c071602170316010d0c16030102010002030011160000081702b41602450c7b16001601000716001601000c160016010010",
-  "codeHash": "a7f7be785251ff461ce36e5bc3700d5aaaf1bcd7389b706117f967b0fb635e8a",
+  "version": "v2.1.0",
+  "name": "DefaultResolver",
+  "bytecode": "04124032404e406840bb40ca40d740ef4117412f415d41a041b641de420c424f4265428d42b1000303040017160000081703b41603450c7b160213c40de0b6b3a7640000a2140100160044ce01b11301641601130164c118010302020008b413c40de0b6b3a7640000a216001344d21601470003010302020007b413c40de0b6b3a7640000a21600133c1601000301030307004029b41703160316000008450c7b140100160044cb17041604c54c0916041705160116020e0c160501004a1016016716024366441602441706160313c40de0b6b3a7640000a2160016061603000001000101010516001344d2000663020100010101041600133c00060201000203010b140100160044cb170216010d0d1602010102010002040015b416000008450c7b140100160044cb17021602c54c071602170316010d0c1603010201000103010bce001600cc1701160117020c0d1602010102000303030015b416000008450c7b160213c40de0b6b3a7640000a2140101160044ce02b11301641601130164c11801030205001fb41702160216000008450c7b140101160044cb17031603c54c081603170416010d0c160401014a07160213c40de0b6b3a7640000a2160016011602000901000102010a140101160044cb17010c0d1601010002010002040015b416000008450c7b140101160044cb17021602c54c071602170316010d0c16030102000303030015b416000008450c7b160213c40de0b6b3a7640000a2140102160044ce03b11301641601130164c11801030205001fb41702160216000008450c7b140102160044cb17031603c54c081603170416010d0c160401014a07160213c40de0b6b3a7640000a2160016011602000d01000102010a140102160044cb17010c0d1601010002010002040015b416000008450c7b140102160044cb17021602c54c071602170316010d0c16030102010002030011160000081702b41602450c7b16001601000716001601000c160016010010",
+  "codeHash": "1fc581f714330ec88bde82bc0f72e4fc9dec48a00b6b6495f4c040414ee54586",
   "fieldsSig": {
-    "signature": "Contract DefaultResolver(ansRegistryId:ByteVec,addressInfoTemplateId:ByteVec,nameInfoTemplateId:ByteVec,pubkeyInfoTemplateId:ByteVec)",
     "names": [
       "ansRegistryId",
       "addressInfoTemplateId",
@@ -15,74 +15,111 @@
       "ByteVec",
       "ByteVec",
       "ByteVec"
+    ],
+    "isMutable": [
+      false,
+      false,
+      false,
+      false
     ]
   },
   "eventsSig": [],
   "functions": [
     {
       "name": "createAddressInfo",
-      "signature": "@using(preapprovedAssets=true) createAddressInfo(node:ByteVec,payload:ByteVec,payer:Address)->()",
-      "argNames": [
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": false,
+      "paramNames": [
         "node",
         "payload",
         "payer"
       ],
-      "argTypes": [
+      "paramTypes": [
         "ByteVec",
         "ByteVec",
         "Address"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false
       ],
       "returnTypes": []
     },
     {
       "name": "setAlphAddress",
-      "signature": "@using(preapprovedAssets=true) pub setAlphAddress(node:ByteVec,address:Address)->()",
-      "argNames": [
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
         "node",
         "address"
       ],
-      "argTypes": [
+      "paramTypes": [
         "ByteVec",
         "Address"
+      ],
+      "paramIsMutable": [
+        false,
+        false
       ],
       "returnTypes": []
     },
     {
       "name": "setEthAddress",
-      "signature": "@using(preapprovedAssets=true) pub setEthAddress(node:ByteVec,address:ByteVec)->()",
-      "argNames": [
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
         "node",
         "address"
       ],
-      "argTypes": [
+      "paramTypes": [
         "ByteVec",
         "ByteVec"
+      ],
+      "paramIsMutable": [
+        false,
+        false
       ],
       "returnTypes": []
     },
     {
       "name": "setAddress",
-      "signature": "@using(preapprovedAssets=true) pub setAddress(node:ByteVec,chainId:U256,address:ByteVec)->()",
-      "argNames": [
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
         "node",
         "chainId",
         "address"
       ],
-      "argTypes": [
+      "paramTypes": [
         "ByteVec",
         "U256",
         "ByteVec"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false
       ],
       "returnTypes": []
     },
     {
       "name": "getAlphAddress",
-      "signature": "pub getAlphAddress(node:ByteVec)->(Address)",
-      "argNames": [
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
         "node"
       ],
-      "argTypes": [
+      "paramTypes": [
         "ByteVec"
+      ],
+      "paramIsMutable": [
+        false
       ],
       "returnTypes": [
         "Address"
@@ -90,12 +127,17 @@
     },
     {
       "name": "getEthAddress",
-      "signature": "pub getEthAddress(node:ByteVec)->(ByteVec)",
-      "argNames": [
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
         "node"
       ],
-      "argTypes": [
+      "paramTypes": [
         "ByteVec"
+      ],
+      "paramIsMutable": [
+        false
       ],
       "returnTypes": [
         "ByteVec"
@@ -103,14 +145,20 @@
     },
     {
       "name": "getAddress",
-      "signature": "pub getAddress(node:ByteVec,chainId:U256)->(ByteVec)",
-      "argNames": [
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
         "node",
         "chainId"
       ],
-      "argTypes": [
+      "paramTypes": [
         "ByteVec",
         "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false
       ],
       "returnTypes": [
         "ByteVec"
@@ -118,25 +166,36 @@
     },
     {
       "name": "removeAddressInfo",
-      "signature": "pub removeAddressInfo(node:ByteVec,refundAddress:Address)->()",
-      "argNames": [
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
         "node",
         "refundAddress"
       ],
-      "argTypes": [
+      "paramTypes": [
         "ByteVec",
         "Address"
+      ],
+      "paramIsMutable": [
+        false,
+        false
       ],
       "returnTypes": []
     },
     {
       "name": "getOwner",
-      "signature": "pub getOwner(node:ByteVec)->(Address)",
-      "argNames": [
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
         "node"
       ],
-      "argTypes": [
+      "paramTypes": [
         "ByteVec"
+      ],
+      "paramIsMutable": [
+        false
       ],
       "returnTypes": [
         "Address"
@@ -144,40 +203,58 @@
     },
     {
       "name": "createNameInfo",
-      "signature": "@using(preapprovedAssets=true) createNameInfo(node:ByteVec,name:ByteVec,payer:Address)->()",
-      "argNames": [
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": false,
+      "paramNames": [
         "node",
         "name",
         "payer"
       ],
-      "argTypes": [
+      "paramTypes": [
         "ByteVec",
         "ByteVec",
         "Address"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false
       ],
       "returnTypes": []
     },
     {
       "name": "setName",
-      "signature": "@using(preapprovedAssets=true) pub setName(node:ByteVec,name:ByteVec)->()",
-      "argNames": [
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
         "node",
         "name"
       ],
-      "argTypes": [
+      "paramTypes": [
         "ByteVec",
         "ByteVec"
+      ],
+      "paramIsMutable": [
+        false,
+        false
       ],
       "returnTypes": []
     },
     {
       "name": "getName",
-      "signature": "pub getName(node:ByteVec)->(ByteVec)",
-      "argNames": [
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
         "node"
       ],
-      "argTypes": [
+      "paramTypes": [
         "ByteVec"
+      ],
+      "paramIsMutable": [
+        false
       ],
       "returnTypes": [
         "ByteVec"
@@ -185,53 +262,77 @@
     },
     {
       "name": "removeNameInfo",
-      "signature": "pub removeNameInfo(node:ByteVec,refundAddress:Address)->()",
-      "argNames": [
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
         "node",
         "refundAddress"
       ],
-      "argTypes": [
+      "paramTypes": [
         "ByteVec",
         "Address"
+      ],
+      "paramIsMutable": [
+        false,
+        false
       ],
       "returnTypes": []
     },
     {
       "name": "createPubkeyInfo",
-      "signature": "@using(preapprovedAssets=true) createPubkeyInfo(node:ByteVec,pubkey:ByteVec,payer:Address)->()",
-      "argNames": [
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": false,
+      "paramNames": [
         "node",
         "pubkey",
         "payer"
       ],
-      "argTypes": [
+      "paramTypes": [
         "ByteVec",
         "ByteVec",
         "Address"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false
       ],
       "returnTypes": []
     },
     {
       "name": "setPubkey",
-      "signature": "@using(preapprovedAssets=true) pub setPubkey(node:ByteVec,pubkey:ByteVec)->()",
-      "argNames": [
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
         "node",
         "pubkey"
       ],
-      "argTypes": [
+      "paramTypes": [
         "ByteVec",
         "ByteVec"
+      ],
+      "paramIsMutable": [
+        false,
+        false
       ],
       "returnTypes": []
     },
     {
       "name": "getPubkey",
-      "signature": "pub getPubkey(node:ByteVec)->(ByteVec)",
-      "argNames": [
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
         "node"
       ],
-      "argTypes": [
+      "paramTypes": [
         "ByteVec"
+      ],
+      "paramIsMutable": [
+        false
       ],
       "returnTypes": [
         "ByteVec"
@@ -239,27 +340,39 @@
     },
     {
       "name": "removePubkeyInfo",
-      "signature": "pub removePubkeyInfo(node:ByteVec,refundAddress:Address)->()",
-      "argNames": [
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
         "node",
         "refundAddress"
       ],
-      "argTypes": [
+      "paramTypes": [
         "ByteVec",
         "Address"
+      ],
+      "paramIsMutable": [
+        false,
+        false
       ],
       "returnTypes": []
     },
     {
       "name": "removeNode",
-      "signature": "pub removeNode(node:ByteVec,refundAddress:Address)->()",
-      "argNames": [
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
         "node",
         "refundAddress"
       ],
-      "argTypes": [
+      "paramTypes": [
         "ByteVec",
         "Address"
+      ],
+      "paramIsMutable": [
+        false,
+        false
       ],
       "returnTypes": []
     }

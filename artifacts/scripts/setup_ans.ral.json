@@ -1,8 +1,8 @@
 {
-  "sourceCodeSha256": "929d7402f132bd87ff3c23367cd77deb41ee578bd9a9b6a4ddf5aec06f3a8656",
+  "version": "v2.1.0",
+  "name": "SetupANS",
   "bytecodeTemplate": "0101030003000fb41700{0}1701144020b2453cbabd12c58b21d32b6c70e6c41c8ca2918d7f56c1b88e838edf168776bf1702160013c40de0b6b3a7640000a21602{1}0e0c16010101",
   "fieldsSig": {
-    "signature": "TxScript Main(ansRegistryId:ByteVec,registrarId:ByteVec)",
     "names": [
       "ansRegistryId",
       "registrarId"
@@ -10,14 +10,21 @@
     "types": [
       "ByteVec",
       "ByteVec"
+    ],
+    "isMutable": [
+      false,
+      false
     ]
   },
   "functions": [
     {
       "name": "main",
-      "signature": "@using(preapprovedAssets=true) pub main()->()",
-      "argNames": [],
-      "argTypes": [],
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
       "returnTypes": []
     }
   ]

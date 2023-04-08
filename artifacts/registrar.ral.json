@@ -1,9 +1,9 @@
 {
-  "sourceCodeSha256": "c57533c005ef903ab571d117509be6e6b398c06d3ba1e88aa94c7ddb8be96111",
-  "bytecode": "03090d402540f04119413c418d41ba41e741f80000010101041343e816002c0201030404000a16031603a4a21600160116021603a00200020101050c0040491600430c300d7b160213c09a7ec800340d7b56170516004f1706144020b2453cbabd12c58b21d32b6c70e6c41c8ca2918d7f56c1b88e838edf168776bf1606444f1707a0011607444e4e17081608c54c101608170916050c0d16090103314c04040f7b4a03160716090003160516022a170a160316020000a9a001170b160313c40de0b6b3a7640000a2144020b2453cbabd12c58b21d32b6c70e6c41c8ca2918d7f56c1b88e838edf168776bf16061601160a1604160313060c160b010205160716015f0000020300160c0d1601010517021602a002414c0916000c0d160101070e0c160201000c0c16010108010001030013a0011600444e4e170116011702b40c0d16020101450c7b1600160200030101030600402fa0011600444e4e1703b4170416040c0d16030101450c7b160113c09a7ec800340d7b0c0d1603010316012a170516050d0c16030104160556330d7b160216010000a9071600160416056001000204001aa0011600444e4e1702b4170316030c0d16020101450c7b16010d0c16020102061600160316016001000204001aa0011600444e4e1702b4170316030c0d16020101450c7b16010d0c160201060816001603160160010102020008b4a000450c7b16001601a8",
-  "codeHash": "5ad4ce46cc4c4d1cdfc48600567f85fa7cd140f08018673f2b6ed5b4b79f3877",
+  "version": "v2.1.0",
+  "name": "Registrar",
+  "bytecode": "03090d402540ee41174138418741b241dd41ee0000010101041343e816002c0201030410000a16031603a4a21600160116021603ce0200020101050c0040471600430c300d7b160213c09a7ec800340d7b56170516004f1706144020b2453cbabd12c58b21d32b6c70e6c41c8ca2918d7f56c1b88e838edf168776bf1606444f1707ce011607cc17081608c54c101608170916050c0d16090103314c04040f7b4a03160716090003160516022a170a160316020000a9ce01170b160313c40de0b6b3a7640000a2144020b2453cbabd12c58b21d32b6c70e6c41c8ca2918d7f56c1b88e838edf168776bf16061601160a1604160313060c160b010205160716015f0000020300160c0d1601010517021602ce02414c0916000c0d160101070e0c160201000c0c16010108010001030011ce011600cc170116011702b40c0d16020101450c7b1600160200030101030600402dce011600cc1703b4170416040c0d16030101450c7b160113c09a7ec800340d7b0c0d1603010316012a170516050d0c16030104160556330d7b160216010000a90716001604160560010002040018ce011600cc1702b4170316030c0d16020101450c7b16010d0c160201020616001603160160010002040018ce011600cc1702b4170316030c0d16020101450c7b16010d0c160201060816001603160160010102020008b4ce00450c7b16001601a8",
+  "codeHash": "21aa86842370520a75317b6582133bd4ee06c0e02cc328be01b7e541ac9a89e1",
   "fieldsSig": {
-    "signature": "Contract Registrar(registrarOwner:Address,ansRegistryId:ByteVec,defaultResolverId:ByteVec)",
     "names": [
       "registrarOwner",
       "ansRegistryId",
@@ -13,12 +13,16 @@
       "Address",
       "ByteVec",
       "ByteVec"
+    ],
+    "isMutable": [
+      false,
+      false,
+      false
     ]
   },
   "eventsSig": [
     {
       "name": "NewNode",
-      "signature": "event NewNode(node:ByteVec,owner:Address)",
       "fieldNames": [
         "node",
         "owner"
@@ -30,7 +34,6 @@
     },
     {
       "name": "Transfer",
-      "signature": "event Transfer(node:ByteVec,oldOwner:Address,newOwner:Address)",
       "fieldNames": [
         "node",
         "oldOwner",
@@ -44,7 +47,6 @@
     },
     {
       "name": "NewTTL",
-      "signature": "event NewTTL(node:ByteVec,owner:Address,ttl:U256)",
       "fieldNames": [
         "node",
         "owner",
@@ -58,7 +60,6 @@
     },
     {
       "name": "NewResolver",
-      "signature": "event NewResolver(node:ByteVec,owner:Address,resolverId:ByteVec)",
       "fieldNames": [
         "node",
         "owner",
@@ -74,12 +75,17 @@
   "functions": [
     {
       "name": "rentPrice",
-      "signature": "rentPrice(duration:U256)->(U256)",
-      "argNames": [
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": false,
+      "paramNames": [
         "duration"
       ],
-      "argTypes": [
+      "paramTypes": [
         "U256"
+      ],
+      "paramIsMutable": [
+        false
       ],
       "returnTypes": [
         "U256"
@@ -87,115 +93,168 @@
     },
     {
       "name": "register",
-      "signature": "@using(preapprovedAssets=true) pub register(name:ByteVec,owner:Address,duration:U256,payer:Address)->()",
-      "argNames": [
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
         "name",
         "owner",
         "duration",
         "payer"
       ],
-      "argTypes": [
+      "paramTypes": [
         "ByteVec",
         "Address",
         "U256",
         "Address"
       ],
+      "paramIsMutable": [
+        false,
+        false,
+        false,
+        false
+      ],
       "returnTypes": []
     },
     {
       "name": "registerWithResolver",
-      "signature": "@using(preapprovedAssets=true,assetsInContract=true) pub registerWithResolver(name:ByteVec,owner:Address,duration:U256,payer:Address,resolverId:ByteVec)->()",
-      "argNames": [
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": true,
+      "isPublic": true,
+      "paramNames": [
         "name",
         "owner",
         "duration",
         "payer",
         "resolverId"
       ],
-      "argTypes": [
+      "paramTypes": [
         "ByteVec",
         "Address",
         "U256",
         "Address",
         "ByteVec"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "returnTypes": []
     },
     {
       "name": "removeRecord",
-      "signature": "removeRecord(node:ByteVec,record:ByteVec)->()",
-      "argNames": [
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": false,
+      "paramNames": [
         "node",
         "record"
       ],
-      "argTypes": [
+      "paramTypes": [
         "ByteVec",
         "ByteVec"
+      ],
+      "paramIsMutable": [
+        false,
+        false
       ],
       "returnTypes": []
     },
     {
       "name": "unregister",
-      "signature": "pub unregister(node:ByteVec)->()",
-      "argNames": [
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
         "node"
       ],
-      "argTypes": [
+      "paramTypes": [
         "ByteVec"
+      ],
+      "paramIsMutable": [
+        false
       ],
       "returnTypes": []
     },
     {
       "name": "renew",
-      "signature": "@using(preapprovedAssets=true,assetsInContract=true) pub renew(node:ByteVec,duration:U256,payer:Address)->()",
-      "argNames": [
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": true,
+      "isPublic": true,
+      "paramNames": [
         "node",
         "duration",
         "payer"
       ],
-      "argTypes": [
+      "paramTypes": [
         "ByteVec",
         "U256",
         "Address"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false
       ],
       "returnTypes": []
     },
     {
       "name": "setOwner",
-      "signature": "pub setOwner(node:ByteVec,newOwner:Address)->()",
-      "argNames": [
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
         "node",
         "newOwner"
       ],
-      "argTypes": [
+      "paramTypes": [
         "ByteVec",
         "Address"
+      ],
+      "paramIsMutable": [
+        false,
+        false
       ],
       "returnTypes": []
     },
     {
       "name": "setResolver",
-      "signature": "pub setResolver(node:ByteVec,resolverId:ByteVec)->()",
-      "argNames": [
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
         "node",
         "resolverId"
       ],
-      "argTypes": [
+      "paramTypes": [
         "ByteVec",
         "ByteVec"
+      ],
+      "paramIsMutable": [
+        false,
+        false
       ],
       "returnTypes": []
     },
     {
       "name": "withdraw",
-      "signature": "@using(preapprovedAssets=true,assetsInContract=true) pub withdraw(to:Address,amount:U256)->()",
-      "argNames": [
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": true,
+      "isPublic": true,
+      "paramNames": [
         "to",
         "amount"
       ],
-      "argTypes": [
+      "paramTypes": [
         "Address",
         "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false
       ],
       "returnTypes": []
     }

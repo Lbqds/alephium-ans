@@ -1,28 +1,28 @@
-import "resolver_base.ral"
-import "name_info.ral"
-import "constants.ral"
-
 Abstract Contract NameResolver(
   ansRegistryId: ByteVec,
   nameInfoTemplateId: ByteVec
 ) extends ResolverBase(ansRegistryId), Constants() {
   @using(preapprovedAssets = true)
   fn createNameInfo(node: ByteVec, name: ByteVec, payer: Address) -> () {
-    assert!(callerAddress!() == getOwner(node), ErrorCodes.InvalidCaller)
-    let encodedState = encodeToByteVec!(selfContractId!(), name)
-    copyCreateSubContract!{payer -> 1 alph}(PathPrefix.NameInfo ++ node, nameInfoTemplateId, encodedState)
+    checkCaller!(callerAddress!() == getOwner(node), ErrorCodes.InvalidCaller)
+    copyCreateSubContract!{payer -> ALPH: 1 alph}(
+      PathPrefix.NameInfo ++ node,
+      nameInfoTemplateId,
+      NameInfo.encodeImmFields!(selfContractId!()),
+      NameInfo.encodeMutFields!(name)
+    )
   }
 
   @using(preapprovedAssets = true)
   pub fn setName(node: ByteVec, name: ByteVec) -> () {
     let caller = callerAddress!()
-    assert!(caller == getOwner(node), ErrorCodes.InvalidCaller)
+    checkCaller!(caller == getOwner(node), ErrorCodes.InvalidCaller)
     let contractId = subContractId!(PathPrefix.NameInfo ++ node)
     if (contractExists!(contractId)) {
       let nameInfo = NameInfo(contractId)
       nameInfo.setName(name)
     } else {
-      createNameInfo{caller -> 1 alph}(node, name, caller)
+      createNameInfo{caller -> ALPH: 1 alph}(node, name, caller)
     }
   }
 
@@ -32,7 +32,7 @@ Abstract Contract NameResolver(
   }
 
   pub fn removeNameInfo(node: ByteVec, refundAddress: Address) -> () {
-    assert!(callerAddress!() == getOwner(node), ErrorCodes.InvalidCaller)
+    checkCaller!(callerAddress!() == getOwner(node), ErrorCodes.InvalidCaller)
     let contractId = subContractId!(PathPrefix.NameInfo ++ node)
     if (contractExists!(contractId)) {
       let nameInfo = NameInfo(contractId)
