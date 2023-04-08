@@ -9,4 +9,7 @@ export * from "./NameInfo";
 export * from "./PubkeyInfo";
 export * from "./Record";
 export * from "./Registrar";
+export * from "./AddressResolverTest";
+export * from "./NameResolverTest";
+export * from "./PubkeyResolverTest";
 export * from "./scripts";

@@ -1,0 +1,5 @@
+Contract AddressResolverTest(
+  ansRegistryId: ByteVec,
+  addressInfoTemplateId: ByteVec
+) extends AddressResolver(ansRegistryId, addressInfoTemplateId) {
+}

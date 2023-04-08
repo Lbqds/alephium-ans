@@ -1,0 +1,5 @@
+Contract PubkeyResolverTest(
+  ansRegistryId: ByteVec,
+  pubkeyInfoTemplateId: ByteVec
+) extends PubkeyResolver(ansRegistryId, pubkeyInfoTemplateId) {
+}

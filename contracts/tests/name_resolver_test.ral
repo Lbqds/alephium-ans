@@ -1,0 +1,5 @@
+Contract NameResolverTest(
+  ansRegistryId: ByteVec,
+  nameInfoTemplateId: ByteVec
+) extends NameResolver(ansRegistryId, nameInfoTemplateId) {
+}

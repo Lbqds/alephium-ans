@@ -29,6 +29,13 @@
       "codeHashDebug": "",
       "warnings": []
     },
+    "AddressResolverTest": {
+      "sourceFile": "tests/address_resolver_test.ral",
+      "sourceCodeHash": "279d105f95da90bebc132e5019ad9e347f9203b9ee817354d5013543461be8c5",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "392a0643534a2299ace92f1ebbe1205a14095e2778171f9185868faa5d74de67",
+      "warnings": []
+    },
     "Constants": {
       "sourceFile": "constants.ral",
       "sourceCodeHash": "de3d393392ef5466cf64daebee23ec019a9ed26e559c647ff3332ba4ce5653e8",
@@ -57,6 +64,13 @@
       "codeHashDebug": "",
       "warnings": []
     },
+    "NameResolverTest": {
+      "sourceFile": "tests/name_resolver_test.ral",
+      "sourceCodeHash": "1cfe92b34089f4a797167a7f721ac7f0bd96ccb10ece23d42eae1ea23fc8dc6a",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "93e99503138928b4dfea841b6d0bc42c6169e296be8d22d07a7f980900325a92",
+      "warnings": []
+    },
     "PubkeyInfo": {
       "sourceFile": "pubkey_info.ral",
       "sourceCodeHash": "f11e6a266b26951e9f8e114d07945a8c6f7e32648f1d9226fadbca651b812a9d",
@@ -69,6 +83,13 @@
       "sourceCodeHash": "59c4b9010ff90818df3535417ded73103403f7b0230478b79911e65ba5f4434e",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "",
+      "warnings": []
+    },
+    "PubkeyResolverTest": {
+      "sourceFile": "tests/pubkey_resolver_test.ral",
+      "sourceCodeHash": "be8eed02f959a5fb18d80d9a92f831b137e1af5dda41771536a87c1cb92425a3",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "b206e05931725581ed4ea4ac42363167398dc4ce909c1855b213e46424182202",
       "warnings": []
     },
     "Record": {

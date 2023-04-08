@@ -1,72 +1,97 @@
-import { addressFromContractId, Asset, binToHex, Contract, contractIdFromAddress, ContractState, Fields, NodeProvider, subContractId } from "@alephium/web3"
+import {
+  addressFromContractId,
+  Asset,
+  binToHex,
+  contractIdFromAddress,
+  ContractState,
+  Fields,
+  ONE_ALPH,
+  Project,
+  subContractId
+} from "@alephium/web3"
 import { randomBytes } from "crypto"
 import * as base58 from 'bs58'
+import {
+  AddressInfo,
+  AddressInfoTypes,
+  AddressResolverTest,
+  AddressResolverTestTypes,
+  ANSRegistry,
+  ANSRegistryTypes,
+  DefaultResolver,
+  DefaultResolverTypes,
+  NameInfo,
+  NameInfoTypes,
+  NameResolverTest,
+  NameResolverTestTypes,
+  PubkeyInfo,
+  PubkeyInfoTypes,
+  PubkeyResolverTest,
+  PubkeyResolverTestTypes,
+  Record,
+  RecordTypes
+} from "../../artifacts/ts"
 
-export const testProvider = new NodeProvider("http://127.0.0.1:22973")
-export const oneAlph = BigInt("1000000000000000000")
 export const defaultInitialAsset: Asset = {
-  alphAmount: oneAlph
+  alphAmount: ONE_ALPH
 }
-export const gasPrice = BigInt("100000000000")
-export const maxGasPerTx = BigInt("625000")
+export const gasPrice = 100000000000n
+export const maxGasPerTx = 625000n
 export const defaultGasFee = gasPrice * maxGasPerTx
+export const defaultGroup = 0
 
-export class ContractInfo {
-  contract: Contract
-  state: ContractState
+export class ContractFixture<T extends Fields> {
+  selfState: ContractState<T>
   dependencies: ContractState[]
+  address: string
+  contractId: string
 
   states(): ContractState[] {
-      return [this.state].concat(this.dependencies)
+    return this.dependencies.concat([this.selfState])
   }
 
-  initialFields(): Fields {
-    return this.state.fields
+  initialFields(): T {
+    return this.selfState.fields
   }
 
-  constructor(contract: Contract, state: ContractState, dependencies: ContractState[]) {
-      this.contract = contract
-      this.state = state
-      this.dependencies = dependencies
+  constructor(selfState: ContractState<T>, dependencies: ContractState[]) {
+    this.selfState = selfState
+    this.dependencies = dependencies
+    this.address = selfState.address
+    this.contractId = selfState.contractId
   }
 }
 
-async function createRecordTemplate(): Promise<ContractInfo> {
-  const contract = await Contract.fromSource(testProvider, 'record.ral')
-  const state = contract.toState({
-    "registrar": "",
-    "owner": randomAssetAddress(),
-    "ttl": 0,
-    "resolver": "",
-    "refundAddress": randomAssetAddress()
+async function createRecordTemplate(): Promise<ContractFixture<RecordTypes.Fields>> {
+  const state = Record.stateForTest({
+    registrar: "",
+    owner: randomAssetAddress(),
+    ttl: 0n,
+    resolver: "",
+    refundAddress: randomAssetAddress()
   }, defaultInitialAsset)
-  return new ContractInfo(contract, state, [])
+  return new ContractFixture(state, [])
 }
 
-export async function createANSRegistry(admin: string): Promise<ContractInfo> {
-  const contract = await Contract.fromSource(testProvider, 'ans_registry.ral')
-  const recordInfo = await createRecordTemplate()
-  const state = contract.toState({
-    "admin": admin,
-    "recordTemplateId": recordInfo.state.contractId
+export async function createANSRegistry(admin: string): Promise<ContractFixture<ANSRegistryTypes.Fields>> {
+  const recordFixture = await createRecordTemplate()
+  const state = ANSRegistry.stateForTest({
+    admin: admin,
+    recordTemplateId: recordFixture.contractId
   }, defaultInitialAsset)
-  return new ContractInfo(contract, state, recordInfo.states())
+  return new ContractFixture(state, recordFixture.states())
 }
 
-export async function createRecord(initFields: Fields, address: string): Promise<ContractState> {
-  const record = await Contract.fromSource(testProvider, 'record.ral')
+export function createRecord(initFields: RecordTypes.Fields, address: string): RecordTypes.State {
   const contractId = binToHex(contractIdFromAddress(address))
-  return record.toState(initFields, {
-    alphAmount: oneAlph,
-    tokens: [{
-      id: contractId,
-      amount: 1
-    }]
+  return Record.stateForTest(initFields, {
+    alphAmount: ONE_ALPH,
+    tokens: [{ id: contractId, amount: 1n }]
   }, address)
 }
 
-export function subContractAddress(parentId: string, path: string): string {
-  return addressFromContractId(subContractId(parentId, path))
+export function subContractAddress(parentId: string, path: string, groupIndex: number): string {
+  return addressFromContractId(subContractId(parentId, path, groupIndex))
 }
 
 export function zeroPad(value: string, byteLength: number): string {
@@ -78,84 +103,80 @@ export function zeroPad(value: string, byteLength: number): string {
   return value
 }
 
-async function createAddressInfoTemplate(): Promise<ContractInfo> {
-  const contract = await Contract.fromSource(testProvider, 'address_info.ral')
-  const state = contract.toState({
-    "parentId": "",
-    "addresses": ""
+async function createAddressInfoTemplate(): Promise<ContractFixture<AddressInfoTypes.Fields>> {
+  const state = AddressInfo.stateForTest({
+    parentId: '',
+    addresses: ''
   }, defaultInitialAsset)
-  return new ContractInfo(contract, state, [])
+  return new ContractFixture(state, [])
 }
 
-export async function createAddressResolver(ansRegistryInfo: ContractInfo): Promise<ContractInfo> {
-  const contract = await Contract.fromSource(testProvider, 'address_resolver.ral')
+export async function createAddressResolver(ansRegistryFixture: ContractFixture<ANSRegistryTypes.Fields>): Promise<ContractFixture<AddressResolverTestTypes.Fields>> {
   const addressInfoTemplate = await createAddressInfoTemplate()
-  const state = contract.toState({
-    "ansRegistryId": ansRegistryInfo.state.contractId,
-    "addressInfoTemplateId": addressInfoTemplate.state.contractId
+  const state = AddressResolverTest.stateForTest({
+    ansRegistryId: ansRegistryFixture.contractId,
+    addressInfoTemplateId: addressInfoTemplate.contractId
   }, defaultInitialAsset)
-  return new ContractInfo(contract, state, [...addressInfoTemplate.states(), ...ansRegistryInfo.states()])
+  return new ContractFixture(state, addressInfoTemplate.states().concat(ansRegistryFixture.states()))
 }
 
-async function createNameInfoTemplate(): Promise<ContractInfo> {
-  const contract = await Contract.fromSource(testProvider, 'name_info.ral')
-  const state = contract.toState({
-    "parentId": "",
-    "name": ""
-  }, defaultInitialAsset)
-  return new ContractInfo(contract, state, [])
+async function createNameInfoTemplate(): Promise<ContractFixture<NameInfoTypes.Fields>> {
+  const state = NameInfo.stateForTest(
+    { parentId: '', name: '' },
+    defaultInitialAsset
+  )
+  return new ContractFixture(state, [])
 }
 
-export async function createNameResolver(ansRegistryInfo: ContractInfo): Promise<ContractInfo> {
-  const contract = await Contract.fromSource(testProvider, 'name_resolver.ral')
+export async function createNameResolver(ansRegistryFixture: ContractFixture<ANSRegistryTypes.Fields>): Promise<ContractFixture<NameResolverTestTypes.Fields>> {
   const nameInfoTemplate = await createNameInfoTemplate()
-  const state = contract.toState({
-    "ansRegistryId": ansRegistryInfo.state.contractId,
-    "nameInfoTemplateId": nameInfoTemplate.state.contractId
+  const state = NameResolverTest.stateForTest({
+    ansRegistryId: ansRegistryFixture.contractId,
+    nameInfoTemplateId: nameInfoTemplate.contractId
   }, defaultInitialAsset)
-  return new ContractInfo(contract, state, [...nameInfoTemplate.states(), ...ansRegistryInfo.states()])
+  return new ContractFixture(state, nameInfoTemplate.states().concat(ansRegistryFixture.states()))
 }
 
-async function createPubkeyInfoTemplate(): Promise<ContractInfo> {
-  const contract = await Contract.fromSource(testProvider, 'pubkey_info.ral')
-  const state = contract.toState({
-    "parentId": "",
-    "pubkey": ""
-  }, defaultInitialAsset)
-  return new ContractInfo(contract, state, [])
+async function createPubkeyInfoTemplate(): Promise<ContractFixture<PubkeyInfoTypes.Fields>> {
+  const state = PubkeyInfo.stateForTest(
+    { parentId: '', pubkey: '' },
+    defaultInitialAsset
+  )
+  return new ContractFixture(state, [])
 }
 
-export async function createPubkeyResolver(ansRegistryInfo: ContractInfo): Promise<ContractInfo> {
-  const contract = await Contract.fromSource(testProvider, 'pubkey_resolver.ral')
+export async function createPubkeyResolver(ansRegistryFixture: ContractFixture<ANSRegistryTypes.Fields>): Promise<ContractFixture<PubkeyResolverTestTypes.Fields>> {
   const pubkeyInfoTemplate = await createPubkeyInfoTemplate()
-  const state = contract.toState({
-    "ansRegistryId": ansRegistryInfo.state.contractId,
-    "pubkeyInfoTemplateId": pubkeyInfoTemplate.state.contractId
+  const state = PubkeyResolverTest.stateForTest({
+    ansRegistryId: ansRegistryFixture.contractId,
+    pubkeyInfoTemplateId: pubkeyInfoTemplate.contractId
   }, defaultInitialAsset)
-  return new ContractInfo(contract, state, [...pubkeyInfoTemplate.states(), ...ansRegistryInfo.states()])
+  return new ContractFixture(state, pubkeyInfoTemplate.states().concat(ansRegistryFixture.states()))
 }
 
-export async function createDefaultResolver(ansRegistryInfo: ContractInfo): Promise<ContractInfo> {
+export async function createDefaultResolver(ansRegistryFixture: ContractFixture<ANSRegistryTypes.Fields>): Promise<ContractFixture<DefaultResolverTypes.Fields>> {
   const addressInfoTemplate = await createAddressInfoTemplate()
   const nameInfoTemplate = await createNameInfoTemplate()
   const pubkeyInfoTemplate = await createPubkeyInfoTemplate()
-  const contract = await Contract.fromSource(testProvider, 'default_resolver.ral')
-  const state = contract.toState({
-    "ansRegistryId": ansRegistryInfo.state.contractId,
-    "addressInfoTemplateId": addressInfoTemplate.state.contractId,
-    "nameInfoTemplateId": nameInfoTemplate.state.contractId,
-    "pubkeyInfoTemplateId": pubkeyInfoTemplate.state.contractId,
+  const state = DefaultResolver.stateForTest({
+    ansRegistryId: ansRegistryFixture.contractId,
+    addressInfoTemplateId: addressInfoTemplate.contractId,
+    nameInfoTemplateId: nameInfoTemplate.contractId,
+    pubkeyInfoTemplateId: pubkeyInfoTemplate.contractId,
   }, defaultInitialAsset)
-  return new ContractInfo(contract, state, [
-    ...ansRegistryInfo.states(),
-    addressInfoTemplate.state,
-    nameInfoTemplate.state,
-    pubkeyInfoTemplate.state
-  ])
+  return new ContractFixture(
+    state,
+    [
+      ...ansRegistryFixture.states(),
+      addressInfoTemplate.selfState,
+      nameInfoTemplate.selfState,
+      pubkeyInfoTemplate.selfState
+    ]
+  )
 }
 
 export function alph(num: number): bigint {
-  return oneAlph * BigInt(num)
+  return ONE_ALPH * BigInt(num)
 }
 
 interface Failed {
@@ -185,4 +206,14 @@ export function randomAssetAddress(): string {
 
 export function randomContractId(): string {
   return binToHex(randomBytes(32))
+}
+
+export function getContractState<T extends Fields>(contracts: ContractState[], idOrAddress: string): ContractState<T> {
+  return contracts.find((c) => c.contractId === idOrAddress || c.address === idOrAddress)! as ContractState<T>
+}
+
+export async function buildProject(): Promise<void> {
+  if (Project.currentProject === undefined) {
+    await Project.build({ ignoreUnusedConstantsWarnings: true })
+  }
 }

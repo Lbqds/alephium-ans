@@ -1,0 +1,119 @@
+{
+  "version": "v2.1.0",
+  "name": "NameResolverTest",
+  "bytecode": "0205402e4071408740af40c7000303030015b416000004450c7b160213c40de0b6b3a7640000a2140101160044ce01b11301641601130164c11801030205001fb41702160216000004450c7b140101160044cb17031603c54c081603170416010d0c160401014a07160213c40de0b6b3a7640000a2160016011602000001000102010a140101160044cb17010c0d1601010002010002040015b416000004450c7b140101160044cb17021602c54c071602170316010d0c1603010201000103010bce001600cc1701160117020c0d1602010102",
+  "codeHash": "93e99503138928b4dfea841b6d0bc42c6169e296be8d22d07a7f980900325a92",
+  "fieldsSig": {
+    "names": [
+      "ansRegistryId",
+      "nameInfoTemplateId"
+    ],
+    "types": [
+      "ByteVec",
+      "ByteVec"
+    ],
+    "isMutable": [
+      false,
+      false
+    ]
+  },
+  "eventsSig": [],
+  "functions": [
+    {
+      "name": "createNameInfo",
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": false,
+      "paramNames": [
+        "node",
+        "name",
+        "payer"
+      ],
+      "paramTypes": [
+        "ByteVec",
+        "ByteVec",
+        "Address"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "setName",
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
+        "node",
+        "name"
+      ],
+      "paramTypes": [
+        "ByteVec",
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "getName",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
+        "node"
+      ],
+      "paramTypes": [
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "removeNameInfo",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
+        "node",
+        "refundAddress"
+      ],
+      "paramTypes": [
+        "ByteVec",
+        "Address"
+      ],
+      "paramIsMutable": [
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "getOwner",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
+        "node"
+      ],
+      "paramTypes": [
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": [
+        "Address"
+      ]
+    }
+  ]
+}
