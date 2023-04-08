@@ -1,15 +1,15 @@
 /* pages/_app.js */
-import { AlephiumWalletProvider } from '../utils/alephium-wallet-provider'
+import { AlephiumConnectProvider } from '@alephium/web3-react'
 import { AppProps } from 'next/app'
 import { ANSProvider } from '../utils/ans-provider'
 
 function MyApp({ Component, pageProps }: AppProps) {
     return (
-        <AlephiumWalletProvider>
+        <AlephiumConnectProvider>
           <ANSProvider>
             <Component {...pageProps} />
           </ANSProvider>
-        </AlephiumWalletProvider>
+        </AlephiumConnectProvider>
     )
 }
 

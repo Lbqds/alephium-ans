@@ -1,4 +1,3 @@
-import { ValAddress, ValU256 } from '@alephium/web3/dist/src/api/api-alephium'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -18,45 +17,42 @@ const Profile = styled.span`
 
 function ShowProfile({name}: {name: string}) {
   const [isLoading, setLoading] = useState(true)
-  const [isAvailable, setAvailable] = useState<boolean | undefined>(undefined)
-  const [error, setError] = useState<undefined | any>(undefined)
+  const [isAvailable, setAvailable] = useState<boolean>(false)
+  const [error, setError] = useState<undefined | string>(undefined)
   const [owner, setOwner] = useState<undefined | string>(undefined)
   const [ttl, setTTL] = useState<undefined | number>(undefined)
   const ans = useANS()
 
   useEffect(() => {
     ans.isAvailable(name)
-      .then((available) => setAvailable(available))
+      .then((available) => {
+        setAvailable(available)
+        setLoading(false)
+      })
       .catch((e) => {
         setLoading(false)
-        setError(e)
+        setError(`${e}`)
       })
   }, [ans, name])
 
   useEffect(() => {
-    if (isAvailable) {
-      setLoading(false)
+    if (isAvailable || isLoading) {
       return
     }
 
     ans.getRecord(name)
       .then((fields) => {
-        setOwner((fields[1] as ValAddress).value)
-        setTTL(parseInt((fields[2] as ValU256).value))
-        setLoading(false)
+        setOwner(fields.owner)
+        setTTL(Number(fields.ttl))
+        setError(undefined)
       })
       .catch(e => {
-        setError(e)
-        setLoading(false)
+        setError(`${e}`)
       })
 
-  }, [ans, name, isAvailable])
+  }, [ans, name, isAvailable, isLoading])
 
-  if (isLoading) {
-    return <div>Loading...</div>
-  }
-
-  if (isAvailable) {
+  if (!isLoading && !!isAvailable) {
     return <div><Name>{name}</Name> is available, click <Link href="/register">here</Link> to register</div>
   }
 
@@ -65,7 +61,7 @@ function ShowProfile({name}: {name: string}) {
       {
         (error) ? (
           <div>Loading error: {error}</div>
-        ) : (
+        ) :(
           <div>
             <p>Owner: {owner}</p>
             <p>Expires: {new Date(ttl as number).toUTCString()}</p>
@@ -78,8 +74,11 @@ function ShowProfile({name}: {name: string}) {
 
 export default function Page() {
   const router = useRouter()
-  const name = router.query.name as string
+  if (router.query.name === undefined) {
+    return <></>
+  }
 
+  const name = router.query.name as string
   return (
     <>
       <Head>

@@ -1,13 +1,12 @@
-import { binToHex, Script, SignerProvider, SignExecuteScriptTxResult } from '@alephium/web3'
+import { binToHex, DUST_AMOUNT, ONE_ALPH, SignerProvider, SignExecuteScriptTxResult } from '@alephium/web3'
 import Head from 'next/head'
 import { useCallback, useRef, useState } from 'react'
 import styled from "styled-components"
-import { useAlephiumWallet } from '../utils/alephium-wallet-provider'
-import { normalize, validateName } from '../utils/ans-provider'
+import { Config, normalize, validateName } from '../utils/ans-provider'
 import { Container, Stack, TopRight } from "../utils/styles"
-import { default as ansContracts } from '../configs/contractIds.json'
-import { default as registerScript } from '../artifacts/scripts/register.ral.json'
+import { Register as RegisterANS } from '../artifacts/ts/scripts'
 import WalletButton from './wallet-button'
+import { useAlephiumWallet } from './useAlephiumWallet'
 
 const Input = styled.input`
   width: 300px;
@@ -32,30 +31,27 @@ const Notification = styled.div`
 
 async function register(
   signerProvider: SignerProvider,
-  signerAddress: string,
   name: string,
   rentalPeriod: number
 ) {
   const rentalPeriodMs = rentalPeriod * 30 * 24 * 3600 * 1000
-  const script = Script.fromJson(registerScript)
-  const bytecode = script.buildByteCodeToDeploy({
-    "registrarId": ansContracts.registrarId,
-    "name": binToHex(normalize(name)),
-    "rentalPeriod": rentalPeriodMs
-  })
-  return signerProvider.signExecuteScriptTx({
-    signerAddress: signerAddress,
-    bytecode: bytecode
+  return RegisterANS.execute(signerProvider, {
+    initialFields: {
+      registrarId: Config.registrarId,
+      name: binToHex(normalize(name)),
+      rentalPeriod: BigInt(rentalPeriodMs)
+    },
+    attoAlphAmount: ONE_ALPH + DUST_AMOUNT * 2n
   })
 }
 
 function validateRentalPeriod(input: string): number {
   if (input === '') {
-    throw new Error('Empty rental period')
+    throw Error('Empty rental period')
   }
   const period = Number(input)
   if (isNaN(period)) {
-    throw new Error('Invalid rental period')
+    throw Error('Invalid rental period')
   }
   return period
 }
@@ -76,8 +72,8 @@ export default function Register() {
     try {
       validateName(name)
       period = validateRentalPeriod(rentalPeriod)
-      if (typeof wallet.signer === 'undefined') {
-        throw new Error('Wallet not connected')
+      if (wallet === undefined) {
+        throw Error('Wallet not connected')
       }
     } catch (e) {
       setError(String(e))
@@ -86,8 +82,7 @@ export default function Register() {
 
     setError(null)
     register(
-      wallet.signer.signerProvider,
-      wallet.signer.account.address,
+      wallet.signer,
       name,
       period
     ).then((result) => {

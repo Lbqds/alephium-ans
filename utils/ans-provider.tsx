@@ -1,17 +1,48 @@
-import { addressFromContractId, NodeProvider, subContractId, node } from "@alephium/web3";
+import { addressFromContractId, subContractId, NetworkId, groupOfAddress, web3 } from "@alephium/web3";
 import { keccak256, toUtf8Bytes } from "ethers/lib/utils";
 import { createContext, useContext } from "react";
 import { ReactNode } from "react";
-import { default as ansContracts } from "../configs/contractIds.json"
+import { Record, RecordTypes } from "../artifacts/ts";
+import { loadDeployments } from "../artifacts/ts/deployments";
 const uts46 = require("idna-uts46-hx/uts46bundle.js")
 
+// namehash("alph")
 const AlphRootNode = "b2453cbabd12c58b21d32b6c70e6c41c8ca2918d7f56c1b88e838edf168776bf"
+const NodeUrl = process.env.NEXT_PUBLIC_NETWORK === 'devnet'
+  ? 'http://127.0.0.1:22973'
+  : '' // TODO: support testnet
+
+web3.setCurrentNodeProvider(NodeUrl)
+
+export interface NetworkConfig {
+  groupIndex: number
+  registrarId: string
+  ansRegistryId: string
+}
+
+export const Config = loadConfig(process.env.NEXT_PUBLIC_NETWORK as NetworkId)
+
+function loadConfig(networkId: NetworkId): NetworkConfig {
+  if (networkId === 'mainnet' || networkId === 'testnet') {
+    throw new Error('Not support now')
+  }
+
+  try {
+    const deployments =  loadDeployments(networkId)
+    return {
+      groupIndex: groupOfAddress(deployments.deployerAddress),
+      registrarId: deployments.contracts.Registrar.contractInstance.contractId,
+      ansRegistryId: deployments.contracts.ANSRegistry.contractInstance.contractId,
+    }
+  } catch (error) {
+    console.log(`Failed to load deployments on ${networkId}, error: ${error}`)
+    throw error
+  }
+}
 
 export interface ANS {
-  nodeProvider: NodeProvider
-
   isAvailable(node: string): Promise<boolean>
-  getRecord(node: string): Promise<node.Val[]>
+  getRecord(node: string): Promise<RecordTypes.Fields>
   getAddresses(node: string): Promise<Map<number, string>>
   getPubkey(node: string): Promise<string>
   getName(address: string): Promise<string>
@@ -42,7 +73,7 @@ export function validateName(name: string) {
 function getSubNodeContractId(name: string): string {
   const label = keccak256(normalize(name)).slice(2)
   const subNodePath = keccak256(Buffer.from(AlphRootNode + label, 'hex')).slice(2)
-  return subContractId(ansContracts.ansRegistryId, subNodePath)
+  return subContractId(Config.ansRegistryId, subNodePath, Config.groupIndex)
 }
 
 function getSubNodeContractAddress(label: string): string {
@@ -50,14 +81,12 @@ function getSubNodeContractAddress(label: string): string {
 }
 
 const defaultANS: ANS = {
-  nodeProvider: new NodeProvider(ansContracts.nodeUrl),
-
   async isAvailable(name: string): Promise<boolean> {
     try {
       const recordContractAddress = getSubNodeContractAddress(name)
-      await this.nodeProvider.contracts.getContractsAddressState(
+      await web3.getCurrentNodeProvider().contracts.getContractsAddressState(
         recordContractAddress,
-        {group: ansContracts.group}
+        {group: Config.groupIndex}
       )
       return false
     } catch(e) {
@@ -65,12 +94,10 @@ const defaultANS: ANS = {
     }
   },
 
-  async getRecord(name: string): Promise<node.Val[]> {
+  async getRecord(name: string): Promise<RecordTypes.Fields> {
     const recordContractAddress = getSubNodeContractAddress(name)
-    const state = await this.nodeProvider.contracts.getContractsAddressState(
-      recordContractAddress,
-      {group: ansContracts.group}
-    )
+    const recordInstance = Record.at(recordContractAddress)
+    const state = await recordInstance.fetchState()
     return state.fields
   },
 

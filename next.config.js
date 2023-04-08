@@ -4,10 +4,6 @@ const nextConfig = {
   compiler: {
     styledComponents: true
   },
-  env: {
-    //ENVIRONMENT: "development-walletconnect"
-    ENVIRONMENT: "development-nodewallet"
-  },
   async rewrites() {
     return [
       {
