@@ -74,7 +74,7 @@ class Factory extends ContractFactory<NameInfoInstance, NameInfoTypes.Fields> {
     destroy: async (
       params: TestContractParams<
         NameInfoTypes.Fields,
-        { refundAddress: HexString }
+        { refundAddress: Address }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "destroy", params);

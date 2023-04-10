@@ -83,7 +83,7 @@ class Factory extends ContractFactory<
     destroy: async (
       params: TestContractParams<
         PubkeyInfoTypes.Fields,
-        { refundAddress: HexString }
+        { refundAddress: Address }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "destroy", params);

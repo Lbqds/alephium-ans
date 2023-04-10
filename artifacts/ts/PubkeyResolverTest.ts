@@ -42,7 +42,7 @@ export namespace PubkeyResolverTestTypes {
     };
     getOwner: {
       params: CallContractParams<{ node: HexString }>;
-      result: CallContractResult<HexString>;
+      result: CallContractResult<Address>;
     };
   }
   export type CallMethodParams<T extends keyof CallMethodTable> =
@@ -71,7 +71,7 @@ class Factory extends ContractFactory<
     createPubkeyInfo: async (
       params: TestContractParams<
         PubkeyResolverTestTypes.Fields,
-        { node: HexString; pubkey: HexString; payer: HexString }
+        { node: HexString; pubkey: HexString; payer: Address }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "createPubkeyInfo", params);
@@ -95,7 +95,7 @@ class Factory extends ContractFactory<
     removePubkeyInfo: async (
       params: TestContractParams<
         PubkeyResolverTestTypes.Fields,
-        { node: HexString; refundAddress: HexString }
+        { node: HexString; refundAddress: Address }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "removePubkeyInfo", params);
@@ -105,7 +105,7 @@ class Factory extends ContractFactory<
         PubkeyResolverTestTypes.Fields,
         { node: HexString }
       >
-    ): Promise<TestContractResult<HexString>> => {
+    ): Promise<TestContractResult<Address>> => {
       return testMethod(this, "getOwner", params);
     },
   };

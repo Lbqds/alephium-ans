@@ -42,7 +42,7 @@ export namespace NameResolverTestTypes {
     };
     getOwner: {
       params: CallContractParams<{ node: HexString }>;
-      result: CallContractResult<HexString>;
+      result: CallContractResult<Address>;
     };
   }
   export type CallMethodParams<T extends keyof CallMethodTable> =
@@ -71,7 +71,7 @@ class Factory extends ContractFactory<
     createNameInfo: async (
       params: TestContractParams<
         NameResolverTestTypes.Fields,
-        { node: HexString; name: HexString; payer: HexString }
+        { node: HexString; name: HexString; payer: Address }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "createNameInfo", params);
@@ -95,7 +95,7 @@ class Factory extends ContractFactory<
     removeNameInfo: async (
       params: TestContractParams<
         NameResolverTestTypes.Fields,
-        { node: HexString; refundAddress: HexString }
+        { node: HexString; refundAddress: Address }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "removeNameInfo", params);
@@ -105,7 +105,7 @@ class Factory extends ContractFactory<
         NameResolverTestTypes.Fields,
         { node: HexString }
       >
-    ): Promise<TestContractResult<HexString>> => {
+    ): Promise<TestContractResult<Address>> => {
       return testMethod(this, "getOwner", params);
     },
   };

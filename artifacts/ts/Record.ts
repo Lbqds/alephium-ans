@@ -30,10 +30,10 @@ import { default as RecordContractJson } from "../record.ral.json";
 export namespace RecordTypes {
   export type Fields = {
     registrar: HexString;
-    owner: HexString;
+    owner: Address;
     ttl: bigint;
     resolver: HexString;
-    refundAddress: HexString;
+    refundAddress: Address;
   };
 
   export type State = ContractState<Fields>;
@@ -45,7 +45,7 @@ export namespace RecordTypes {
     };
     getOwner: {
       params: Omit<CallContractParams<{}>, "args">;
-      result: CallContractResult<HexString>;
+      result: CallContractResult<Address>;
     };
     getTTL: {
       params: Omit<CallContractParams<{}>, "args">;
@@ -57,7 +57,7 @@ export namespace RecordTypes {
     };
     getRefundAddress: {
       params: Omit<CallContractParams<{}>, "args">;
-      result: CallContractResult<HexString>;
+      result: CallContractResult<Address>;
     };
   }
   export type CallMethodParams<T extends keyof CallMethodTable> =
@@ -87,11 +87,11 @@ class Factory extends ContractFactory<RecordInstance, RecordTypes.Fields> {
     },
     getOwner: async (
       params: Omit<TestContractParams<RecordTypes.Fields, never>, "testArgs">
-    ): Promise<TestContractResult<HexString>> => {
+    ): Promise<TestContractResult<Address>> => {
       return testMethod(this, "getOwner", params);
     },
     setOwner: async (
-      params: TestContractParams<RecordTypes.Fields, { newOwner: HexString }>
+      params: TestContractParams<RecordTypes.Fields, { newOwner: Address }>
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "setOwner", params);
     },
@@ -117,7 +117,7 @@ class Factory extends ContractFactory<RecordInstance, RecordTypes.Fields> {
     },
     getRefundAddress: async (
       params: Omit<TestContractParams<RecordTypes.Fields, never>, "testArgs">
-    ): Promise<TestContractResult<HexString>> => {
+    ): Promise<TestContractResult<Address>> => {
       return testMethod(this, "getRefundAddress", params);
     },
     destroy: async (

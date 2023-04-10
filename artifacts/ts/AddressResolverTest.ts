@@ -38,7 +38,7 @@ export namespace AddressResolverTestTypes {
   export interface CallMethodTable {
     getAlphAddress: {
       params: CallContractParams<{ node: HexString }>;
-      result: CallContractResult<HexString>;
+      result: CallContractResult<Address>;
     };
     getEthAddress: {
       params: CallContractParams<{ node: HexString }>;
@@ -50,7 +50,7 @@ export namespace AddressResolverTestTypes {
     };
     getOwner: {
       params: CallContractParams<{ node: HexString }>;
-      result: CallContractResult<HexString>;
+      result: CallContractResult<Address>;
     };
   }
   export type CallMethodParams<T extends keyof CallMethodTable> =
@@ -79,7 +79,7 @@ class Factory extends ContractFactory<
     createAddressInfo: async (
       params: TestContractParams<
         AddressResolverTestTypes.Fields,
-        { node: HexString; payload: HexString; payer: HexString }
+        { node: HexString; payload: HexString; payer: Address }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "createAddressInfo", params);
@@ -87,7 +87,7 @@ class Factory extends ContractFactory<
     setAlphAddress: async (
       params: TestContractParams<
         AddressResolverTestTypes.Fields,
-        { node: HexString; address: HexString }
+        { node: HexString; address: Address }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "setAlphAddress", params);
@@ -113,7 +113,7 @@ class Factory extends ContractFactory<
         AddressResolverTestTypes.Fields,
         { node: HexString }
       >
-    ): Promise<TestContractResult<HexString>> => {
+    ): Promise<TestContractResult<Address>> => {
       return testMethod(this, "getAlphAddress", params);
     },
     getEthAddress: async (
@@ -135,7 +135,7 @@ class Factory extends ContractFactory<
     removeAddressInfo: async (
       params: TestContractParams<
         AddressResolverTestTypes.Fields,
-        { node: HexString; refundAddress: HexString }
+        { node: HexString; refundAddress: Address }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "removeAddressInfo", params);
@@ -145,7 +145,7 @@ class Factory extends ContractFactory<
         AddressResolverTestTypes.Fields,
         { node: HexString }
       >
-    ): Promise<TestContractResult<HexString>> => {
+    ): Promise<TestContractResult<Address>> => {
       return testMethod(this, "getOwner", params);
     },
   };

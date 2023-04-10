@@ -29,30 +29,27 @@ import { default as RegistrarContractJson } from "../registrar.ral.json";
 // Custom types for the contract
 export namespace RegistrarTypes {
   export type Fields = {
-    registrarOwner: HexString;
+    registrarOwner: Address;
     ansRegistryId: HexString;
     defaultResolverId: HexString;
   };
 
   export type State = ContractState<Fields>;
 
-  export type NewNodeEvent = ContractEvent<{
-    node: HexString;
-    owner: HexString;
-  }>;
+  export type NewNodeEvent = ContractEvent<{ node: HexString; owner: Address }>;
   export type TransferEvent = ContractEvent<{
     node: HexString;
-    oldOwner: HexString;
-    newOwner: HexString;
+    oldOwner: Address;
+    newOwner: Address;
   }>;
   export type NewTTLEvent = ContractEvent<{
     node: HexString;
-    owner: HexString;
+    owner: Address;
     ttl: bigint;
   }>;
   export type NewResolverEvent = ContractEvent<{
     node: HexString;
-    owner: HexString;
+    owner: Address;
     resolverId: HexString;
   }>;
 }
@@ -74,12 +71,7 @@ class Factory extends ContractFactory<
     register: async (
       params: TestContractParams<
         RegistrarTypes.Fields,
-        {
-          name: HexString;
-          owner: HexString;
-          duration: bigint;
-          payer: HexString;
-        }
+        { name: HexString; owner: Address; duration: bigint; payer: Address }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "register", params);
@@ -89,9 +81,9 @@ class Factory extends ContractFactory<
         RegistrarTypes.Fields,
         {
           name: HexString;
-          owner: HexString;
+          owner: Address;
           duration: bigint;
-          payer: HexString;
+          payer: Address;
           resolverId: HexString;
         }
       >
@@ -114,7 +106,7 @@ class Factory extends ContractFactory<
     renew: async (
       params: TestContractParams<
         RegistrarTypes.Fields,
-        { node: HexString; duration: bigint; payer: HexString }
+        { node: HexString; duration: bigint; payer: Address }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "renew", params);
@@ -122,7 +114,7 @@ class Factory extends ContractFactory<
     setOwner: async (
       params: TestContractParams<
         RegistrarTypes.Fields,
-        { node: HexString; newOwner: HexString }
+        { node: HexString; newOwner: Address }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "setOwner", params);
@@ -138,7 +130,7 @@ class Factory extends ContractFactory<
     withdraw: async (
       params: TestContractParams<
         RegistrarTypes.Fields,
-        { to: HexString; amount: bigint }
+        { to: Address; amount: bigint }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "withdraw", params);

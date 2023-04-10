@@ -40,7 +40,7 @@ export namespace DefaultResolverTypes {
   export interface CallMethodTable {
     getAlphAddress: {
       params: CallContractParams<{ node: HexString }>;
-      result: CallContractResult<HexString>;
+      result: CallContractResult<Address>;
     };
     getEthAddress: {
       params: CallContractParams<{ node: HexString }>;
@@ -52,7 +52,7 @@ export namespace DefaultResolverTypes {
     };
     getOwner: {
       params: CallContractParams<{ node: HexString }>;
-      result: CallContractResult<HexString>;
+      result: CallContractResult<Address>;
     };
     getName: {
       params: CallContractParams<{ node: HexString }>;
@@ -89,7 +89,7 @@ class Factory extends ContractFactory<
     createAddressInfo: async (
       params: TestContractParams<
         DefaultResolverTypes.Fields,
-        { node: HexString; payload: HexString; payer: HexString }
+        { node: HexString; payload: HexString; payer: Address }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "createAddressInfo", params);
@@ -97,7 +97,7 @@ class Factory extends ContractFactory<
     setAlphAddress: async (
       params: TestContractParams<
         DefaultResolverTypes.Fields,
-        { node: HexString; address: HexString }
+        { node: HexString; address: Address }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "setAlphAddress", params);
@@ -123,7 +123,7 @@ class Factory extends ContractFactory<
         DefaultResolverTypes.Fields,
         { node: HexString }
       >
-    ): Promise<TestContractResult<HexString>> => {
+    ): Promise<TestContractResult<Address>> => {
       return testMethod(this, "getAlphAddress", params);
     },
     getEthAddress: async (
@@ -145,7 +145,7 @@ class Factory extends ContractFactory<
     removeAddressInfo: async (
       params: TestContractParams<
         DefaultResolverTypes.Fields,
-        { node: HexString; refundAddress: HexString }
+        { node: HexString; refundAddress: Address }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "removeAddressInfo", params);
@@ -155,13 +155,13 @@ class Factory extends ContractFactory<
         DefaultResolverTypes.Fields,
         { node: HexString }
       >
-    ): Promise<TestContractResult<HexString>> => {
+    ): Promise<TestContractResult<Address>> => {
       return testMethod(this, "getOwner", params);
     },
     createNameInfo: async (
       params: TestContractParams<
         DefaultResolverTypes.Fields,
-        { node: HexString; name: HexString; payer: HexString }
+        { node: HexString; name: HexString; payer: Address }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "createNameInfo", params);
@@ -185,7 +185,7 @@ class Factory extends ContractFactory<
     removeNameInfo: async (
       params: TestContractParams<
         DefaultResolverTypes.Fields,
-        { node: HexString; refundAddress: HexString }
+        { node: HexString; refundAddress: Address }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "removeNameInfo", params);
@@ -193,7 +193,7 @@ class Factory extends ContractFactory<
     createPubkeyInfo: async (
       params: TestContractParams<
         DefaultResolverTypes.Fields,
-        { node: HexString; pubkey: HexString; payer: HexString }
+        { node: HexString; pubkey: HexString; payer: Address }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "createPubkeyInfo", params);
@@ -217,7 +217,7 @@ class Factory extends ContractFactory<
     removePubkeyInfo: async (
       params: TestContractParams<
         DefaultResolverTypes.Fields,
-        { node: HexString; refundAddress: HexString }
+        { node: HexString; refundAddress: Address }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "removePubkeyInfo", params);
@@ -225,7 +225,7 @@ class Factory extends ContractFactory<
     removeNode: async (
       params: TestContractParams<
         DefaultResolverTypes.Fields,
-        { node: HexString; refundAddress: HexString }
+        { node: HexString; refundAddress: Address }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "removeNode", params);

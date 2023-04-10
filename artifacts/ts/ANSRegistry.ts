@@ -29,7 +29,7 @@ import { default as ANSRegistryContractJson } from "../ans_registry.ral.json";
 // Custom types for the contract
 export namespace ANSRegistryTypes {
   export type Fields = {
-    admin: HexString;
+    admin: Address;
     recordTemplateId: HexString;
   };
 
@@ -46,10 +46,7 @@ class Factory extends ContractFactory<
 
   tests = {
     updateAdmin: async (
-      params: TestContractParams<
-        ANSRegistryTypes.Fields,
-        { newAdmin: HexString }
-      >
+      params: TestContractParams<ANSRegistryTypes.Fields, { newAdmin: Address }>
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "updateAdmin", params);
     },
@@ -67,10 +64,10 @@ class Factory extends ContractFactory<
         {
           node: HexString;
           label: HexString;
-          owner: HexString;
+          owner: Address;
           ttl: bigint;
           resolver: HexString;
-          payer: HexString;
+          payer: Address;
         }
       >
     ): Promise<TestContractResult<null>> => {
