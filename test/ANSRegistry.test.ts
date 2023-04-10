@@ -6,15 +6,16 @@ import {
   createRecord,
   defaultGasFee,
   defaultInitialAsset,
-  expectAssertionFailed,
   randomAssetAddress,
   randomContractId,
   getContractState,
   defaultGroup,
-  buildProject
+  buildProject,
+  ErrorCodes
 } from './fixtures/ANSFixture'
 import { ethers } from 'ethers'
 import { ANSRegistry, ANSRegistryTypes, RecordTypes } from '../artifacts/ts'
+import { expectAssertionError } from '@alephium/web3-test'
 
 describe('test registrar', () => {
   beforeAll(async () => {
@@ -42,7 +43,7 @@ describe('test registrar', () => {
     const state = getContractState<ANSRegistryTypes.Fields>(testResult.contracts, ansRegistryFixture.address)
     expect(state.fields.admin).toEqual(newAdminAddress)
 
-    await expectAssertionFailed(() => test(randomAssetAddress()))
+    await expectAssertionError(test(randomAssetAddress()), ansRegistryFixture.address, ErrorCodes.InvalidCaller)
   })
 
   it('should test create new node', async () => {
@@ -72,7 +73,7 @@ describe('test registrar', () => {
     const assetOutput = testResult.txOutputs[1]
     expect(assetOutput.alphAmount).toEqual(alph(2) - ONE_ALPH - defaultGasFee)
 
-    await expectAssertionFailed(() => test(randomAssetAddress(), node, owner))
+    await expectAssertionError(test(randomAssetAddress(), node, owner), ansRegistryFixture.address, ErrorCodes.InvalidCaller)
   })
 
   it('should test create sub node', async () => {
@@ -81,7 +82,7 @@ describe('test registrar', () => {
     const rootNodeOwner = randomAssetAddress()
     const ansRegistryFixture = await createANSRegistry(adminAddress)
     const ansRegistryId = ansRegistryFixture.contractId
-    const rootNodeRecord = await createRecord({
+    const rootNodeRecord = createRecord({
       registrar: '',
       owner: rootNodeOwner,
       ttl: 0n,
@@ -111,12 +112,12 @@ describe('test registrar', () => {
     const contractOutput = testResult.txOutputs[0]
     expect(contractOutput.tokens).toEqual([{
       id: subNodeRecord.contractId,
-      amount: 1
+      amount: 1n
     }])
 
     const assetOutput = testResult.txOutputs[1]
     expect(assetOutput.alphAmount).toEqual(alph(2) - ONE_ALPH - defaultGasFee)
 
-    await expectAssertionFailed(() => test(randomAssetAddress(), subNodeLabel, subNodeOwner))
+    await expectAssertionError(test(randomAssetAddress(), subNodeLabel, subNodeOwner), ansRegistryFixture.address, ErrorCodes.InvalidCaller)
   })
 })

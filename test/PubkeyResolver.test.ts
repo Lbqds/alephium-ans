@@ -15,7 +15,7 @@ import {
 } from "./fixtures/ANSFixture"
 
 describe("test pubkey resolver", () => {
-  async function createPubkeyInfo(parentId: string, pubkey: string, address: string): Promise<PubkeyInfoTypes.State> {
+  function createPubkeyInfo(parentId: string, pubkey: string, address: string): PubkeyInfoTypes.State {
     return PubkeyInfo.stateForTest({ parentId, pubkey }, defaultInitialAsset, address)
   }
 
@@ -30,7 +30,7 @@ describe("test pubkey resolver", () => {
     const ansRegistryId = ansRegistryFixture.contractId
     const nodeOwner = randomAssetAddress()
     const node = binToHex(randomBytes(4))
-    const record = await createRecord({
+    const record = createRecord({
       registrar: '',
       owner: nodeOwner,
       ttl: 0n,
@@ -40,7 +40,7 @@ describe("test pubkey resolver", () => {
     const path = '02' + node
     const pubkeyInfoAddress = subContractAddress(pubkeyResolverFixture.contractId, path, defaultGroup)
     const pubkey = binToHex(randomBytes(33))
-    const pubkeyInfo = await createPubkeyInfo(
+    const pubkeyInfo = createPubkeyInfo(
       pubkeyResolverFixture.contractId,
       pubkey,
       pubkeyInfoAddress
@@ -70,7 +70,7 @@ describe("test pubkey resolver", () => {
 
     const testResult0 = await setPubkey(node)
     const pubkeyInfoFields = getContractState(testResult0.contracts, pubkeyInfoAddress).fields
-    expect(pubkeyInfoFields.pubkey).toEqual(pubkey)
+    expect(pubkeyInfoFields.name).toEqual(pubkey) // FIXME: The code hash of `PubkeyInfo` is the same as the code hash of `NameInfo`
     const testResult1 = await getPubkey(node)
     expect(testResult1.returns).toEqual(pubkey)
   })

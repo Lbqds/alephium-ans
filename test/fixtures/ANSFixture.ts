@@ -40,6 +40,13 @@ export const maxGasPerTx = 625000n
 export const defaultGasFee = gasPrice * maxGasPerTx
 export const defaultGroup = 0
 
+export enum ErrorCodes {
+  InvalidCaller,
+  InvalidArgs,
+  ExpectAssetAddress,
+  NameHasBeenRegistered
+}
+
 export class ContractFixture<T extends Fields> {
   selfState: ContractState<T>
   dependencies: ContractState[]
@@ -177,25 +184,6 @@ export async function createDefaultResolver(ansRegistryFixture: ContractFixture<
 
 export function alph(num: number): bigint {
   return ONE_ALPH * BigInt(num)
-}
-
-interface Failed {
-  error: {
-      detail: string
-  }
-}
-
-async function expectFailed<T>(func: () => Promise<T>, details: string[]) {
-  try {
-      await func()
-  } catch (exp) {
-      const detail = (exp as Failed).error.detail
-      expect(details).toContain(detail)
-  }
-}
-
-export async function expectAssertionFailed<T>(func: () => Promise<T>) {
-  await expectFailed(func, ['AssertionFailed', 'AssertionFailedWithErrorCode'])
 }
 
 export function randomAssetAddress(): string {
