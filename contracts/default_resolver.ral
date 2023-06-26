@@ -1,5 +1,6 @@
 Contract DefaultResolver(
   ansRegistry: ANSRegistry,
+  registrar: ByteVec,
   recordInfoTemplateId: ByteVec
 ) extends Constants() implements Resolver {
   event NewRecordInfoCreated(node: ByteVec, pubkey: ByteVec, addresses: ByteVec)
@@ -48,8 +49,7 @@ Contract DefaultResolver(
   }
 
   pub fn removeNode(node: ByteVec, refundAddress: Address) -> () {
-    let recordId = subContractIdOf!(ansRegistry, node)
-    checkCaller!(callerContractId!() == recordId, ErrorCodes.InvalidCaller)
+    checkCaller!(callerContractId!() == registrar, ErrorCodes.InvalidCaller)
     let recordInfoId = subContractId!(node)
     if (contractExists!(recordInfoId)) {
       RecordInfo(recordInfoId).destroy(refundAddress)

@@ -1,4 +1,4 @@
-import { addressFromContractId, binToHex, ContractDestroyedEvent, ONE_ALPH, subContractId, web3 } from "@alephium/web3"
+import { binToHex, ContractDestroyedEvent, ONE_ALPH, subContractId, web3 } from "@alephium/web3"
 import {
   alph,
   createANSRegistry,
@@ -17,7 +17,7 @@ import {
 } from "./fixtures/ANSFixture"
 import { keccak256 } from "ethers/lib/utils"
 import { DefaultResolverTypes, RecordInfo, RecordTypes, Registrar, RegistrarTypes } from "../artifacts/ts"
-import { expectAssertionError, randomContractAddress } from "@alephium/web3-test"
+import { expectAssertionError } from "@alephium/web3-test"
 
 describe("test registrar", () => {
   const MinRentalPeriod = 2592000000
@@ -34,6 +34,7 @@ describe("test registrar", () => {
     const ansRegistryFixture = createANSRegistry(randomAssetAddress())
     const registrarOwner = randomAssetAddress()
     const registrarFixture = createRegistrar(registrarOwner, ansRegistryFixture)
+    const resolverFixture = createDefaultResolver(registrarFixture)
 
     async function register(subNode: string, subNodeOwner: string, rentDuration: number) {
       return Registrar.tests.register({
@@ -45,9 +46,10 @@ describe("test registrar", () => {
           name: binToHex(encoder.encode(subNode)),
           owner: subNodeOwner,
           duration: BigInt(rentDuration),
-          payer: subNodeOwner
+          payer: subNodeOwner,
+          resolver: resolverFixture.contractId
         },
-        existingContracts: registrarFixture.dependencies
+        existingContracts: resolverFixture.states()
       })
     }
 
@@ -81,9 +83,9 @@ describe("test registrar", () => {
 
   it('should remove the expired record on registration', async () => {
     const ansRegistryFixture = createANSRegistry(randomAssetAddress())
-    const resolverFixture = createDefaultResolver(ansRegistryFixture)
     const registrarOwner = randomAssetAddress()
-    const registrarFixture = createRegistrar(registrarOwner, ansRegistryFixture, resolverFixture)
+    const registrarFixture = createRegistrar(registrarOwner, ansRegistryFixture)
+    const resolverFixture = createDefaultResolver(registrarFixture)
     const name = "test"
     const previousOwner = randomAssetAddress()
     const newOwner = randomAssetAddress()
@@ -108,9 +110,10 @@ describe("test registrar", () => {
           name: binToHex(encoder.encode(subNode)),
           owner: newOwner,
           duration: BigInt(rentDuration),
-          payer: newOwner
+          payer: newOwner,
+          resolver: resolverFixture.contractId
         },
-        existingContracts: [subRecord, ...registrarFixture.dependencies]
+        existingContracts: [subRecord, ...resolverFixture.states()]
       })
     }
 
@@ -191,9 +194,9 @@ describe("test registrar", () => {
 
   it('should unregister sub record', async () => {
     const ansRegistryFixture = createANSRegistry(randomAssetAddress())
-    const resolverFixture = createDefaultResolver(ansRegistryFixture)
     const registrarOwner = randomAssetAddress()
-    const registrarFixture = createRegistrar(registrarOwner, ansRegistryFixture, resolverFixture)
+    const registrarFixture = createRegistrar(registrarOwner, ansRegistryFixture)
+    const resolverFixture = createDefaultResolver(registrarFixture)
     const subNodeLabel = keccak256(encoder.encode("test")).slice(2)
     const subNode = keccak256(Buffer.from(RootNode + subNodeLabel)).slice(2)
     const subNodeOwner = randomAssetAddress()
@@ -218,7 +221,7 @@ describe("test registrar", () => {
         initialAsset: defaultInitialAsset,
         inputAssets: [{ address: caller, asset: { alphAmount: ONE_ALPH }}],
         testArgs: { node: subNode },
-        existingContracts: [subRecord, ...registrarFixture.dependencies, recordInfo]
+        existingContracts: [subRecord, ...resolverFixture.states(), recordInfo]
       })
     }
 

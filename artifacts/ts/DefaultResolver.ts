@@ -31,6 +31,7 @@ import { getContractByCodeHash } from "./contracts";
 export namespace DefaultResolverTypes {
   export type Fields = {
     ansRegistry: HexString;
+    registrar: HexString;
     recordInfoTemplateId: HexString;
   };
 
@@ -156,7 +157,7 @@ export const DefaultResolver = new Factory(
   Contract.fromJson(
     DefaultResolverContractJson,
     "",
-    "0ac67df3fd094984d15975fc0db4a86baf0e97e9e4197092cac83b8b398580c9"
+    "534e86b9ad3db38f6d7726f66d0047beb56e805de79eb0662694ddd10657e8a6"
   )
 );
 

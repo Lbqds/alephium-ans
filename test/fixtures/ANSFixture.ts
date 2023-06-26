@@ -20,7 +20,8 @@ import {
   RecordTypes,
   RecordInfo,
   RecordInfoTypes,
-  Registrar
+  Registrar,
+  RegistrarTypes
 } from "../../artifacts/ts"
 
 export const defaultInitialAsset: Asset = {
@@ -107,16 +108,17 @@ function createRecordInfoTemplate(): ContractFixture<RecordInfoTypes.Fields> {
   return new ContractFixture(state, [])
 }
 
-export function createDefaultResolver(ansRegistryFixture: ContractFixture<ANSRegistryTypes.Fields>): ContractFixture<DefaultResolverTypes.Fields> {
+export function createDefaultResolver(registrarFixture: ContractFixture<RegistrarTypes.Fields>): ContractFixture<DefaultResolverTypes.Fields> {
   const recordInfoTemplate = createRecordInfoTemplate()
   const state = DefaultResolver.stateForTest({
-    ansRegistry: ansRegistryFixture.contractId,
+    ansRegistry: registrarFixture.selfState.fields.ansRegistry,
+    registrar: registrarFixture.contractId,
     recordInfoTemplateId: recordInfoTemplate.contractId,
   }, defaultInitialAsset)
   return new ContractFixture(
     state,
     [
-      ...ansRegistryFixture.states(),
+      ...registrarFixture.states(),
       recordInfoTemplate.selfState,
     ]
   )
@@ -124,23 +126,20 @@ export function createDefaultResolver(ansRegistryFixture: ContractFixture<ANSReg
 
 export function createRegistrar(
   owner: string,
-  ansRegistryFixture: ContractFixture<ANSRegistryTypes.Fields>,
-  resolverFixtureOpt?: ContractFixture<DefaultResolverTypes.Fields>
+  ansRegistryFixture: ContractFixture<ANSRegistryTypes.Fields>
 ) {
-  const resolverFixture = resolverFixtureOpt ?? createDefaultResolver(ansRegistryFixture)
   const state = Registrar.stateForTest({
     registrarOwner: owner,
-    ansRegistry: ansRegistryFixture.contractId,
-    defaultResolver: resolverFixture.contractId
+    ansRegistry: ansRegistryFixture.contractId
   }, defaultInitialAsset)
   const rootRecord = createRecord({
     registrar: state.contractId,
     owner: addressFromContractId(state.contractId),
     ttl: MaxTTL,
-    resolver: resolverFixture.contractId,
+    resolver: '',
     refundAddress: owner
   }, subContractAddress(ansRegistryFixture.contractId, RootNode, DefaultGroup))
-  return new ContractFixture(state, [ rootRecord, ...resolverFixture.states()])
+  return new ContractFixture(state, [rootRecord, ...ansRegistryFixture.states()])
 }
 
 export function alph(num: number): bigint {

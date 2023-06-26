@@ -14,8 +14,10 @@ const deployResolver: DeployFunction<undefined> = async (deployer: Deployer): Pr
   }
   const recordInfoTemplateResult = await deployer.deployContract(RecordInfo, { initialFields: recordInfoFields })
   const ansRegistryId = deployer.getDeployContractResult('ANSRegistry').contractInstance.contractId
+  const registrarId = deployer.getDeployContractResult('Registrar').contractInstance.contractId
   const initialFields: DefaultResolverTypes.Fields = {
     ansRegistry: ansRegistryId,
+    registrar: registrarId,
     recordInfoTemplateId: recordInfoTemplateResult.contractInstance.contractId
   }
   const result = await deployer.deployContract(DefaultResolver, { initialFields: initialFields })

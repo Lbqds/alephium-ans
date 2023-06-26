@@ -52,6 +52,10 @@ export namespace RecordTypes {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<bigint>;
     };
+    getResolver: {
+      params: Omit<CallContractParams<{}>, "args">;
+      result: CallContractResult<HexString>;
+    };
     getRefundAddress: {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<Address>;
@@ -112,6 +116,11 @@ class Factory extends ContractFactory<RecordInstance, RecordTypes.Fields> {
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "setTTL", params);
     },
+    getResolver: async (
+      params: Omit<TestContractParams<RecordTypes.Fields, never>, "testArgs">
+    ): Promise<TestContractResult<HexString>> => {
+      return testMethod(this, "getResolver", params);
+    },
     setResolver: async (
       params: TestContractParams<RecordTypes.Fields, { newResolver: HexString }>
     ): Promise<TestContractResult<null>> => {
@@ -123,7 +132,7 @@ class Factory extends ContractFactory<RecordInstance, RecordTypes.Fields> {
       return testMethod(this, "getRefundAddress", params);
     },
     destroy: async (
-      params: TestContractParams<RecordTypes.Fields, { node: HexString }>
+      params: Omit<TestContractParams<RecordTypes.Fields, never>, "testArgs">
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "destroy", params);
     },
@@ -135,7 +144,7 @@ export const Record = new Factory(
   Contract.fromJson(
     RecordContractJson,
     "",
-    "0e308c0b0cbac94ed57fbf2523825d4fca4a1977554be4e63ec952df221942a7"
+    "db1b74b79b7a21500c4ae9b072987b594192e2e751fb8160f24800824f71663d"
   )
 );
 
@@ -179,6 +188,17 @@ export class RecordInstance extends ContractInstance {
         Record,
         this,
         "getTTL",
+        params === undefined ? {} : params,
+        getContractByCodeHash
+      );
+    },
+    getResolver: async (
+      params?: RecordTypes.CallMethodParams<"getResolver">
+    ): Promise<RecordTypes.CallMethodResult<"getResolver">> => {
+      return callMethod(
+        Record,
+        this,
+        "getResolver",
         params === undefined ? {} : params,
         getContractByCodeHash
       );

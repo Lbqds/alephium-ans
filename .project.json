@@ -25,16 +25,16 @@
     },
     "DefaultResolver": {
       "sourceFile": "default_resolver.ral",
-      "sourceCodeHash": "3350bfc820552e5f3da9c7c859be81b4893ff4bf43cc9aead3db92fb97a89914",
+      "sourceCodeHash": "bfad9bbc51018d24627f3eb61b35e29649c5931be8814cb70bb209679dfb2ca1",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "0ac67df3fd094984d15975fc0db4a86baf0e97e9e4197092cac83b8b398580c9",
+      "codeHashDebug": "534e86b9ad3db38f6d7726f66d0047beb56e805de79eb0662694ddd10657e8a6",
       "warnings": []
     },
     "Record": {
       "sourceFile": "record.ral",
-      "sourceCodeHash": "e8e916583c6a757088e8e1585f082a04d00ff8ff51928c57dbeb991c8679c911",
+      "sourceCodeHash": "e6f1f3e99332209a82497c2d39e2f847f0b25247155790e15d68196dee086cd6",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "0e308c0b0cbac94ed57fbf2523825d4fca4a1977554be4e63ec952df221942a7",
+      "codeHashDebug": "db1b74b79b7a21500c4ae9b072987b594192e2e751fb8160f24800824f71663d",
       "warnings": []
     },
     "RecordInfo": {
@@ -46,16 +46,16 @@
     },
     "Register": {
       "sourceFile": "scripts/register.ral",
-      "sourceCodeHash": "060797aa67d901da01a9a00a76f395f3b42587c848a5e720a256fbc8cf1051bd",
+      "sourceCodeHash": "280c0fff03c60ee792bc719f4d3d200ae95c7de26201ec8406db29927f4d99e3",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "",
       "warnings": []
     },
     "Registrar": {
       "sourceFile": "registrar.ral",
-      "sourceCodeHash": "f928c8349f8f1a5438b6d333060d4107cb295011488fdf620cb564e43490eec3",
+      "sourceCodeHash": "be0732bf9f7012fedae4fecb24cdfd1b262ff21368c42588f99f30030165166e",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "51ede2deb07161f8d93b26986c85acd26ab907eff70c88ae33426e2814b2eda0",
+      "codeHashDebug": "0e3c3f638cce21479f3c26f00d8695de21b581dae0fe7497deb4cef76ce6fc1b",
       "warnings": []
     },
     "Resolver": {

@@ -32,7 +32,6 @@ export namespace RegistrarTypes {
   export type Fields = {
     registrarOwner: Address;
     ansRegistry: HexString;
-    defaultResolver: HexString;
   };
 
   export type State = ContractState<Fields>;
@@ -85,14 +84,6 @@ class Factory extends ContractFactory<
     register: async (
       params: TestContractParams<
         RegistrarTypes.Fields,
-        { name: HexString; owner: Address; duration: bigint; payer: Address }
-      >
-    ): Promise<TestContractResult<null>> => {
-      return testMethod(this, "register", params);
-    },
-    registerWithResolver: async (
-      params: TestContractParams<
-        RegistrarTypes.Fields,
         {
           name: HexString;
           owner: Address;
@@ -102,12 +93,20 @@ class Factory extends ContractFactory<
         }
       >
     ): Promise<TestContractResult<null>> => {
-      return testMethod(this, "registerWithResolver", params);
+      return testMethod(this, "register", params);
     },
     unregister: async (
       params: TestContractParams<RegistrarTypes.Fields, { node: HexString }>
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "unregister", params);
+    },
+    removeRecord: async (
+      params: TestContractParams<
+        RegistrarTypes.Fields,
+        { node: HexString; record: HexString }
+      >
+    ): Promise<TestContractResult<null>> => {
+      return testMethod(this, "removeRecord", params);
     },
     renew: async (
       params: TestContractParams<
@@ -149,7 +148,7 @@ export const Registrar = new Factory(
   Contract.fromJson(
     RegistrarContractJson,
     "",
-    "51ede2deb07161f8d93b26986c85acd26ab907eff70c88ae33426e2814b2eda0"
+    "0e3c3f638cce21479f3c26f00d8695de21b581dae0fe7497deb4cef76ce6fc1b"
   )
 );
 

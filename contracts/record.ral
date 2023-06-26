@@ -29,6 +29,10 @@ Contract Record(
     ttl = newTTL
   }
  
+  pub fn getResolver() -> Resolver {
+    return resolver
+  }
+
   @using(updateFields = true)
   pub fn setResolver(newResolver: Resolver) -> () {
     checkCaller!(callerContractId!() == registrar, ErrorCodes.InvalidCaller)
@@ -40,9 +44,8 @@ Contract Record(
   }
 
   @using(assetsInContract = true)
-  pub fn destroy(node: ByteVec) -> () {
+  pub fn destroy() -> () {
     checkCaller!(callerContractId!() == registrar, ErrorCodes.InvalidCaller)
-    resolver.removeNode(node, refundAddress)
     burnToken!(selfAddress!(), selfContractId!(), 1)
     destroySelf!(refundAddress)
   }

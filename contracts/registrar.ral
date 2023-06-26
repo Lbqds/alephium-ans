@@ -1,8 +1,4 @@
-Contract Registrar(
-  registrarOwner: Address,
-  ansRegistry: ANSRegistry,
-  defaultResolver: DefaultResolver
-) extends Constants() {
+Contract Registrar(registrarOwner: Address, ansRegistry: ANSRegistry) extends Constants() {
   event NewNode(node: ByteVec, owner: Address)
   event Transfer(node: ByteVec, oldOwner: Address, newOwner: Address)
   event NewTTL(node: ByteVec, owner: Address, ttl: U256)
@@ -16,18 +12,8 @@ Contract Registrar(
     return 1e-15 alph * duration
   }
 
-  @using(preapprovedAssets = true, checkExternalCaller = false)
-  pub fn register(
-    name: ByteVec,
-    owner: Address,
-    duration: U256,
-    payer: Address
-  ) -> () {
-    registerWithResolver{payer -> ALPH: tokenRemaining!(payer, ALPH)}(name, owner, duration, payer, Resolver(contractId!(defaultResolver))) // TODO: improve type check
-  }
-
   @using(preapprovedAssets = true, assetsInContract = true, checkExternalCaller = false)
-  pub fn registerWithResolver(
+  pub fn register(
     name: ByteVec,
     owner: Address,
     duration: U256,
@@ -46,7 +32,7 @@ Contract Registrar(
       if (currentTs < record.getTTL()) {
         panic!(ErrorCodes.NameHasBeenRegistered)
       } else {
-        record.destroy(subNode)
+        removeRecord(subNode, record)
       }
     }
 
@@ -61,7 +47,13 @@ Contract Registrar(
     let subNodeRecordId = subContractIdOf!(ansRegistry, node)
     let record = Record(subNodeRecordId)
     checkCaller!(callerAddress!() == record.getOwner(), ErrorCodes.InvalidCaller)
-    record.destroy(node)
+    removeRecord(node, record)
+  }
+
+  fn removeRecord(node: ByteVec, record: Record) -> () {
+    let resolver = record.getResolver()
+    resolver.removeNode(node, record.getRefundAddress())
+    record.destroy()
   }
 
   @using(preapprovedAssets = true, assetsInContract = true)

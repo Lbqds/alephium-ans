@@ -37,9 +37,10 @@ async function register(
   const rentalPeriodMs = rentalPeriod * 30 * 24 * 3600 * 1000
   return RegisterANS.execute(signerProvider, {
     initialFields: {
-      registrarId: Config.registrarId,
+      registrar: Config.registrarId,
       name: binToHex(normalize(name)),
-      rentalPeriod: BigInt(rentalPeriodMs)
+      rentalPeriod: BigInt(rentalPeriodMs),
+      resolver: Config.defaultResolverId
     },
     attoAlphAmount: ONE_ALPH + DUST_AMOUNT * 2n
   })

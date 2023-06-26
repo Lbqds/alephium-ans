@@ -11,7 +11,8 @@ import {
   buildProject,
   DefaultGroup,
   createDefaultResolver,
-  ErrorCodes
+  ErrorCodes,
+  createRegistrar
 } from "./fixtures/ANSFixture"
 import * as base58 from 'bs58'
 import { DefaultResolver, DefaultResolverTypes, RecordInfo, RecordInfoTypes } from "../artifacts/ts"
@@ -36,7 +37,8 @@ describe("test default resolver", () => {
 
   it('should create new record info', async () => {
     const ansRegistryFixture = createANSRegistry(randomAssetAddress())
-    const resolverFixture = createDefaultResolver(ansRegistryFixture)
+    const registrarFixture = createRegistrar(randomAssetAddress(), ansRegistryFixture)
+    const resolverFixture = createDefaultResolver(registrarFixture)
     const node = binToHex(randomBytes(4))
     const nodeOwner = randomAssetAddress()
     const record = createRecord({
@@ -77,7 +79,8 @@ describe("test default resolver", () => {
 
   it('should set/get addresses', async () => {
     const ansRegistryFixture = createANSRegistry(randomAssetAddress())
-    const resolverFixture = createDefaultResolver(ansRegistryFixture)
+    const registrarFixture = createRegistrar(randomAssetAddress(), ansRegistryFixture)
+    const resolverFixture = createDefaultResolver(registrarFixture)
     const ansRegistryId = ansRegistryFixture.contractId
     const nodeOwner = randomAssetAddress()
     const node = binToHex(randomBytes(4))
@@ -142,7 +145,8 @@ describe("test default resolver", () => {
 
   it('should set pubkey', async () => {
     const ansRegistryFixture = createANSRegistry(randomAssetAddress())
-    const resolverFixture = createDefaultResolver(ansRegistryFixture)
+    const registrarFixture = createRegistrar(randomAssetAddress(), ansRegistryFixture)
+    const resolverFixture = createDefaultResolver(registrarFixture)
     const ansRegistryId = ansRegistryFixture.contractId
     const nodeOwner = randomAssetAddress()
     const node = binToHex(randomBytes(4))
