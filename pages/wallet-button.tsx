@@ -13,7 +13,7 @@ const Button = styled.button`
 const WalletButton = () => {
   const context = useAlephiumConnectContext()
   const { connect, disconnect } = useConnect({
-    chainGroup: context.addressGroup,
+    addressGroup: context.addressGroup,
     keyType: context.keyType,
     networkId: context.network
   })
