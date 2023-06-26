@@ -33,12 +33,7 @@ export const DefaultGroup = 0
 export const RootNode = "b2453cbabd12c58b21d32b6c70e6c41c8ca2918d7f56c1b88e838edf168776bf"
 export const MaxTTL = 1n << 255n
 
-export enum ErrorCodes {
-  InvalidCaller,
-  InvalidArgs,
-  ExpectAssetAddress,
-  NameHasBeenRegistered
-}
+export const ErrorCodes = ANSRegistry.consts.ErrorCodes
 
 export class ContractFixture<T extends Fields> {
   selfState: ContractState<T>

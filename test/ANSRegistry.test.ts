@@ -44,7 +44,7 @@ describe('test registrar', () => {
     const state = getContractState<ANSRegistryTypes.Fields>(testResult.contracts, ansRegistryFixture.address)
     expect(state.fields.admin).toEqual(newAdminAddress)
 
-    await expectAssertionError(test(randomAssetAddress()), ansRegistryFixture.address, ErrorCodes.InvalidCaller)
+    await expectAssertionError(test(randomAssetAddress()), ansRegistryFixture.address, Number(ErrorCodes.InvalidCaller))
   })
 
   it('should test create new node', async () => {
@@ -75,7 +75,8 @@ describe('test registrar', () => {
     const assetOutput = testResult.txOutputs[1]
     expect(assetOutput.alphAmount).toEqual(alph(2) - ONE_ALPH - DefaultGasFee)
 
-    await expectAssertionError(test(randomAssetAddress(), node, owner), ansRegistryFixture.address, ErrorCodes.InvalidCaller)
+    await expectAssertionError(test(randomAssetAddress(), node, owner), ansRegistryFixture.address, Number(ErrorCodes.InvalidCaller))
+    await expectAssertionError(test(adminAddress, node, randomContractId()), ansRegistryFixture.address, Number(ErrorCodes.ContractNotExists))
   })
 
   it('should test create sub node', async () => {
@@ -120,6 +121,10 @@ describe('test registrar', () => {
     const assetOutput = testResult.txOutputs[1]
     expect(assetOutput.alphAmount).toEqual(alph(2) - ONE_ALPH - DefaultGasFee)
 
-    await expectAssertionError(test(randomAssetAddress(), subNodeLabel, subNodeOwner), ansRegistryFixture.address, ErrorCodes.InvalidCaller)
+    await expectAssertionError(
+      test(randomAssetAddress(), subNodeLabel, subNodeOwner),
+      ansRegistryFixture.address,
+      Number(ErrorCodes.InvalidCaller)
+    )
   })
 })

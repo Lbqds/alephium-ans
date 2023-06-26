@@ -1,4 +1,4 @@
-import { addressFromContractId, binToHex, ONE_ALPH, subContractId, web3 } from "@alephium/web3"
+import { addressFromContractId, binToHex, ContractDestroyedEvent, ONE_ALPH, subContractId, web3 } from "@alephium/web3"
 import {
   alph,
   createANSRegistry,
@@ -16,8 +16,8 @@ import {
   createRegistrar
 } from "./fixtures/ANSFixture"
 import { keccak256 } from "ethers/lib/utils"
-import { RecordTypes, Registrar, RegistrarTypes } from "../artifacts/ts"
-import { expectAssertionError } from "@alephium/web3-test"
+import { DefaultResolverTypes, RecordInfo, RecordTypes, Registrar, RegistrarTypes } from "../artifacts/ts"
+import { expectAssertionError, randomContractAddress } from "@alephium/web3-test"
 
 describe("test registrar", () => {
   const MinRentalPeriod = 2592000000
@@ -76,7 +76,7 @@ describe("test registrar", () => {
     expect(newNodeEvents.length).toEqual(1)
     expect(newNodeEvents[0].fields).toEqual({ node: subNode, owner: subNodeOwner })
 
-    await expectAssertionError(register(name, subNodeOwner, MinRentalPeriod - 1), registrarFixture.address, ErrorCodes.InvalidArgs)
+    await expectAssertionError(register(name, subNodeOwner, MinRentalPeriod - 1), registrarFixture.address, Number(ErrorCodes.InvalidArgs))
   })
 
   it('should remove the expired record on registration', async () => {
@@ -184,9 +184,9 @@ describe("test registrar", () => {
       ttl: BigInt(ttl + MinRentalPeriod)
     })
 
-    await expectAssertionError(renew(randomAssetAddress(), MinRentalPeriod, ttl), registrarFixture.address, ErrorCodes.InvalidCaller)
-    await expectAssertionError(renew(subNodeOwner, MinRentalPeriod - 1, ttl), registrarFixture.address, ErrorCodes.InvalidArgs)
-    await expectAssertionError(renew(subNodeOwner, MinRentalPeriod, ttl - MinRentalPeriod * 2), registrarFixture.address, ErrorCodes.InvalidArgs)
+    await expectAssertionError(renew(randomAssetAddress(), MinRentalPeriod, ttl), registrarFixture.address, Number(ErrorCodes.InvalidCaller))
+    await expectAssertionError(renew(subNodeOwner, MinRentalPeriod - 1, ttl), registrarFixture.address, Number(ErrorCodes.InvalidArgs))
+    await expectAssertionError(renew(subNodeOwner, MinRentalPeriod, ttl - MinRentalPeriod * 2), registrarFixture.address, Number(ErrorCodes.InvalidArgs))
   })
 
   it('should unregister sub record', async () => {
@@ -198,28 +198,41 @@ describe("test registrar", () => {
     const subNode = keccak256(Buffer.from(RootNode + subNodeLabel)).slice(2)
     const subNodeOwner = randomAssetAddress()
     const subRecordAddress = subContractAddress(ansRegistryFixture.contractId, subNode, DefaultGroup)
+    const subRecord = createRecord({
+      registrar: registrarFixture.contractId,
+      owner: subNodeOwner,
+      ttl: 0n,
+      resolver: resolverFixture.contractId,
+      refundAddress: subNodeOwner
+    }, subRecordAddress)
+    const recordInfo = RecordInfo.stateForTest(
+      { resolver: resolverFixture.contractId, pubkey: '', addresses: '' },
+      defaultInitialAsset,
+      subContractAddress(resolverFixture.contractId, subNode, DefaultGroup)
+    )
 
     async function unregister(caller: string) {
-      const subRecord = createRecord({
-        registrar: registrarFixture.contractId,
-        owner: subNodeOwner,
-        ttl: 0n,
-        resolver: resolverFixture.contractId,
-        refundAddress: subNodeOwner
-      }, subRecordAddress)
       return Registrar.tests.unregister({
         address: registrarFixture.address,
         initialFields: registrarFixture.initialFields(),
         initialAsset: defaultInitialAsset,
         inputAssets: [{ address: caller, asset: { alphAmount: ONE_ALPH }}],
         testArgs: { node: subNode },
-        existingContracts: [subRecord, ...registrarFixture.dependencies]
+        existingContracts: [subRecord, ...registrarFixture.dependencies, recordInfo]
       })
     }
 
     const testResult = await unregister(subNodeOwner)
     const subRecordContract = testResult.contracts.find(c => c.address === subRecordAddress)
     expect(subRecordContract).toEqual(undefined)
+    expect(testResult.events.length).toEqual(3)
+
+    const event0 = testResult.events[0] as ContractDestroyedEvent
+    expect(event0.fields.address).toEqual(recordInfo.address)
+    const event1 = testResult.events[1] as ContractDestroyedEvent
+    expect(event1.fields.address).toEqual(subRecord.address)
+    const event2 = testResult.events[2] as DefaultResolverTypes.RecordInfoRemovedEvent
+    expect(event2.fields.node).toEqual(subNode)
   })
 
   it('should update record profile', async () => {
@@ -261,7 +274,7 @@ describe("test registrar", () => {
       newOwner: newOwner
     })
 
-    await expectAssertionError(setOwner(randomAssetAddress(), newOwner), registrarFixture.address, ErrorCodes.InvalidCaller)
+    await expectAssertionError(setOwner(randomAssetAddress(), newOwner), registrarFixture.address, Number(ErrorCodes.InvalidCaller))
 
     async function setResolver(caller: string, resolver: string) {
       return Registrar.tests.setResolver({
@@ -286,6 +299,6 @@ describe("test registrar", () => {
       resolverId: newResolverId
     })
 
-    await expectAssertionError(setResolver(randomAssetAddress(), newResolverId), registrarFixture.address, ErrorCodes.InvalidCaller)
+    await expectAssertionError(setResolver(randomAssetAddress(), newResolverId), registrarFixture.address, Number(ErrorCodes.InvalidCaller))
   })
 })

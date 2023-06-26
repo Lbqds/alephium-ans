@@ -7,11 +7,11 @@ import {
   defaultInitialAsset,
   randomAssetAddress,
   subContractAddress,
-  zeroPad,
   getContractState,
   buildProject,
   DefaultGroup,
-  createDefaultResolver
+  createDefaultResolver,
+  ErrorCodes
 } from "./fixtures/ANSFixture"
 import * as base58 from 'bs58'
 import { DefaultResolver, DefaultResolverTypes, RecordInfo, RecordInfoTypes } from "../artifacts/ts"
@@ -60,7 +60,7 @@ describe("test default resolver", () => {
       })
     }
 
-    await expectAssertionError(newRecordInfo(randomAssetAddress()), resolverFixture.address, Number(DefaultResolver.consts.ErrorCodes.InvalidCaller))
+    await expectAssertionError(newRecordInfo(randomAssetAddress()), resolverFixture.address, Number(ErrorCodes.InvalidCaller))
 
     const result = await newRecordInfo(nodeOwner)
     const recordInfoId = subContractId(resolverFixture.contractId, node, 0)
@@ -124,7 +124,7 @@ describe("test default resolver", () => {
     await expectAssertionError(
       setAddress(randomAssetAddress(), AlphChainId, alphAddress),
       resolverFixture.address,
-      Number(DefaultResolver.consts.ErrorCodes.InvalidCaller)
+      Number(ErrorCodes.InvalidCaller)
     )
 
     const recordInfoState0 = await setAddress(nodeOwner, AlphChainId, alphAddress)
@@ -186,7 +186,7 @@ describe("test default resolver", () => {
     }
 
     const pubkey = binToHex(randomBytes(32))
-    await expectAssertionError(setPubkey(randomAssetAddress(), pubkey), resolverFixture.address, Number(DefaultResolver.consts.ErrorCodes.InvalidCaller))
+    await expectAssertionError(setPubkey(randomAssetAddress(), pubkey), resolverFixture.address, Number(ErrorCodes.InvalidCaller))
 
     const recordInfoState0 = await setPubkey(nodeOwner, pubkey)
     expect(await getPubkey(recordInfoState0)).toEqual(pubkey)
