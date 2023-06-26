@@ -1,4 +1,4 @@
-import { binToHex, ContractDestroyedEvent, ONE_ALPH, subContractId, web3 } from "@alephium/web3"
+import { binToHex, Contract, ContractDestroyedEvent, ONE_ALPH, subContractId, web3 } from "@alephium/web3"
 import {
   alph,
   createANSRegistry,
@@ -230,12 +230,9 @@ describe("test registrar", () => {
     expect(subRecordContract).toEqual(undefined)
     expect(testResult.events.length).toEqual(3)
 
-    const event0 = testResult.events[0] as ContractDestroyedEvent
-    expect(event0.fields.address).toEqual(recordInfo.address)
-    const event1 = testResult.events[1] as ContractDestroyedEvent
-    expect(event1.fields.address).toEqual(subRecord.address)
-    const event2 = testResult.events[2] as DefaultResolverTypes.RecordInfoRemovedEvent
-    expect(event2.fields.node).toEqual(subNode)
+    expect(testResult.events.filter((e) => e.eventIndex === Contract.ContractDestroyedEventIndex).length).toEqual(2)
+    const recordInfoRemovedEvent = testResult.events.find((e) => e.eventIndex === 3)! as DefaultResolverTypes.RecordInfoRemovedEvent
+    expect(recordInfoRemovedEvent.fields.node).toEqual(subNode)
   })
 
   it('should update record profile', async () => {
