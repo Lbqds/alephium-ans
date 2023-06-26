@@ -6,10 +6,10 @@ const setupANS: DeployFunction<undefined> = async (deployer: Deployer): Promise<
   const ansRegistryId = deployer.getDeployContractResult('ANSRegistry').contractInstance.contractId
   const registrarId = deployer.getDeployContractResult('Registrar').contractInstance.contractId
   const initialFields = {
-    ansRegistryId: ansRegistryId,
+    ansRegistry: ansRegistryId,
     registrarId: registrarId
   }
-  await deployer.runScript(SetupANS.execute, SetupANS.script, {
+  await deployer.runScript(SetupANS, {
     initialFields: initialFields,
     attoAlphAmount: ONE_ALPH + DUST_AMOUNT
   })

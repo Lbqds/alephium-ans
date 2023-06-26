@@ -6,8 +6,8 @@ const deployRegistrar: DeployFunction<undefined> = async (deployer: Deployer): P
   const defaultResolverId = deployer.getDeployContractResult('DefaultResolver').contractInstance.contractId
   const initialFields: RegistrarTypes.Fields = {
     registrarOwner: deployer.account.address,
-    ansRegistryId,
-    defaultResolverId
+    ansRegistry: ansRegistryId,
+    defaultResolver: defaultResolverId
   }
   const result = await deployer.deployContract(Registrar, { initialFields: initialFields })
   console.log(`Registrar contract address: ${result.contractInstance.address}, contract id: ${result.contractInstance.contractId}`)

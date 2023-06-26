@@ -1,44 +1,22 @@
 import { Deployer, DeployFunction } from '@alephium/cli'
 import { ContractFactory, Fields } from '@alephium/web3'
 import {
-  AddressInfo,
+  RecordInfo,
   DefaultResolverTypes,
-  NameInfo,
-  PubkeyInfo,
   DefaultResolver
 } from '../artifacts/ts'
 
-async function deployTemplateContract<F extends Fields>(
-  deployer: Deployer,
-  factory: ContractFactory<any, F>,
-  initialFields: F
-): Promise<string> {
-  const result = await deployer.deployContract(factory, { initialFields: initialFields })
-  return result.contractInstance.contractId
-}
-
 const deployResolver: DeployFunction<undefined> = async (deployer: Deployer): Promise<void> => {
-  const addressInfoTemplateId = await deployTemplateContract(
-    deployer,
-    AddressInfo,
-    { parentId: '', addresses: '' }
-  )
-  const nameInfoTemplateId = await deployTemplateContract(
-    deployer,
-    NameInfo,
-    { parentId: '', name: '' }
-  )
-  const pubkeyInfoTemplateId = await deployTemplateContract(
-    deployer,
-    PubkeyInfo,
-    { parentId: '', pubkey: '' }
-  )
+  const recordInfoFields = {
+    resolver: '',
+    pubkey: '',
+    addresses: ''
+  }
+  const recordInfoTemplateResult = await deployer.deployContract(RecordInfo, { initialFields: recordInfoFields })
   const ansRegistryId = deployer.getDeployContractResult('ANSRegistry').contractInstance.contractId
   const initialFields: DefaultResolverTypes.Fields = {
-    ansRegistryId,
-    addressInfoTemplateId,
-    nameInfoTemplateId,
-    pubkeyInfoTemplateId
+    ansRegistry: ansRegistryId,
+    recordInfoTemplateId: recordInfoTemplateResult.contractInstance.contractId
   }
   const result = await deployer.deployContract(DefaultResolver, { initialFields: initialFields })
   console.log(`Default resolver contract address: ${result.contractInstance.address}, contract id: ${result.contractInstance.contractId}`)
