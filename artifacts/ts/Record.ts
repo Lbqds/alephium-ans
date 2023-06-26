@@ -24,7 +24,8 @@ import {
   ContractInstance,
   getContractEventsCurrentCount,
 } from "@alephium/web3";
-import { default as RecordContractJson } from "../record.ral.json";
+import { default as RecordContractJson } from "../Record.ral.json";
+import { getContractByCodeHash } from "./contracts";
 
 // Custom types for the contract
 export namespace RecordTypes {
@@ -51,10 +52,6 @@ export namespace RecordTypes {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<bigint>;
     };
-    getResolver: {
-      params: Omit<CallContractParams<{}>, "args">;
-      result: CallContractResult<HexString>;
-    };
     getRefundAddress: {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<Address>;
@@ -75,6 +72,16 @@ export namespace RecordTypes {
 }
 
 class Factory extends ContractFactory<RecordInstance, RecordTypes.Fields> {
+  consts = {
+    ErrorCodes: {
+      InvalidCaller: BigInt(0),
+      InvalidArgs: BigInt(1),
+      ExpectAssetAddress: BigInt(2),
+      NameHasBeenRegistered: BigInt(3),
+      ContractNotExists: BigInt(4),
+    },
+  };
+
   at(address: string): RecordInstance {
     return new RecordInstance(address);
   }
@@ -105,11 +112,6 @@ class Factory extends ContractFactory<RecordInstance, RecordTypes.Fields> {
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "setTTL", params);
     },
-    getResolver: async (
-      params: Omit<TestContractParams<RecordTypes.Fields, never>, "testArgs">
-    ): Promise<TestContractResult<HexString>> => {
-      return testMethod(this, "getResolver", params);
-    },
     setResolver: async (
       params: TestContractParams<RecordTypes.Fields, { newResolver: HexString }>
     ): Promise<TestContractResult<null>> => {
@@ -121,7 +123,7 @@ class Factory extends ContractFactory<RecordInstance, RecordTypes.Fields> {
       return testMethod(this, "getRefundAddress", params);
     },
     destroy: async (
-      params: Omit<TestContractParams<RecordTypes.Fields, never>, "testArgs">
+      params: TestContractParams<RecordTypes.Fields, { node: HexString }>
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "destroy", params);
     },
@@ -133,7 +135,7 @@ export const Record = new Factory(
   Contract.fromJson(
     RecordContractJson,
     "",
-    "db1b74b79b7a21500c4ae9b072987b594192e2e751fb8160f24800824f71663d"
+    "0e308c0b0cbac94ed57fbf2523825d4fca4a1977554be4e63ec952df221942a7"
   )
 );
 
@@ -155,7 +157,8 @@ export class RecordInstance extends ContractInstance {
         Record,
         this,
         "getRegistrar",
-        params === undefined ? {} : params
+        params === undefined ? {} : params,
+        getContractByCodeHash
       );
     },
     getOwner: async (
@@ -165,7 +168,8 @@ export class RecordInstance extends ContractInstance {
         Record,
         this,
         "getOwner",
-        params === undefined ? {} : params
+        params === undefined ? {} : params,
+        getContractByCodeHash
       );
     },
     getTTL: async (
@@ -175,17 +179,8 @@ export class RecordInstance extends ContractInstance {
         Record,
         this,
         "getTTL",
-        params === undefined ? {} : params
-      );
-    },
-    getResolver: async (
-      params?: RecordTypes.CallMethodParams<"getResolver">
-    ): Promise<RecordTypes.CallMethodResult<"getResolver">> => {
-      return callMethod(
-        Record,
-        this,
-        "getResolver",
-        params === undefined ? {} : params
+        params === undefined ? {} : params,
+        getContractByCodeHash
       );
     },
     getRefundAddress: async (
@@ -195,7 +190,8 @@ export class RecordInstance extends ContractInstance {
         Record,
         this,
         "getRefundAddress",
-        params === undefined ? {} : params
+        params === undefined ? {} : params,
+        getContractByCodeHash
       );
     },
   };
@@ -206,7 +202,8 @@ export class RecordInstance extends ContractInstance {
     return (await multicallMethods(
       Record,
       this,
-      calls
+      calls,
+      getContractByCodeHash
     )) as RecordTypes.MultiCallResults<Calls>;
   }
 }

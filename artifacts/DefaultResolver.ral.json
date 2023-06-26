@@ -1,0 +1,237 @@
+{
+  "version": "v2.3.5",
+  "name": "DefaultResolver",
+  "bytecode": "02064029406f409d40b140db40ed010002040017ce001600cc1702b31602410c7b1600cb17031603c54c0816010d0c160301040816005e01030407004023ce001600cc1704b40c0d16040101450c7bb11301641602160313026417061705160113c40de0b6b3a7640000a21600ce0116051606c118051600160216036001000305001ace001600cc1703b40c0d16030101450c7b1600cb1704160116020e0c1604010006160016011602600100020301091600cb170216010d0d1602010102010002040018ce001600cc1702b40c0d16020101450c7b1600cb170316010d0c1603010207160016015f0100010201081600cb17010c0d1601010302",
+  "codeHash": "0ac67df3fd094984d15975fc0db4a86baf0e97e9e4197092cac83b8b398580c9",
+  "fieldsSig": {
+    "names": [
+      "ansRegistry",
+      "recordInfoTemplateId"
+    ],
+    "types": [
+      "ByteVec",
+      "ByteVec"
+    ],
+    "isMutable": [
+      false,
+      false
+    ]
+  },
+  "eventsSig": [
+    {
+      "name": "NewRecordInfoCreated",
+      "fieldNames": [
+        "node",
+        "pubkey",
+        "addresses"
+      ],
+      "fieldTypes": [
+        "ByteVec",
+        "ByteVec",
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "AddressUpdated",
+      "fieldNames": [
+        "node",
+        "chainId",
+        "newAddress"
+      ],
+      "fieldTypes": [
+        "ByteVec",
+        "U256",
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "PubkeyUpdated",
+      "fieldNames": [
+        "node",
+        "newPubkey"
+      ],
+      "fieldTypes": [
+        "ByteVec",
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "RecordInfoRemoved",
+      "fieldNames": [
+        "node"
+      ],
+      "fieldTypes": [
+        "ByteVec"
+      ]
+    }
+  ],
+  "functions": [
+    {
+      "name": "removeNode",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
+        "node",
+        "refundAddress"
+      ],
+      "paramTypes": [
+        "ByteVec",
+        "Address"
+      ],
+      "paramIsMutable": [
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "newRecordInfo",
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
+        "node",
+        "payer",
+        "pubkey",
+        "addresses"
+      ],
+      "paramTypes": [
+        "ByteVec",
+        "Address",
+        "ByteVec",
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "setAddress",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
+        "node",
+        "chainId",
+        "address"
+      ],
+      "paramTypes": [
+        "ByteVec",
+        "U256",
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "getAddress",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
+        "node",
+        "chainId"
+      ],
+      "paramTypes": [
+        "ByteVec",
+        "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false
+      ],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "setPubkey",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
+        "node",
+        "pubkey"
+      ],
+      "paramTypes": [
+        "ByteVec",
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "getPubKey",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
+        "node"
+      ],
+      "paramTypes": [
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    }
+  ],
+  "constants": [],
+  "enums": [
+    {
+      "name": "ErrorCodes",
+      "fields": [
+        {
+          "name": "InvalidCaller",
+          "value": {
+            "type": "U256",
+            "value": "0"
+          }
+        },
+        {
+          "name": "InvalidArgs",
+          "value": {
+            "type": "U256",
+            "value": "1"
+          }
+        },
+        {
+          "name": "ExpectAssetAddress",
+          "value": {
+            "type": "U256",
+            "value": "2"
+          }
+        },
+        {
+          "name": "NameHasBeenRegistered",
+          "value": {
+            "type": "U256",
+            "value": "3"
+          }
+        },
+        {
+          "name": "ContractNotExists",
+          "value": {
+            "type": "U256",
+            "value": "4"
+          }
+        }
+      ]
+    }
+  ]
+}

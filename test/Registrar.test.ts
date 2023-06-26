@@ -8,19 +8,18 @@ import {
   subContractAddress,
   createDefaultResolver,
   randomContractId,
-  ContractFixture,
-  defaultGroup,
+  DefaultGroup,
   getContractState,
   buildProject,
-  ErrorCodes
+  ErrorCodes,
+  RootNode,
+  createRegistrar
 } from "./fixtures/ANSFixture"
 import { keccak256 } from "ethers/lib/utils"
-import { ANSRegistryTypes, RecordTypes, Registrar, RegistrarTypes } from "../artifacts/ts"
+import { RecordTypes, Registrar, RegistrarTypes } from "../artifacts/ts"
 import { expectAssertionError } from "@alephium/web3-test"
 
 describe("test registrar", () => {
-  const RootNode = "b2453cbabd12c58b21d32b6c70e6c41c8ca2918d7f56c1b88e838edf168776bf"
-  const MaxTTL = 1n << 255n
   const MinRentalPeriod = 2592000000
   const RentPrice = 1000n
 
@@ -31,27 +30,10 @@ describe("test registrar", () => {
     await buildProject()
   })
 
-  async function createRegistrar(owner: string, ansRegistryFixture: ContractFixture<ANSRegistryTypes.Fields>) {
-    const resolverFixture = await createDefaultResolver(ansRegistryFixture)
-    const state = Registrar.stateForTest({
-      registrarOwner: owner,
-      ansRegistryId: ansRegistryFixture.contractId,
-      defaultResolverId: resolverFixture.contractId
-    }, defaultInitialAsset)
-    const rootRecord = await createRecord({
-      registrar: state.contractId,
-      owner: addressFromContractId(state.contractId),
-      ttl: MaxTTL,
-      resolver: resolverFixture.contractId,
-      refundAddress: owner
-    }, subContractAddress(ansRegistryFixture.contractId, RootNode, defaultGroup))
-    return new ContractFixture(state, [ rootRecord, ...ansRegistryFixture.states(), ...resolverFixture.states()])
-  }
-
   it('should register sub record', async () => {
-    const ansRegistryFixture = await createANSRegistry(randomAssetAddress())
+    const ansRegistryFixture = createANSRegistry(randomAssetAddress())
     const registrarOwner = randomAssetAddress()
-    const registrarFixture = await createRegistrar(registrarOwner, ansRegistryFixture)
+    const registrarFixture = createRegistrar(registrarOwner, ansRegistryFixture)
 
     async function register(subNode: string, subNodeOwner: string, rentDuration: number) {
       return Registrar.tests.register({
@@ -77,7 +59,7 @@ describe("test registrar", () => {
     expect(subRecordState.fields.registrar).toEqual(registrarFixture.contractId)
     const label = keccak256(encoder.encode(name)).slice(2)
     const subNode = keccak256(Buffer.from(RootNode + label, 'hex')).slice(2)
-    const expectedContractId = subContractId(ansRegistryFixture.contractId, subNode, defaultGroup)
+    const expectedContractId = subContractId(ansRegistryFixture.contractId, subNode, DefaultGroup)
     expect(subRecordState.contractId).toEqual(expectedContractId)
 
     const contractOutput = testResult.txOutputs[0]
@@ -98,16 +80,16 @@ describe("test registrar", () => {
   })
 
   it('should remove the expired record on registration', async () => {
-    const ansRegistryFixture = await createANSRegistry(randomAssetAddress())
-    const resolverFixture = await createDefaultResolver(ansRegistryFixture)
+    const ansRegistryFixture = createANSRegistry(randomAssetAddress())
+    const resolverFixture = createDefaultResolver(ansRegistryFixture)
     const registrarOwner = randomAssetAddress()
-    const registrarFixture = await createRegistrar(registrarOwner, ansRegistryFixture)
+    const registrarFixture = createRegistrar(registrarOwner, ansRegistryFixture, resolverFixture)
     const name = "test"
     const previousOwner = randomAssetAddress()
     const newOwner = randomAssetAddress()
     const subNodeLabel = keccak256(encoder.encode(name)).slice(2)
     const subNode = keccak256(Buffer.from(RootNode + subNodeLabel, 'hex')).slice(2)
-    const subRecordAddress = subContractAddress(ansRegistryFixture.contractId, subNode, defaultGroup)
+    const subRecordAddress = subContractAddress(ansRegistryFixture.contractId, subNode, DefaultGroup)
 
     async function register(subNode: string, newOwner: string, rentDuration: number) {
       const subRecord = createRecord({
@@ -133,7 +115,7 @@ describe("test registrar", () => {
     }
 
     const testResult = await register(name, newOwner, MinRentalPeriod)
-    const expectedContractId = subContractId(ansRegistryFixture.contractId, subNode, defaultGroup)
+    const expectedContractId = subContractId(ansRegistryFixture.contractId, subNode, DefaultGroup)
     const subRecordState = getContractState<RecordTypes.Fields>(testResult.contracts, expectedContractId)
     expect(subRecordState.fields.owner).toEqual(newOwner)
     expect(subRecordState.fields.registrar).toEqual(registrarFixture.contractId)
@@ -158,13 +140,13 @@ describe("test registrar", () => {
   })
 
   it('should renew sub record', async () => {
-    const ansRegistryFixture = await createANSRegistry(randomAssetAddress())
+    const ansRegistryFixture = createANSRegistry(randomAssetAddress())
     const registrarOwner = randomAssetAddress()
-    const registrarFixture = await createRegistrar(registrarOwner, ansRegistryFixture)
+    const registrarFixture = createRegistrar(registrarOwner, ansRegistryFixture)
     const subNodeLabel = keccak256(encoder.encode("test")).slice(2)
     const subNode = keccak256(Buffer.from(RootNode + subNodeLabel)).slice(2)
     const subNodeOwner = randomAssetAddress()
-    const subRecordAddress = subContractAddress(ansRegistryFixture.contractId, subNode, defaultGroup)
+    const subRecordAddress = subContractAddress(ansRegistryFixture.contractId, subNode, DefaultGroup)
 
     async function renew(caller: string, duration: number, currentTTL: number) {
       const subRecord = createRecord({
@@ -208,20 +190,21 @@ describe("test registrar", () => {
   })
 
   it('should unregister sub record', async () => {
-    const ansRegistryFixture = await createANSRegistry(randomAssetAddress())
+    const ansRegistryFixture = createANSRegistry(randomAssetAddress())
+    const resolverFixture = createDefaultResolver(ansRegistryFixture)
     const registrarOwner = randomAssetAddress()
-    const registrarFixture = await createRegistrar(registrarOwner, ansRegistryFixture)
+    const registrarFixture = createRegistrar(registrarOwner, ansRegistryFixture, resolverFixture)
     const subNodeLabel = keccak256(encoder.encode("test")).slice(2)
     const subNode = keccak256(Buffer.from(RootNode + subNodeLabel)).slice(2)
     const subNodeOwner = randomAssetAddress()
-    const subRecordAddress = subContractAddress(ansRegistryFixture.contractId, subNode, defaultGroup)
+    const subRecordAddress = subContractAddress(ansRegistryFixture.contractId, subNode, DefaultGroup)
 
     async function unregister(caller: string) {
       const subRecord = createRecord({
         registrar: registrarFixture.contractId,
         owner: subNodeOwner,
         ttl: 0n,
-        resolver: '',
+        resolver: resolverFixture.contractId,
         refundAddress: subNodeOwner
       }, subRecordAddress)
       return Registrar.tests.unregister({
@@ -240,13 +223,13 @@ describe("test registrar", () => {
   })
 
   it('should update record profile', async () => {
-    const ansRegistryFixture = await createANSRegistry(randomAssetAddress())
+    const ansRegistryFixture = createANSRegistry(randomAssetAddress())
     const registrarOwner = randomAssetAddress()
-    const registrarFixture = await createRegistrar(registrarOwner, ansRegistryFixture)
+    const registrarFixture = createRegistrar(registrarOwner, ansRegistryFixture)
     const subNodeLabel = keccak256(encoder.encode("test")).slice(2)
     const subNode = keccak256(Buffer.from(RootNode + subNodeLabel)).slice(2)
     const subNodeOwner = randomAssetAddress()
-    const subRecordAddress = subContractAddress(ansRegistryFixture.contractId, subNode, defaultGroup)
+    const subRecordAddress = subContractAddress(ansRegistryFixture.contractId, subNode, DefaultGroup)
     const subRecord = createRecord({
       registrar: registrarFixture.contractId,
       owner: subNodeOwner,
@@ -280,13 +263,13 @@ describe("test registrar", () => {
 
     await expectAssertionError(setOwner(randomAssetAddress(), newOwner), registrarFixture.address, ErrorCodes.InvalidCaller)
 
-    async function setResolver(caller: string, resolverId: string) {
+    async function setResolver(caller: string, resolver: string) {
       return Registrar.tests.setResolver({
         address: registrarFixture.address,
         initialFields: registrarFixture.initialFields(),
         initialAsset: defaultInitialAsset,
         inputAssets: [{ address: caller, asset: { alphAmount: ONE_ALPH }}],
-        testArgs: { node: subNode, resolverId },
+        testArgs: { node: subNode, resolver },
         existingContracts: [subRecord, ...registrarFixture.dependencies]
       })
     }

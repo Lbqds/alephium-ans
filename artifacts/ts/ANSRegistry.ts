@@ -24,7 +24,8 @@ import {
   ContractInstance,
   getContractEventsCurrentCount,
 } from "@alephium/web3";
-import { default as ANSRegistryContractJson } from "../ans_registry.ral.json";
+import { default as ANSRegistryContractJson } from "../ANSRegistry.ral.json";
+import { getContractByCodeHash } from "./contracts";
 
 // Custom types for the contract
 export namespace ANSRegistryTypes {
@@ -40,6 +41,16 @@ class Factory extends ContractFactory<
   ANSRegistryInstance,
   ANSRegistryTypes.Fields
 > {
+  consts = {
+    ErrorCodes: {
+      InvalidCaller: BigInt(0),
+      InvalidArgs: BigInt(1),
+      ExpectAssetAddress: BigInt(2),
+      NameHasBeenRegistered: BigInt(3),
+      ContractNotExists: BigInt(4),
+    },
+  };
+
   at(address: string): ANSRegistryInstance {
     return new ANSRegistryInstance(address);
   }
@@ -58,7 +69,7 @@ class Factory extends ContractFactory<
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "newNode", params);
     },
-    setSubNodeRecord: async (
+    newSubNodeRecord: async (
       params: TestContractParams<
         ANSRegistryTypes.Fields,
         {
@@ -71,7 +82,7 @@ class Factory extends ContractFactory<
         }
       >
     ): Promise<TestContractResult<null>> => {
-      return testMethod(this, "setSubNodeRecord", params);
+      return testMethod(this, "newSubNodeRecord", params);
     },
   };
 }
@@ -81,7 +92,7 @@ export const ANSRegistry = new Factory(
   Contract.fromJson(
     ANSRegistryContractJson,
     "",
-    "0508f26fc13862c0d1b1e86ea54daae6bc588c3d32cb9c9ceb6d988e3a5b9ecc"
+    "125ae52bad2a8ead1fa3ac791690114e7562404daa592c08546a1257c6a6176e"
   )
 );
 

@@ -4,42 +4,22 @@
 
 import {
   Address,
+  ExecutableScript,
   ExecuteScriptParams,
   ExecuteScriptResult,
   Script,
   SignerProvider,
   HexString,
 } from "@alephium/web3";
-import { default as RegisterScriptJson } from "../scripts/register.ral.json";
-import { default as SetupANSScriptJson } from "../scripts/setup_ans.ral.json";
+import { default as RegisterScriptJson } from "../scripts/Register.ral.json";
+import { default as SetupANSScriptJson } from "../scripts/SetupANS.ral.json";
 
-export namespace Register {
-  export async function execute(
-    signer: SignerProvider,
-    params: ExecuteScriptParams<{
-      registrarId: HexString;
-      name: HexString;
-      rentalPeriod: bigint;
-    }>
-  ): Promise<ExecuteScriptResult> {
-    const signerParams = await script.txParamsForExecution(signer, params);
-    return await signer.signAndSubmitExecuteScriptTx(signerParams);
-  }
-
-  export const script = Script.fromJson(RegisterScriptJson);
-}
-
-export namespace SetupANS {
-  export async function execute(
-    signer: SignerProvider,
-    params: ExecuteScriptParams<{
-      ansRegistryId: HexString;
-      registrarId: HexString;
-    }>
-  ): Promise<ExecuteScriptResult> {
-    const signerParams = await script.txParamsForExecution(signer, params);
-    return await signer.signAndSubmitExecuteScriptTx(signerParams);
-  }
-
-  export const script = Script.fromJson(SetupANSScriptJson);
-}
+export const Register = new ExecutableScript<{
+  registrarId: HexString;
+  name: HexString;
+  rentalPeriod: bigint;
+}>(Script.fromJson(RegisterScriptJson));
+export const SetupANS = new ExecutableScript<{
+  ansRegistry: HexString;
+  registrarId: HexString;
+}>(Script.fromJson(SetupANSScriptJson));

@@ -4,5 +4,6 @@ Abstract Contract Constants() {
     InvalidArgs           = 1
     ExpectAssetAddress    = 2
     NameHasBeenRegistered = 3
+    ContractNotExists     = 4
   }
 }

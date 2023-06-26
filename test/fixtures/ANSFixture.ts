@@ -12,33 +12,26 @@ import {
 import { randomBytes } from "crypto"
 import * as base58 from 'bs58'
 import {
-  AddressInfo,
-  AddressInfoTypes,
-  AddressResolverTest,
-  AddressResolverTestTypes,
   ANSRegistry,
   ANSRegistryTypes,
   DefaultResolver,
   DefaultResolverTypes,
-  NameInfo,
-  NameInfoTypes,
-  NameResolverTest,
-  NameResolverTestTypes,
-  PubkeyInfo,
-  PubkeyInfoTypes,
-  PubkeyResolverTest,
-  PubkeyResolverTestTypes,
   Record,
-  RecordTypes
+  RecordTypes,
+  RecordInfo,
+  RecordInfoTypes,
+  Registrar
 } from "../../artifacts/ts"
 
 export const defaultInitialAsset: Asset = {
   alphAmount: ONE_ALPH
 }
-export const gasPrice = 100000000000n
-export const maxGasPerTx = 625000n
-export const defaultGasFee = gasPrice * maxGasPerTx
-export const defaultGroup = 0
+export const GasPrice = 100000000000n
+export const MaxGasPerTx = 625000n
+export const DefaultGasFee = GasPrice * MaxGasPerTx
+export const DefaultGroup = 0
+export const RootNode = "b2453cbabd12c58b21d32b6c70e6c41c8ca2918d7f56c1b88e838edf168776bf"
+export const MaxTTL = 1n << 255n
 
 export enum ErrorCodes {
   InvalidCaller,
@@ -69,7 +62,7 @@ export class ContractFixture<T extends Fields> {
   }
 }
 
-async function createRecordTemplate(): Promise<ContractFixture<RecordTypes.Fields>> {
+function createRecordTemplate(): ContractFixture<RecordTypes.Fields> {
   const state = Record.stateForTest({
     registrar: "",
     owner: randomAssetAddress(),
@@ -80,8 +73,8 @@ async function createRecordTemplate(): Promise<ContractFixture<RecordTypes.Field
   return new ContractFixture(state, [])
 }
 
-export async function createANSRegistry(admin: string): Promise<ContractFixture<ANSRegistryTypes.Fields>> {
-  const recordFixture = await createRecordTemplate()
+export function createANSRegistry(admin: string): ContractFixture<ANSRegistryTypes.Fields> {
+  const recordFixture = createRecordTemplate()
   const state = ANSRegistry.stateForTest({
     admin: admin,
     recordTemplateId: recordFixture.contractId
@@ -110,76 +103,49 @@ export function zeroPad(value: string, byteLength: number): string {
   return value
 }
 
-async function createAddressInfoTemplate(): Promise<ContractFixture<AddressInfoTypes.Fields>> {
-  const state = AddressInfo.stateForTest({
-    parentId: '',
+function createRecordInfoTemplate(): ContractFixture<RecordInfoTypes.Fields> {
+  const state = RecordInfo.stateForTest({
+    resolver: '',
+    pubkey: '',
     addresses: ''
   }, defaultInitialAsset)
   return new ContractFixture(state, [])
 }
 
-export async function createAddressResolver(ansRegistryFixture: ContractFixture<ANSRegistryTypes.Fields>): Promise<ContractFixture<AddressResolverTestTypes.Fields>> {
-  const addressInfoTemplate = await createAddressInfoTemplate()
-  const state = AddressResolverTest.stateForTest({
-    ansRegistryId: ansRegistryFixture.contractId,
-    addressInfoTemplateId: addressInfoTemplate.contractId
-  }, defaultInitialAsset)
-  return new ContractFixture(state, addressInfoTemplate.states().concat(ansRegistryFixture.states()))
-}
-
-async function createNameInfoTemplate(): Promise<ContractFixture<NameInfoTypes.Fields>> {
-  const state = NameInfo.stateForTest(
-    { parentId: '', name: '' },
-    defaultInitialAsset
-  )
-  return new ContractFixture(state, [])
-}
-
-export async function createNameResolver(ansRegistryFixture: ContractFixture<ANSRegistryTypes.Fields>): Promise<ContractFixture<NameResolverTestTypes.Fields>> {
-  const nameInfoTemplate = await createNameInfoTemplate()
-  const state = NameResolverTest.stateForTest({
-    ansRegistryId: ansRegistryFixture.contractId,
-    nameInfoTemplateId: nameInfoTemplate.contractId
-  }, defaultInitialAsset)
-  return new ContractFixture(state, nameInfoTemplate.states().concat(ansRegistryFixture.states()))
-}
-
-async function createPubkeyInfoTemplate(): Promise<ContractFixture<PubkeyInfoTypes.Fields>> {
-  const state = PubkeyInfo.stateForTest(
-    { parentId: '', pubkey: '' },
-    defaultInitialAsset
-  )
-  return new ContractFixture(state, [])
-}
-
-export async function createPubkeyResolver(ansRegistryFixture: ContractFixture<ANSRegistryTypes.Fields>): Promise<ContractFixture<PubkeyResolverTestTypes.Fields>> {
-  const pubkeyInfoTemplate = await createPubkeyInfoTemplate()
-  const state = PubkeyResolverTest.stateForTest({
-    ansRegistryId: ansRegistryFixture.contractId,
-    pubkeyInfoTemplateId: pubkeyInfoTemplate.contractId
-  }, defaultInitialAsset)
-  return new ContractFixture(state, pubkeyInfoTemplate.states().concat(ansRegistryFixture.states()))
-}
-
-export async function createDefaultResolver(ansRegistryFixture: ContractFixture<ANSRegistryTypes.Fields>): Promise<ContractFixture<DefaultResolverTypes.Fields>> {
-  const addressInfoTemplate = await createAddressInfoTemplate()
-  const nameInfoTemplate = await createNameInfoTemplate()
-  const pubkeyInfoTemplate = await createPubkeyInfoTemplate()
+export function createDefaultResolver(ansRegistryFixture: ContractFixture<ANSRegistryTypes.Fields>): ContractFixture<DefaultResolverTypes.Fields> {
+  const recordInfoTemplate = createRecordInfoTemplate()
   const state = DefaultResolver.stateForTest({
-    ansRegistryId: ansRegistryFixture.contractId,
-    addressInfoTemplateId: addressInfoTemplate.contractId,
-    nameInfoTemplateId: nameInfoTemplate.contractId,
-    pubkeyInfoTemplateId: pubkeyInfoTemplate.contractId,
+    ansRegistry: ansRegistryFixture.contractId,
+    recordInfoTemplateId: recordInfoTemplate.contractId,
   }, defaultInitialAsset)
   return new ContractFixture(
     state,
     [
       ...ansRegistryFixture.states(),
-      addressInfoTemplate.selfState,
-      nameInfoTemplate.selfState,
-      pubkeyInfoTemplate.selfState
+      recordInfoTemplate.selfState,
     ]
   )
+}
+
+export function createRegistrar(
+  owner: string,
+  ansRegistryFixture: ContractFixture<ANSRegistryTypes.Fields>,
+  resolverFixtureOpt?: ContractFixture<DefaultResolverTypes.Fields>
+) {
+  const resolverFixture = resolverFixtureOpt ?? createDefaultResolver(ansRegistryFixture)
+  const state = Registrar.stateForTest({
+    registrarOwner: owner,
+    ansRegistry: ansRegistryFixture.contractId,
+    defaultResolver: resolverFixture.contractId
+  }, defaultInitialAsset)
+  const rootRecord = createRecord({
+    registrar: state.contractId,
+    owner: addressFromContractId(state.contractId),
+    ttl: MaxTTL,
+    resolver: resolverFixture.contractId,
+    refundAddress: owner
+  }, subContractAddress(ansRegistryFixture.contractId, RootNode, DefaultGroup))
+  return new ContractFixture(state, [ rootRecord, ...resolverFixture.states()])
 }
 
 export function alph(num: number): bigint {

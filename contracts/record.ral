@@ -2,7 +2,7 @@ Contract Record(
   registrar: ByteVec,
   mut owner: Address, // The owner can be a contract address
   mut ttl: U256,
-  mut resolver: ByteVec,
+  mut resolver: Resolver,
   refundAddress: Address
 ) extends Constants() {
   pub fn getRegistrar() -> ByteVec {
@@ -29,12 +29,8 @@ Contract Record(
     ttl = newTTL
   }
  
-  pub fn getResolver() -> ByteVec {
-    return resolver
-  }
-
   @using(updateFields = true)
-  pub fn setResolver(newResolver: ByteVec) -> () {
+  pub fn setResolver(newResolver: Resolver) -> () {
     checkCaller!(callerContractId!() == registrar, ErrorCodes.InvalidCaller)
     resolver = newResolver
   }
@@ -44,8 +40,9 @@ Contract Record(
   }
 
   @using(assetsInContract = true)
-  pub fn destroy() -> () {
+  pub fn destroy(node: ByteVec) -> () {
     checkCaller!(callerContractId!() == registrar, ErrorCodes.InvalidCaller)
+    resolver.removeNode(node, refundAddress)
     burnToken!(selfAddress!(), selfContractId!(), 1)
     destroySelf!(refundAddress)
   }

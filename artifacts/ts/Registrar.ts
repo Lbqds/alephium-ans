@@ -24,14 +24,15 @@ import {
   ContractInstance,
   getContractEventsCurrentCount,
 } from "@alephium/web3";
-import { default as RegistrarContractJson } from "../registrar.ral.json";
+import { default as RegistrarContractJson } from "../Registrar.ral.json";
+import { getContractByCodeHash } from "./contracts";
 
 // Custom types for the contract
 export namespace RegistrarTypes {
   export type Fields = {
     registrarOwner: Address;
-    ansRegistryId: HexString;
-    defaultResolverId: HexString;
+    ansRegistry: HexString;
+    defaultResolver: HexString;
   };
 
   export type State = ContractState<Fields>;
@@ -58,6 +59,19 @@ class Factory extends ContractFactory<
   RegistrarInstance,
   RegistrarTypes.Fields
 > {
+  consts = {
+    RootNode:
+      "b2453cbabd12c58b21d32b6c70e6c41c8ca2918d7f56c1b88e838edf168776bf",
+    MinRentDuration: BigInt(2592000000),
+    ErrorCodes: {
+      InvalidCaller: BigInt(0),
+      InvalidArgs: BigInt(1),
+      ExpectAssetAddress: BigInt(2),
+      NameHasBeenRegistered: BigInt(3),
+      ContractNotExists: BigInt(4),
+    },
+  };
+
   at(address: string): RegistrarInstance {
     return new RegistrarInstance(address);
   }
@@ -84,19 +98,11 @@ class Factory extends ContractFactory<
           owner: Address;
           duration: bigint;
           payer: Address;
-          resolverId: HexString;
+          resolver: HexString;
         }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "registerWithResolver", params);
-    },
-    removeRecord: async (
-      params: TestContractParams<
-        RegistrarTypes.Fields,
-        { node: HexString; record: HexString }
-      >
-    ): Promise<TestContractResult<null>> => {
-      return testMethod(this, "removeRecord", params);
     },
     unregister: async (
       params: TestContractParams<RegistrarTypes.Fields, { node: HexString }>
@@ -122,7 +128,7 @@ class Factory extends ContractFactory<
     setResolver: async (
       params: TestContractParams<
         RegistrarTypes.Fields,
-        { node: HexString; resolverId: HexString }
+        { node: HexString; resolver: HexString }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "setResolver", params);
@@ -143,7 +149,7 @@ export const Registrar = new Factory(
   Contract.fromJson(
     RegistrarContractJson,
     "",
-    "21aa86842370520a75317b6582133bd4ee06c0e02cc328be01b7e541ac9a89e1"
+    "51ede2deb07161f8d93b26986c85acd26ab907eff70c88ae33426e2814b2eda0"
   )
 );
 

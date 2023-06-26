@@ -1,10 +1,11 @@
-Contract AddressInfo(
-  parentId: ByteVec,
+Contract RecordInfo(
+  resolver: Resolver,
+  mut pubkey: ByteVec,
   mut addresses: ByteVec // chainId + length + address
 ) extends Constants() {
   @using(updateFields = true)
   pub fn setAddress(chainId: U256, address: ByteVec) -> () {
-    checkCaller!(callerContractId!() == parentId, ErrorCodes.InvalidCaller)
+    checkCaller!(callerContractId!() == contractId!(resolver), ErrorCodes.InvalidCaller)
     let newAddress = u256To2Byte!(chainId) ++ u256To1Byte!(size!(address)) ++ address
     let length = size!(addresses)
     let mut index = 0
@@ -38,9 +39,19 @@ Contract AddressInfo(
     panic!(ErrorCodes.InvalidArgs)
   }
 
+  @using(updateFields = true)
+  pub fn setPubkey(newPubkey: ByteVec) -> () {
+    checkCaller!(callerContractId!() == contractId!(resolver), ErrorCodes.InvalidCaller)
+    pubkey = newPubkey
+  }
+
+  pub fn getPubkey() -> ByteVec {
+    return pubkey
+  }
+
   @using(assetsInContract = true)
   pub fn destroy(refundAddress: Address) -> () {
-    checkCaller!(callerContractId!() == parentId, ErrorCodes.InvalidCaller)
+    checkCaller!(callerContractId!() == contractId!(resolver), ErrorCodes.InvalidCaller)
     destroySelf!(refundAddress)
   }
 }

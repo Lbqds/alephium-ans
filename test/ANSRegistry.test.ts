@@ -4,14 +4,15 @@ import {
   alph,
   createANSRegistry,
   createRecord,
-  defaultGasFee,
+  DefaultGasFee,
   defaultInitialAsset,
   randomAssetAddress,
   randomContractId,
   getContractState,
-  defaultGroup,
+  DefaultGroup,
   buildProject,
-  ErrorCodes
+  ErrorCodes,
+  createRegistrar
 } from './fixtures/ANSFixture'
 import { ethers } from 'ethers'
 import { ANSRegistry, ANSRegistryTypes, RecordTypes } from '../artifacts/ts'
@@ -26,7 +27,7 @@ describe('test registrar', () => {
   it('should test update admin', async () => {
     const adminAddress = randomAssetAddress()
     const newAdminAddress = randomAssetAddress()
-    const ansRegistryFixture = await createANSRegistry(adminAddress)
+    const ansRegistryFixture = createANSRegistry(adminAddress)
 
     async function test(caller: string) {
       return ANSRegistry.tests.updateAdmin({
@@ -48,7 +49,8 @@ describe('test registrar', () => {
 
   it('should test create new node', async () => {
     const adminAddress = randomAssetAddress()
-    const ansRegistryFixture = await createANSRegistry(adminAddress)
+    const ansRegistryFixture = createANSRegistry(adminAddress)
+    const registrarFixture = createRegistrar(adminAddress, ansRegistryFixture)
 
     async function test(caller: string, node: string, owner: string) {
       return ANSRegistry.tests.newNode({
@@ -57,21 +59,21 @@ describe('test registrar', () => {
         initialAsset: defaultInitialAsset,
         inputAssets: [{ address: caller, asset: { alphAmount: alph(2) }}],
         testArgs: { node, ownerContractId: owner },
-        existingContracts: ansRegistryFixture.dependencies
+        existingContracts: registrarFixture.states()
       })
     }
 
     const node = binToHex(randomBytes(4))
-    const owner = randomContractId()
-    const testResult = await test(adminAddress, node, owner)
+    const owner = registrarFixture.contractId
+    const testResult = await test(adminAddress, node, registrarFixture.contractId)
     const recordState = testResult.contracts[0] as RecordTypes.State
     expect(recordState.fields.registrar).toEqual(owner)
     expect(recordState.fields.owner).toEqual(addressFromContractId(owner))
     const ansRegistryId = ansRegistryFixture.contractId
-    expect(recordState.contractId).toEqual(subContractId(ansRegistryId, node, defaultGroup))
+    expect(recordState.contractId).toEqual(subContractId(ansRegistryId, node, DefaultGroup))
 
     const assetOutput = testResult.txOutputs[1]
-    expect(assetOutput.alphAmount).toEqual(alph(2) - ONE_ALPH - defaultGasFee)
+    expect(assetOutput.alphAmount).toEqual(alph(2) - ONE_ALPH - DefaultGasFee)
 
     await expectAssertionError(test(randomAssetAddress(), node, owner), ansRegistryFixture.address, ErrorCodes.InvalidCaller)
   })
@@ -80,7 +82,7 @@ describe('test registrar', () => {
     const adminAddress = randomAssetAddress()
     const rootNode = binToHex(randomBytes(4))
     const rootNodeOwner = randomAssetAddress()
-    const ansRegistryFixture = await createANSRegistry(adminAddress)
+    const ansRegistryFixture = createANSRegistry(adminAddress)
     const ansRegistryId = ansRegistryFixture.contractId
     const rootNodeRecord = createRecord({
       registrar: '',
@@ -88,10 +90,10 @@ describe('test registrar', () => {
       ttl: 0n,
       resolver: '',
       refundAddress: rootNodeOwner
-    }, addressFromContractId(subContractId(ansRegistryId, rootNode, defaultGroup)))
+    }, addressFromContractId(subContractId(ansRegistryId, rootNode, DefaultGroup)))
 
     async function test(caller: string, label: string, owner: string) {
-      return ANSRegistry.tests.setSubNodeRecord({
+      return ANSRegistry.tests.newSubNodeRecord({
         address: ansRegistryFixture.address,
         initialFields: ansRegistryFixture.initialFields(),
         initialAsset: defaultInitialAsset,
@@ -107,7 +109,7 @@ describe('test registrar', () => {
     const subNodeRecord = testResult.contracts[0] as RecordTypes.State
     expect(subNodeRecord.fields.owner).toEqual(subNodeOwner)
     const path = ethers.utils.keccak256(Buffer.from(rootNode + subNodeLabel, 'hex'))
-    expect(subNodeRecord.contractId).toEqual(subContractId(ansRegistryId, path.slice(2), defaultGroup))
+    expect(subNodeRecord.contractId).toEqual(subContractId(ansRegistryId, path.slice(2), DefaultGroup))
 
     const contractOutput = testResult.txOutputs[0]
     expect(contractOutput.tokens).toEqual([{
@@ -116,7 +118,7 @@ describe('test registrar', () => {
     }])
 
     const assetOutput = testResult.txOutputs[1]
-    expect(assetOutput.alphAmount).toEqual(alph(2) - ONE_ALPH - defaultGasFee)
+    expect(assetOutput.alphAmount).toEqual(alph(2) - ONE_ALPH - DefaultGasFee)
 
     await expectAssertionError(test(randomAssetAddress(), subNodeLabel, subNodeOwner), ansRegistryFixture.address, ErrorCodes.InvalidCaller)
   })

@@ -2,14 +2,9 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export * from "./AddressInfo";
 export * from "./ANSRegistry";
 export * from "./DefaultResolver";
-export * from "./NameInfo";
-export * from "./PubkeyInfo";
 export * from "./Record";
+export * from "./RecordInfo";
 export * from "./Registrar";
-export * from "./AddressResolverTest";
-export * from "./NameResolverTest";
-export * from "./PubkeyResolverTest";
 export * from "./scripts";

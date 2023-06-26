@@ -1,8 +1,8 @@
 {
-  "version": "v2.1.1",
+  "version": "v2.3.5",
   "name": "Record",
-  "bytecode": "050909124022402b403b40444054405d4070010000000102ce0002010000000102a00002010001010007b3ce00410c7b1600a100010000000102a00102010001010007b3ce00410c7b1600a101010000000102a00202010001010007b3ce00410c7b1600a102010000000102ce010201020000000bb3ce00410c7bb2b10dbdce01b0",
-  "codeHash": "db1b74b79b7a21500c4ae9b072987b594192e2e751fb8160f24800824f71663d",
+  "bytecode": "050809124022402b403b404b40544071010000000102ce0002010000000102a00002010001010007b3ce00410c7b1600a100010000000102a00102010001010007b3ce00410c7b1600a101010001010007b3ce00410c7b1600a102010000000102ce0102010201010011b3ce00410c7b1600ce010e0ca0020100b2b10dbdce01b0",
+  "codeHash": "0e308c0b0cbac94ed57fbf2523825d4fca4a1977554be4e63ec952df221942a7",
   "fieldsSig": {
     "names": [
       "registrar",
@@ -97,18 +97,6 @@
       "returnTypes": []
     },
     {
-      "name": "getResolver",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": false,
-      "isPublic": true,
-      "paramNames": [],
-      "paramTypes": [],
-      "paramIsMutable": [],
-      "returnTypes": [
-        "ByteVec"
-      ]
-    },
-    {
       "name": "setResolver",
       "usePreapprovedAssets": false,
       "useAssetsInContract": false,
@@ -141,10 +129,59 @@
       "usePreapprovedAssets": false,
       "useAssetsInContract": true,
       "isPublic": true,
-      "paramNames": [],
-      "paramTypes": [],
-      "paramIsMutable": [],
+      "paramNames": [
+        "node"
+      ],
+      "paramTypes": [
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false
+      ],
       "returnTypes": []
+    }
+  ],
+  "constants": [],
+  "enums": [
+    {
+      "name": "ErrorCodes",
+      "fields": [
+        {
+          "name": "InvalidCaller",
+          "value": {
+            "type": "U256",
+            "value": "0"
+          }
+        },
+        {
+          "name": "InvalidArgs",
+          "value": {
+            "type": "U256",
+            "value": "1"
+          }
+        },
+        {
+          "name": "ExpectAssetAddress",
+          "value": {
+            "type": "U256",
+            "value": "2"
+          }
+        },
+        {
+          "name": "NameHasBeenRegistered",
+          "value": {
+            "type": "U256",
+            "value": "3"
+          }
+        },
+        {
+          "name": "ContractNotExists",
+          "value": {
+            "type": "U256",
+            "value": "4"
+          }
+        }
+      ]
     }
   ]
 }

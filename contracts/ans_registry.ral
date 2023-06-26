@@ -8,10 +8,14 @@ Contract ANSRegistry(mut admin: Address, recordTemplateId: ByteVec) extends Cons
   @using(preapprovedAssets = true)
   pub fn newNode(node: ByteVec, ownerContractId: ByteVec) -> () {
     checkCaller!(callerAddress!() == admin, ErrorCodes.InvalidCaller)
-    let ownerAddress = contractIdToAddress!(ownerContractId)
-    let maxTTL = 1 << 255
-    let encodedImmutableFields = Record.encodeImmFields!(ownerContractId, admin)
-    let encodedMutableFields = Record.encodeMutFields!(ownerAddress, maxTTL, #)
+    assert!(contractExists!(ownerContractId), ErrorCodes.ContractNotExists)
+    let (encodedImmutableFields, encodedMutableFields) = Record.encodeFields!(
+      ownerContractId,
+      contractIdToAddress!(ownerContractId),
+      1 << 255,
+      Resolver(#),
+      admin
+    )
     copyCreateSubContractWithToken!{admin -> ALPH: 1 alph}(
       node,
       recordTemplateId,
@@ -22,21 +26,27 @@ Contract ANSRegistry(mut admin: Address, recordTemplateId: ByteVec) extends Cons
   }
 
   @using(preapprovedAssets = true)
-  pub fn setSubNodeRecord(
+  pub fn newSubNodeRecord(
     node: ByteVec,
     label: ByteVec,
     owner: Address,
     ttl: U256,
-    resolver: ByteVec,
+    resolver: Resolver,
     payer: Address
   ) -> () {
     let record = Record(subContractId!(node))
     checkCaller!(callerAddress!() == record.getOwner(), ErrorCodes.InvalidCaller)
     assert!(ttl <= record.getTTL(), ErrorCodes.InvalidArgs)
     assert!(isAssetAddress!(payer), ErrorCodes.ExpectAssetAddress)
+
+    let (encodedImmutableFields, encodedMutableFields) = Record.encodeFields!(
+      record.getRegistrar(),
+      owner,
+      ttl,
+      resolver,
+      payer
+    )
     let subNode = keccak256!(node ++ label)
-    let encodedImmutableFields = Record.encodeImmFields!(record.getRegistrar(), payer)
-    let encodedMutableFields = Record.encodeMutFields!(owner, ttl, resolver)
     copyCreateSubContractWithToken!{payer -> ALPH: 1 alph}(
       subNode,
       recordTemplateId,

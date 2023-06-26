@@ -1,4 +1,5 @@
 {
+  "fullNodeVersion": "v2.3.5",
   "compilerOptionsUsed": {
     "ignoreUnusedConstantsWarnings": true,
     "ignoreUnusedVariablesWarnings": false,
@@ -10,93 +11,37 @@
   "infos": {
     "ANSRegistry": {
       "sourceFile": "ans_registry.ral",
-      "sourceCodeHash": "f6680762663229aeabf284bcb65cf47f4b5f983b12d7652c19eebe5a1972d6d7",
+      "sourceCodeHash": "3f72ffb833c3315635f16f3fcfe7fff0761fa68c30bd699338742f8418b86457",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "0508f26fc13862c0d1b1e86ea54daae6bc588c3d32cb9c9ceb6d988e3a5b9ecc",
-      "warnings": []
-    },
-    "AddressInfo": {
-      "sourceFile": "address_info.ral",
-      "sourceCodeHash": "a6e2d55ffc20b62273789b5e10f0c0d5b18a0ff256cda28bac3f6a8a9c85bca4",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": "c19dc7a9fd7e6383f11369febf20e63eb37e14bd2be5b39ee059c5fdb514d1e4",
-      "warnings": []
-    },
-    "AddressResolver": {
-      "sourceFile": "address_resolver.ral",
-      "sourceCodeHash": "667910b032aef60fd529c4561aaf821d0d5d367f4065ef8ecb24ce31f38d74c6",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": "",
-      "warnings": []
-    },
-    "AddressResolverTest": {
-      "sourceFile": "tests/address_resolver_test.ral",
-      "sourceCodeHash": "279d105f95da90bebc132e5019ad9e347f9203b9ee817354d5013543461be8c5",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": "392a0643534a2299ace92f1ebbe1205a14095e2778171f9185868faa5d74de67",
+      "codeHashDebug": "125ae52bad2a8ead1fa3ac791690114e7562404daa592c08546a1257c6a6176e",
       "warnings": []
     },
     "Constants": {
       "sourceFile": "constants.ral",
-      "sourceCodeHash": "de3d393392ef5466cf64daebee23ec019a9ed26e559c647ff3332ba4ce5653e8",
+      "sourceCodeHash": "4c225d788a5e5507da4b2f0eb143114a938b6cf0e2ef9b9aae84cf64e3dd6b04",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "",
       "warnings": []
     },
     "DefaultResolver": {
       "sourceFile": "default_resolver.ral",
-      "sourceCodeHash": "a361ff5b779632d6291f451cfcf232b8f906babca198e4b5f73f663c15e72dcb",
+      "sourceCodeHash": "3350bfc820552e5f3da9c7c859be81b4893ff4bf43cc9aead3db92fb97a89914",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "1fc581f714330ec88bde82bc0f72e4fc9dec48a00b6b6495f4c040414ee54586",
-      "warnings": []
-    },
-    "NameInfo": {
-      "sourceFile": "name_info.ral",
-      "sourceCodeHash": "52c5c83b8e83611d1fc6fd367db35a18c2941f7d6b39307c5d2ee5913d2d1298",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": "6da0796e66ff0bf8f85ba2282b7870cf7e16b5da614040dcb3512777c906f3bd",
-      "warnings": []
-    },
-    "NameResolver": {
-      "sourceFile": "name_resolver.ral",
-      "sourceCodeHash": "36bfab8bda813ca5dbc97f4f45e0a98ce163b4884ec3871f48f891a351a89491",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": "",
-      "warnings": []
-    },
-    "NameResolverTest": {
-      "sourceFile": "tests/name_resolver_test.ral",
-      "sourceCodeHash": "1cfe92b34089f4a797167a7f721ac7f0bd96ccb10ece23d42eae1ea23fc8dc6a",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": "93e99503138928b4dfea841b6d0bc42c6169e296be8d22d07a7f980900325a92",
-      "warnings": []
-    },
-    "PubkeyInfo": {
-      "sourceFile": "pubkey_info.ral",
-      "sourceCodeHash": "f11e6a266b26951e9f8e114d07945a8c6f7e32648f1d9226fadbca651b812a9d",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": "6da0796e66ff0bf8f85ba2282b7870cf7e16b5da614040dcb3512777c906f3bd",
-      "warnings": []
-    },
-    "PubkeyResolver": {
-      "sourceFile": "pubkey_resolver.ral",
-      "sourceCodeHash": "59c4b9010ff90818df3535417ded73103403f7b0230478b79911e65ba5f4434e",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": "",
-      "warnings": []
-    },
-    "PubkeyResolverTest": {
-      "sourceFile": "tests/pubkey_resolver_test.ral",
-      "sourceCodeHash": "be8eed02f959a5fb18d80d9a92f831b137e1af5dda41771536a87c1cb92425a3",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": "b206e05931725581ed4ea4ac42363167398dc4ce909c1855b213e46424182202",
+      "codeHashDebug": "0ac67df3fd094984d15975fc0db4a86baf0e97e9e4197092cac83b8b398580c9",
       "warnings": []
     },
     "Record": {
       "sourceFile": "record.ral",
-      "sourceCodeHash": "c1f3d372aa4f150a8c2d2e2f301a174287c7223f38814bce6094fb340934f4dd",
+      "sourceCodeHash": "e8e916583c6a757088e8e1585f082a04d00ff8ff51928c57dbeb991c8679c911",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "db1b74b79b7a21500c4ae9b072987b594192e2e751fb8160f24800824f71663d",
+      "codeHashDebug": "0e308c0b0cbac94ed57fbf2523825d4fca4a1977554be4e63ec952df221942a7",
+      "warnings": []
+    },
+    "RecordInfo": {
+      "sourceFile": "record_info.ral",
+      "sourceCodeHash": "feae11dbd5b128d60d18f9637b4746e02abe39b38c9052cf755cb627102d85a3",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "9f41e2b03b94eee005a632fa7868b52b342910089286e5bc969e333283b47f23",
       "warnings": []
     },
     "Register": {
@@ -108,9 +53,9 @@
     },
     "Registrar": {
       "sourceFile": "registrar.ral",
-      "sourceCodeHash": "eea9fe6e3d97d645d78b3812e9dd6d6673b439721124321fb2a584b9efddbd02",
+      "sourceCodeHash": "f928c8349f8f1a5438b6d333060d4107cb295011488fdf620cb564e43490eec3",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "21aa86842370520a75317b6582133bd4ee06c0e02cc328be01b7e541ac9a89e1",
+      "codeHashDebug": "51ede2deb07161f8d93b26986c85acd26ab907eff70c88ae33426e2814b2eda0",
       "warnings": []
     },
     "Resolver": {
@@ -120,16 +65,9 @@
       "codeHashDebug": "",
       "warnings": []
     },
-    "ResolverBase": {
-      "sourceFile": "resolver_base.ral",
-      "sourceCodeHash": "7a5e7c746752141cee93a32394ea7b3b686939ffedbf1832c93a17399f0ce847",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": "",
-      "warnings": []
-    },
     "SetupANS": {
       "sourceFile": "scripts/setup_ans.ral",
-      "sourceCodeHash": "0cdcddd301c447884e33821a32956507459c9b03e5b23568b3e6f99bb6f18f53",
+      "sourceCodeHash": "9593adfb24349334e59a1494c42dacce10ab792be36ffa1de81cafe37b40cb11",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "",
       "warnings": []
