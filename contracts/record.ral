@@ -1,52 +1,5 @@
-Contract Record(
-  registrar: ByteVec,
-  mut owner: Address, // The owner can be a contract address
-  mut ttl: U256,
-  mut resolver: Resolver,
-  refundAddress: Address
-) extends Constants() {
-  pub fn getRegistrar() -> ByteVec {
-    return registrar
-  }
-
-  pub fn getOwner() -> Address {
-    return owner
-  }
-
-  @using(updateFields = true)
-  pub fn setOwner(newOwner: Address) -> () {
-    checkCaller!(callerContractId!() == registrar, ErrorCodes.InvalidCaller)
-    owner = newOwner
-  }
-
-  pub fn getTTL() -> U256 {
-    return ttl
-  }
-
-  @using(updateFields = true)
-  pub fn setTTL(newTTL: U256) -> () {
-    checkCaller!(callerContractId!() == registrar, ErrorCodes.InvalidCaller)
-    ttl = newTTL
-  }
- 
-  pub fn getResolver() -> Resolver {
-    return resolver
-  }
-
-  @using(updateFields = true)
-  pub fn setResolver(newResolver: Resolver) -> () {
-    checkCaller!(callerContractId!() == registrar, ErrorCodes.InvalidCaller)
-    resolver = newResolver
-  }
-
-  pub fn getRefundAddress() -> Address {
-    return refundAddress
-  }
-
-  @using(assetsInContract = true)
-  pub fn destroy() -> () {
-    checkCaller!(callerContractId!() == registrar, ErrorCodes.InvalidCaller)
-    burnToken!(selfAddress!(), selfContractId!(), 1)
-    destroySelf!(refundAddress)
-  }
+Interface Record {
+  pub fn getOwner() -> Address
+  pub fn getResolver() -> Resolver
+  pub fn getRefundAddress() -> Address
 }

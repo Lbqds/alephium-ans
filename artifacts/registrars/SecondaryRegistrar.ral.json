@@ -1,0 +1,110 @@
+{
+  "version": "v2.3.5",
+  "name": "SecondaryRegistrar",
+  "bytecode": "020140690103040900403b1600430c300d7b1602480e7b16004f4f1704ce001604cc170516021605a50d2f117b1604cb17061606c54c0516040d0c16060105b116021302641601160313026417081707160213c40de0b6b3a7640000a21604ce0116071608c11805160016015f",
+  "codeHash": "a6064c2207259176d88d050f3d27529ca2d0ed0bc7e4eb90af29441d03c1c871",
+  "fieldsSig": {
+    "names": [
+      "primaryRegistrar",
+      "recordTemplateId"
+    ],
+    "types": [
+      "ByteVec",
+      "ByteVec"
+    ],
+    "isMutable": [
+      false,
+      false
+    ]
+  },
+  "eventsSig": [
+    {
+      "name": "NameRegistered",
+      "fieldNames": [
+        "name",
+        "owner"
+      ],
+      "fieldTypes": [
+        "ByteVec",
+        "Address"
+      ]
+    }
+  ],
+  "functions": [
+    {
+      "name": "register",
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
+        "name",
+        "owner",
+        "payer",
+        "resolver"
+      ],
+      "paramTypes": [
+        "ByteVec",
+        "Address",
+        "Address",
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "returnTypes": []
+    }
+  ],
+  "constants": [],
+  "enums": [
+    {
+      "name": "ErrorCodes",
+      "fields": [
+        {
+          "name": "InvalidCaller",
+          "value": {
+            "type": "U256",
+            "value": "0"
+          }
+        },
+        {
+          "name": "InvalidArgs",
+          "value": {
+            "type": "U256",
+            "value": "1"
+          }
+        },
+        {
+          "name": "ExpectAssetAddress",
+          "value": {
+            "type": "U256",
+            "value": "2"
+          }
+        },
+        {
+          "name": "NameHasBeenRegistered",
+          "value": {
+            "type": "U256",
+            "value": "3"
+          }
+        },
+        {
+          "name": "ContractNotExists",
+          "value": {
+            "type": "U256",
+            "value": "4"
+          }
+        },
+        {
+          "name": "PrimaryRecordNotExists",
+          "value": {
+            "type": "U256",
+            "value": "5"
+          }
+        }
+      ]
+    }
+  ]
+}

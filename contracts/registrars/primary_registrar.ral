@@ -1,0 +1,36 @@
+Contract PrimaryRegistrar(mut registrarOwner: Address, recordTemplateId: ByteVec) extends Constants() implements Registrar {
+  // TODO: do we need to consider the front-run
+  @using(preapprovedAssets = true, checkExternalCaller = false)
+  pub fn register(name: ByteVec, owner: Address, payer: Address, resolver: Resolver) -> () {
+    assert!(size!(name) != 0, ErrorCodes.InvalidArgs)
+    assert!(isAssetAddress!(payer), ErrorCodes.ExpectAssetAddress)
+
+    let node = keccak256!(keccak256!(name))
+    let recordId = subContractId!(node)
+    if (contractExists!(recordId)) {
+      panic!(ErrorCodes.NameHasBeenRegistered)
+    }
+
+    let (encodedImmutableFields, encodedMutableFields) = PrimaryRecord.encodeFields!(owner, resolver, payer)
+    copyCreateSubContractWithToken!{payer -> ALPH: 1 alph}(
+      node,
+      recordTemplateId,
+      encodedImmutableFields,
+      encodedMutableFields,
+      1
+    )
+    emit NameRegistered(name, owner)
+  }
+
+  @using(preapprovedAssets = true, assetsInContract = true)
+  pub fn withdraw(to: Address, amount: U256) -> () {
+    checkCaller!(callerAddress!() == registrarOwner, ErrorCodes.InvalidCaller)
+    transferTokenFromSelf!(to, ALPH, amount)
+  }
+
+  @using(updateFields = true)
+  pub fn updateRegistrarOwner(newOwner: Address) -> () {
+    checkCaller!(callerAddress!() == registrarOwner, ErrorCodes.InvalidCaller)
+    registrarOwner = newOwner
+  }
+}

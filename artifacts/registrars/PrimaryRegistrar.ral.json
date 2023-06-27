@@ -1,39 +1,73 @@
 {
   "version": "v2.3.5",
-  "name": "AccountInfo",
-  "bytecode": "0305407640cd40dd40e640f501000208004047b3ce00410c7b16006716014366441601441702a0014317030c170416041603314c402ca001160416040e2a626d1705a00116040e2a16040f2a626c170616040f2a16062a1707160516002f4c0da0010c160462160244a001160716036244a10102160717044a7fd0a001160244a10101000106014034a0014317010c170216021601314c4026a001160216020e2a626d1703a00116020e2a16020f2a626c170416020f2a16042a1705160316002f4c07a00116020f2a16056202160517024a7fd60d047c7b18010001010007b3ce00410c7b1600a100010000000102a00002010201010007b3ce00410c7b1600b0",
-  "codeHash": "9f41e2b03b94eee005a632fa7868b52b342910089286e5bc969e333283b47f23",
+  "name": "PrimaryRegistrar",
+  "bytecode": "0203405640674077010304080040301600430c300d7b1602480e7b16004f4f17041604cb17051605c54c050f047c7b1816021301641601160313026417071706160213c40de0b6b3a7640000a21604ce00160616070dc21805160016015f010102020008b4a000450c7b16001601a8010001010007b4a000450c7b1600a100",
+  "codeHash": "66197a343d9e39daed319d816569593bb176b9a377dd7ff778a65c8b3fe32df7",
   "fieldsSig": {
     "names": [
-      "resolver",
-      "pubkey",
-      "addresses"
+      "registrarOwner",
+      "recordTemplateId"
     ],
     "types": [
-      "ByteVec",
-      "ByteVec",
+      "Address",
       "ByteVec"
     ],
     "isMutable": [
-      false,
       true,
-      true
+      false
     ]
   },
-  "eventsSig": [],
+  "eventsSig": [
+    {
+      "name": "NameRegistered",
+      "fieldNames": [
+        "name",
+        "owner"
+      ],
+      "fieldTypes": [
+        "ByteVec",
+        "Address"
+      ]
+    }
+  ],
   "functions": [
     {
-      "name": "setAddress",
-      "usePreapprovedAssets": false,
+      "name": "register",
+      "usePreapprovedAssets": true,
       "useAssetsInContract": false,
       "isPublic": true,
       "paramNames": [
-        "chainId",
-        "address"
+        "name",
+        "owner",
+        "payer",
+        "resolver"
       ],
       "paramTypes": [
-        "U256",
+        "ByteVec",
+        "Address",
+        "Address",
         "ByteVec"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "withdraw",
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": true,
+      "isPublic": true,
+      "paramNames": [
+        "to",
+        "amount"
+      ],
+      "paramTypes": [
+        "Address",
+        "U256"
       ],
       "paramIsMutable": [
         false,
@@ -42,58 +76,12 @@
       "returnTypes": []
     },
     {
-      "name": "getAddress",
+      "name": "updateRegistrarOwner",
       "usePreapprovedAssets": false,
       "useAssetsInContract": false,
       "isPublic": true,
       "paramNames": [
-        "chainId"
-      ],
-      "paramTypes": [
-        "U256"
-      ],
-      "paramIsMutable": [
-        false
-      ],
-      "returnTypes": [
-        "ByteVec"
-      ]
-    },
-    {
-      "name": "setPubkey",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": false,
-      "isPublic": true,
-      "paramNames": [
-        "newPubkey"
-      ],
-      "paramTypes": [
-        "ByteVec"
-      ],
-      "paramIsMutable": [
-        false
-      ],
-      "returnTypes": []
-    },
-    {
-      "name": "getPubkey",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": false,
-      "isPublic": true,
-      "paramNames": [],
-      "paramTypes": [],
-      "paramIsMutable": [],
-      "returnTypes": [
-        "ByteVec"
-      ]
-    },
-    {
-      "name": "destroy",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": true,
-      "isPublic": true,
-      "paramNames": [
-        "refundAddress"
+        "newOwner"
       ],
       "paramTypes": [
         "Address"

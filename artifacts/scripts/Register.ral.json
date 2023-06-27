@@ -1,22 +1,19 @@
 {
   "version": "v2.3.5",
   "name": "Register",
-  "bytecodeTemplate": "0101030001000fb4170016001600a4a2{1}1600{2}1600{3}110c{0}0101",
+  "bytecodeTemplate": "0101030001000eb4170016001600a4a2{1}16001600{2}100c{0}0100",
   "fieldsSig": {
     "names": [
       "registrar",
       "name",
-      "rentalPeriod",
       "resolver"
     ],
     "types": [
       "ByteVec",
       "ByteVec",
-      "U256",
       "ByteVec"
     ],
     "isMutable": [
-      false,
       false,
       false,
       false

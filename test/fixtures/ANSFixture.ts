@@ -1,8 +1,8 @@
 import {
+  Address,
   addressFromContractId,
   Asset,
   binToHex,
-  contractIdFromAddress,
   ContractState,
   Fields,
   ONE_ALPH,
@@ -12,17 +12,18 @@ import {
 import { randomBytes } from "crypto"
 import * as base58 from 'bs58'
 import {
-  ANSRegistry,
-  ANSRegistryTypes,
   AccountResolver,
   AccountResolverTypes,
-  Record,
-  RecordTypes,
   AccountInfo,
   AccountInfoTypes,
-  Registrar,
-  RegistrarTypes
+  PrimaryRegistrar,
+  PrimaryRecordTypes,
+  PrimaryRecord,
+  SecondaryRecordTypes,
+  SecondaryRecord,
+  SecondaryRegistrar
 } from "../../artifacts/ts"
+import { randomContractAddress } from "@alephium/web3-test"
 
 export const defaultInitialAsset: Asset = {
   alphAmount: ONE_ALPH
@@ -31,10 +32,9 @@ export const GasPrice = 100000000000n
 export const MaxGasPerTx = 625000n
 export const DefaultGasFee = GasPrice * MaxGasPerTx
 export const DefaultGroup = 0
-export const RootNode = "b2453cbabd12c58b21d32b6c70e6c41c8ca2918d7f56c1b88e838edf168776bf"
 export const MaxTTL = 1n << 255n
 
-export const ErrorCodes = ANSRegistry.consts.ErrorCodes
+export const ErrorCodes = PrimaryRegistrar.consts.ErrorCodes
 
 export class ContractFixture<T extends Fields> {
   selfState: ContractState<T>
@@ -58,45 +58,25 @@ export class ContractFixture<T extends Fields> {
   }
 }
 
-function createRecordTemplate(): ContractFixture<RecordTypes.Fields> {
-  const state = Record.stateForTest({
-    registrar: "",
-    owner: randomAssetAddress(),
-    ttl: 0n,
-    resolver: "",
+export function createPrimaryRecord(address: Address, owner = randomAssetAddress(), resolver = ''): ContractState<PrimaryRecordTypes.Fields> {
+  return PrimaryRecord.stateForTest({
+    owner,
+    resolver,
     refundAddress: randomAssetAddress()
-  }, defaultInitialAsset)
-  return new ContractFixture(state, [])
+  }, undefined, address)
 }
 
-export function createANSRegistry(admin: string): ContractFixture<ANSRegistryTypes.Fields> {
-  const recordFixture = createRecordTemplate()
-  const state = ANSRegistry.stateForTest({
-    admin: admin,
-    recordTemplateId: recordFixture.contractId
-  }, defaultInitialAsset)
-  return new ContractFixture(state, recordFixture.states())
-}
-
-export function createRecord(initFields: RecordTypes.Fields, address: string): RecordTypes.State {
-  const contractId = binToHex(contractIdFromAddress(address))
-  return Record.stateForTest(initFields, {
-    alphAmount: ONE_ALPH,
-    tokens: [{ id: contractId, amount: 1n }]
-  }, address)
+export function createSecondaryRecord(address: Address, registrar: string, resolver: string, owner = randomAssetAddress()): ContractState<SecondaryRecordTypes.Fields> {
+  return SecondaryRecord.stateForTest({
+    registrar,
+    owner,
+    resolver,
+    refundAddress: randomAssetAddress()
+  }, undefined, address)
 }
 
 export function subContractAddress(parentId: string, path: string, groupIndex: number): string {
   return addressFromContractId(subContractId(parentId, path, groupIndex))
-}
-
-export function zeroPad(value: string, byteLength: number): string {
-  const expectedLength = 2 * byteLength
-  if (value.length < expectedLength) {
-      const prefix = Array(expectedLength - value.length).fill('0').join("")
-      return prefix + value
-  }
-  return value
 }
 
 function createAccountInfoTemplate(): ContractFixture<AccountInfoTypes.Fields> {
@@ -108,10 +88,9 @@ function createAccountInfoTemplate(): ContractFixture<AccountInfoTypes.Fields> {
   return new ContractFixture(state, [])
 }
 
-export function createAccountResolver(registrarFixture: ContractFixture<RegistrarTypes.Fields>): ContractFixture<AccountResolverTypes.Fields> {
+export function createAccountResolver(registrarFixture: ContractFixture<Fields>): ContractFixture<AccountResolverTypes.Fields> {
   const accountInfoTemplate = createAccountInfoTemplate()
   const state = AccountResolver.stateForTest({
-    ansRegistry: registrarFixture.selfState.fields.ansRegistry,
     registrar: registrarFixture.contractId,
     accountInfoTemplateId: accountInfoTemplate.contractId,
   }, defaultInitialAsset)
@@ -124,22 +103,22 @@ export function createAccountResolver(registrarFixture: ContractFixture<Registra
   )
 }
 
-export function createRegistrar(
-  owner: string,
-  ansRegistryFixture: ContractFixture<ANSRegistryTypes.Fields>
-) {
-  const state = Registrar.stateForTest({
+export function createPrimaryRegistrar(owner: string) {
+  const template = createPrimaryRecord(randomContractAddress())
+  const state = PrimaryRegistrar.stateForTest({
     registrarOwner: owner,
-    ansRegistry: ansRegistryFixture.contractId
+    recordTemplateId: template.contractId
   }, defaultInitialAsset)
-  const rootRecord = createRecord({
-    registrar: state.contractId,
-    owner: addressFromContractId(state.contractId),
-    ttl: MaxTTL,
-    resolver: '',
-    refundAddress: owner
-  }, subContractAddress(ansRegistryFixture.contractId, RootNode, DefaultGroup))
-  return new ContractFixture(state, [rootRecord, ...ansRegistryFixture.states()])
+  return new ContractFixture(state, [template])
+}
+
+export function createSecondaryRegistrar(primaryRegistrarId: string) {
+  const template = createSecondaryRecord(randomContractAddress(), '', '')
+  const state = SecondaryRegistrar.stateForTest({
+    primaryRegistrar: primaryRegistrarId,
+    recordTemplateId: template.contractId
+  })
+  return new ContractFixture(state, [template])
 }
 
 export function alph(num: number): bigint {
@@ -152,8 +131,9 @@ export function randomAssetAddress(): string {
   return base58.encode(bytes)
 }
 
-export function randomContractId(): string {
-  return binToHex(randomBytes(32))
+export function randomContractId(groupIndex: number): string {
+  const contractId = binToHex(randomBytes(32))
+  return contractId.slice(0, -2) + groupIndex.toString(16).padStart(2, '0')
 }
 
 export function getContractState<T extends Fields>(contracts: ContractState[], idOrAddress: string): ContractState<T> {
@@ -163,5 +143,17 @@ export function getContractState<T extends Fields>(contracts: ContractState[], i
 export async function buildProject(): Promise<void> {
   if (Project.currentProject === undefined) {
     await Project.build({ ignoreUnusedConstantsWarnings: true })
+  }
+}
+
+export async function expectVMAssertionError(promise: Promise<any>, errorCode: string) {
+  try {
+    await promise
+  } catch (error) {
+    if (error instanceof Error) {
+      expect(error.message).toEqual(`[API Error] - VM execution error: ${errorCode}`)
+      return
+    }
+    throw error
   }
 }

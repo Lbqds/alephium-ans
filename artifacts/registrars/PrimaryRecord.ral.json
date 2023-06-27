@@ -1,18 +1,21 @@
 {
   "version": "v2.3.5",
-  "name": "ANSRegistry",
-  "bytecode": "020310405240b0010001010007b4a000450c7b1600a10001030204004021b4a000450c7b1601c5107b1601a0001302641601770d1340ff3b140013036417031702a00013c40de0b6b3a7640000a21600ce00160216030dc2180103060a0040341600cb1706b40c0d16060101450c7b16030c0d16060103320d7b1605480e7b0c0d1606010016051302641602160316041303641708170716001601444f1709160513c40de0b6b3a7640000a21609ce00160716080dc218",
-  "codeHash": "125ae52bad2a8ead1fa3ac791690114e7562404daa592c08546a1257c6a6176e",
+  "name": "PrimaryRecord",
+  "bytecode": "030609121b402b403b405f010000000102a00002010000000102a00102010000000102ce0002010001010007b4a000450c7b1600a100010001010007b4a000450c7b1600a101010101010015b4a000450c7ba0011400424c061600ce000e0ca0010100b4b10dbdce00b0",
+  "codeHash": "0d828dfda703f6817981883611662f282434010ff0218c7c4c30b9f8fd0c08f0",
   "fieldsSig": {
     "names": [
-      "admin",
-      "recordTemplateId"
+      "owner",
+      "resolver",
+      "refundAddress"
     ],
     "types": [
       "Address",
-      "ByteVec"
+      "ByteVec",
+      "Address"
     ],
     "isMutable": [
+      true,
       true,
       false
     ]
@@ -20,12 +23,48 @@
   "eventsSig": [],
   "functions": [
     {
-      "name": "updateAdmin",
+      "name": "getOwner",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "Address"
+      ]
+    },
+    {
+      "name": "getResolver",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "getRefundAddress",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "Address"
+      ]
+    },
+    {
+      "name": "setOwner",
       "usePreapprovedAssets": false,
       "useAssetsInContract": false,
       "isPublic": true,
       "paramNames": [
-        "newAdmin"
+        "newOwner"
       ],
       "paramTypes": [
         "Address"
@@ -36,51 +75,33 @@
       "returnTypes": []
     },
     {
-      "name": "newNode",
-      "usePreapprovedAssets": true,
+      "name": "setResolver",
+      "usePreapprovedAssets": false,
       "useAssetsInContract": false,
       "isPublic": true,
       "paramNames": [
-        "node",
-        "ownerContractId"
+        "newResolver"
       ],
       "paramTypes": [
-        "ByteVec",
         "ByteVec"
       ],
       "paramIsMutable": [
-        false,
         false
       ],
       "returnTypes": []
     },
     {
-      "name": "newSubNodeRecord",
+      "name": "destroy",
       "usePreapprovedAssets": true,
-      "useAssetsInContract": false,
+      "useAssetsInContract": true,
       "isPublic": true,
       "paramNames": [
-        "node",
-        "label",
-        "owner",
-        "ttl",
-        "resolver",
-        "payer"
+        "node"
       ],
       "paramTypes": [
-        "ByteVec",
-        "ByteVec",
-        "Address",
-        "U256",
-        "ByteVec",
-        "Address"
+        "ByteVec"
       ],
       "paramIsMutable": [
-        false,
-        false,
-        false,
-        false,
-        false,
         false
       ],
       "returnTypes": []
@@ -124,6 +145,13 @@
           "value": {
             "type": "U256",
             "value": "4"
+          }
+        },
+        {
+          "name": "PrimaryRecordNotExists",
+          "value": {
+            "type": "U256",
+            "value": "5"
           }
         }
       ]

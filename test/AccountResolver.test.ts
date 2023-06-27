@@ -2,8 +2,6 @@ import { addressFromContractId, binToHex, subContractId, web3 } from "@alephium/
 import { randomBytes } from "crypto"
 import {
   alph,
-  createANSRegistry,
-  createRecord,
   defaultInitialAsset,
   randomAssetAddress,
   subContractAddress,
@@ -12,7 +10,8 @@ import {
   DefaultGroup,
   createAccountResolver,
   ErrorCodes,
-  createRegistrar
+  createPrimaryRegistrar,
+  createPrimaryRecord
 } from "./fixtures/ANSFixture"
 import * as base58 from 'bs58'
 import { AccountResolver, AccountResolverTypes, AccountInfo, AccountInfoTypes } from "../artifacts/ts"
@@ -36,18 +35,11 @@ describe("test default resolver", () => {
   }
 
   it('should create new record info', async () => {
-    const ansRegistryFixture = createANSRegistry(randomAssetAddress())
-    const registrarFixture = createRegistrar(randomAssetAddress(), ansRegistryFixture)
+    const registrarFixture = createPrimaryRegistrar(randomAssetAddress())
     const resolverFixture = createAccountResolver(registrarFixture)
     const node = binToHex(randomBytes(4))
     const nodeOwner = randomAssetAddress()
-    const record = createRecord({
-      registrar: '',
-      owner: nodeOwner,
-      ttl: 0n,
-      resolver: '',
-      refundAddress: nodeOwner
-    }, subContractAddress(ansRegistryFixture.contractId, node, DefaultGroup))
+    const record = createPrimaryRecord(subContractAddress(registrarFixture.contractId, node, DefaultGroup), nodeOwner)
     const pubkey = binToHex(randomBytes(32))
     const addresses = binToHex(randomBytes(33))
 
@@ -78,19 +70,11 @@ describe("test default resolver", () => {
   })
 
   it('should set/get addresses', async () => {
-    const ansRegistryFixture = createANSRegistry(randomAssetAddress())
-    const registrarFixture = createRegistrar(randomAssetAddress(), ansRegistryFixture)
+    const registrarFixture = createPrimaryRegistrar(randomAssetAddress())
     const resolverFixture = createAccountResolver(registrarFixture)
-    const ansRegistryId = ansRegistryFixture.contractId
     const nodeOwner = randomAssetAddress()
     const node = binToHex(randomBytes(4))
-    const record = createRecord({
-      registrar: '',
-      owner: nodeOwner,
-      ttl: 0n,
-      resolver: '',
-      refundAddress: nodeOwner
-    }, subContractAddress(ansRegistryId, node, DefaultGroup))
+    const record = createPrimaryRecord(subContractAddress(registrarFixture.contractId, node, DefaultGroup), nodeOwner)
 
     const contractId = subContractId(resolverFixture.contractId, node, DefaultGroup)
 
@@ -143,20 +127,12 @@ describe("test default resolver", () => {
     expect(await getAddress(EthChainId, accountInfoState2)).toEqual(ethAddress)
   })
 
-  it('should set pubkey', async () => {
-    const ansRegistryFixture = createANSRegistry(randomAssetAddress())
-    const registrarFixture = createRegistrar(randomAssetAddress(), ansRegistryFixture)
+  it('should set/get pubkey', async () => {
+    const registrarFixture = createPrimaryRegistrar(randomAssetAddress())
     const resolverFixture = createAccountResolver(registrarFixture)
-    const ansRegistryId = ansRegistryFixture.contractId
     const nodeOwner = randomAssetAddress()
     const node = binToHex(randomBytes(4))
-    const record = createRecord({
-      registrar: '',
-      owner: nodeOwner,
-      ttl: 0n,
-      resolver: '',
-      refundAddress: nodeOwner
-    }, subContractAddress(ansRegistryId, node, DefaultGroup))
+    const record = createPrimaryRecord(subContractAddress(registrarFixture.contractId, node, DefaultGroup), nodeOwner)
 
     const contractId = subContractId(resolverFixture.contractId, node, DefaultGroup)
     async function setPubkey(caller: string, pubkey: string, accountInfoOpt?: AccountInfoTypes.State) {

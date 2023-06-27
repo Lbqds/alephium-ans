@@ -1,26 +1,23 @@
 {
   "version": "v2.3.5",
-  "name": "Record",
-  "bytecode": "050909124022402b403b40444054405d4070010000000102ce0002010000000102a00002010001010007b3ce00410c7b1600a100010000000102a00102010001010007b3ce00410c7b1600a101010000000102a00202010001010007b3ce00410c7b1600a102010000000102ce010201020000000bb3ce00410c7bb2b10dbdce01b0",
-  "codeHash": "db1b74b79b7a21500c4ae9b072987b594192e2e751fb8160f24800824f71663d",
+  "name": "SecondaryRecord",
+  "bytecode": "040609121b402b403b4060010000000102a00002010000000102a00102010000000102ce0102010001010007b4a000450c7b1600a100010001010007b4a000450c7b1600a101010201010015b3ce0041b4a000451b0c7ba0011400424c061600ce010e0ca0010100ce01b0",
+  "codeHash": "b60091ea5be04efec3a9eae229bb7450c3ea4105d61bc1bd81127cbbf8c7ca6c",
   "fieldsSig": {
     "names": [
       "registrar",
       "owner",
-      "ttl",
       "resolver",
       "refundAddress"
     ],
     "types": [
       "ByteVec",
       "Address",
-      "U256",
       "ByteVec",
       "Address"
     ],
     "isMutable": [
       false,
-      true,
       true,
       true,
       false
@@ -29,7 +26,19 @@
   "eventsSig": [],
   "functions": [
     {
-      "name": "getRegistrar",
+      "name": "getOwner",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "Address"
+      ]
+    },
+    {
+      "name": "getResolver",
       "usePreapprovedAssets": false,
       "useAssetsInContract": false,
       "isPublic": true,
@@ -41,7 +50,7 @@
       ]
     },
     {
-      "name": "getOwner",
+      "name": "getRefundAddress",
       "usePreapprovedAssets": false,
       "useAssetsInContract": false,
       "isPublic": true,
@@ -69,46 +78,6 @@
       "returnTypes": []
     },
     {
-      "name": "getTTL",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": false,
-      "isPublic": true,
-      "paramNames": [],
-      "paramTypes": [],
-      "paramIsMutable": [],
-      "returnTypes": [
-        "U256"
-      ]
-    },
-    {
-      "name": "setTTL",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": false,
-      "isPublic": true,
-      "paramNames": [
-        "newTTL"
-      ],
-      "paramTypes": [
-        "U256"
-      ],
-      "paramIsMutable": [
-        false
-      ],
-      "returnTypes": []
-    },
-    {
-      "name": "getResolver",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": false,
-      "isPublic": true,
-      "paramNames": [],
-      "paramTypes": [],
-      "paramIsMutable": [],
-      "returnTypes": [
-        "ByteVec"
-      ]
-    },
-    {
       "name": "setResolver",
       "usePreapprovedAssets": false,
       "useAssetsInContract": false,
@@ -125,25 +94,19 @@
       "returnTypes": []
     },
     {
-      "name": "getRefundAddress",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": false,
-      "isPublic": true,
-      "paramNames": [],
-      "paramTypes": [],
-      "paramIsMutable": [],
-      "returnTypes": [
-        "Address"
-      ]
-    },
-    {
       "name": "destroy",
       "usePreapprovedAssets": false,
       "useAssetsInContract": true,
       "isPublic": true,
-      "paramNames": [],
-      "paramTypes": [],
-      "paramIsMutable": [],
+      "paramNames": [
+        "node"
+      ],
+      "paramTypes": [
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false
+      ],
       "returnTypes": []
     }
   ],
@@ -185,6 +148,13 @@
           "value": {
             "type": "U256",
             "value": "4"
+          }
+        },
+        {
+          "name": "PrimaryRecordNotExists",
+          "value": {
+            "type": "U256",
+            "value": "5"
           }
         }
       ]

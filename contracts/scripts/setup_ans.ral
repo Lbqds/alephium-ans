@@ -1,5 +1,0 @@
-TxScript SetupANS(ansRegistry: ANSRegistry, registrarId: ByteVec) {
-  let caller = callerAddress!()
-  let alphNode = #b2453cbabd12c58b21d32b6c70e6c41c8ca2918d7f56c1b88e838edf168776bf
-  ansRegistry.newNode{caller -> ALPH: 1 alph}(alphNode, registrarId)
-}

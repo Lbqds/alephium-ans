@@ -1,9 +1,10 @@
 Abstract Contract Constants() {
   enum ErrorCodes {
-    InvalidCaller         = 0
-    InvalidArgs           = 1
-    ExpectAssetAddress    = 2
-    NameHasBeenRegistered = 3
-    ContractNotExists     = 4
+    InvalidCaller          = 0
+    InvalidArgs            = 1
+    ExpectAssetAddress     = 2
+    NameHasBeenRegistered  = 3
+    ContractNotExists      = 4
+    PrimaryRecordNotExists = 5
   }
 }

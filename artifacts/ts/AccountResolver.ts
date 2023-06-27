@@ -30,7 +30,6 @@ import { getContractByCodeHash } from "./contracts";
 // Custom types for the contract
 export namespace AccountResolverTypes {
   export type Fields = {
-    ansRegistry: HexString;
     registrar: HexString;
     accountInfoTemplateId: HexString;
   };
@@ -88,6 +87,7 @@ class Factory extends ContractFactory<
       ExpectAssetAddress: BigInt(2),
       NameHasBeenRegistered: BigInt(3),
       ContractNotExists: BigInt(4),
+      PrimaryRecordNotExists: BigInt(5),
     },
   };
 
@@ -157,7 +157,7 @@ export const AccountResolver = new Factory(
   Contract.fromJson(
     AccountResolverContractJson,
     "",
-    "ac3ad943e9b194ad955348da4092ca80f9068ef5bfd1fe70a9e295c72dfd2c66"
+    "afb858c254bb8a3ad6ae0f4715baf86091c9b235ceea5c8afe8c60e1af6130d0"
   )
 );
 

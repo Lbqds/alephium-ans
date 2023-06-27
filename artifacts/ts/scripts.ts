@@ -12,15 +12,9 @@ import {
   HexString,
 } from "@alephium/web3";
 import { default as RegisterScriptJson } from "../scripts/Register.ral.json";
-import { default as SetupANSScriptJson } from "../scripts/SetupANS.ral.json";
 
 export const Register = new ExecutableScript<{
   registrar: HexString;
   name: HexString;
-  rentalPeriod: bigint;
   resolver: HexString;
 }>(Script.fromJson(RegisterScriptJson));
-export const SetupANS = new ExecutableScript<{
-  ansRegistry: HexString;
-  registrarId: HexString;
-}>(Script.fromJson(SetupANSScriptJson));

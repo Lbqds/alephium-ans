@@ -4,17 +4,29 @@
 
 import { Contract, ContractFactory } from "@alephium/web3";
 import {
-  ANSRegistry,
-  Record,
-  Registrar,
+  PrimaryRecord,
+  PrimaryRegistrar,
+  SecondaryRecord,
+  SecondaryRegistrar,
   AccountInfo,
   AccountResolver,
+  PrimaryRecordOwner,
+  SecondaryRecordOwner,
 } from ".";
 
 let contracts: ContractFactory<any>[] | undefined = undefined;
 export function getContractByCodeHash(codeHash: string): Contract {
   if (contracts === undefined) {
-    contracts = [ANSRegistry, Record, Registrar, AccountInfo, AccountResolver];
+    contracts = [
+      PrimaryRecord,
+      PrimaryRegistrar,
+      SecondaryRecord,
+      SecondaryRegistrar,
+      AccountInfo,
+      AccountResolver,
+      PrimaryRecordOwner,
+      SecondaryRecordOwner,
+    ];
   }
   const c = contracts.find(
     (c) =>

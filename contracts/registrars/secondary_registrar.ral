@@ -1,0 +1,24 @@
+Contract SecondaryRegistrar(primaryRegistrar: PrimaryRegistrar, recordTemplateId: ByteVec) extends Constants() implements Registrar {
+  @using(preapprovedAssets = true, checkExternalCaller = false)
+  pub fn register(name: ByteVec, owner: Address, payer: Address, resolver: Resolver) -> () {
+    assert!(size!(name) != 0, ErrorCodes.InvalidArgs)
+    assert!(isAssetAddress!(payer), ErrorCodes.ExpectAssetAddress)
+    let node = keccak256!(keccak256!(name))
+    let primaryRecordId = subContractIdOf!(primaryRegistrar, node)
+    assert!(tokenRemaining!(payer, primaryRecordId) == 1, ErrorCodes.PrimaryRecordNotExists)
+
+    let secondaryRecordId = subContractId!(node)
+    if (contractExists!(secondaryRecordId)) {
+      SecondaryRecord(secondaryRecordId).destroy(node)
+    }
+
+    let (encodedImmutableFields, encodedMutableFields) = SecondaryRecord.encodeFields!(selfContractId!(), owner, resolver, payer)
+    copyCreateSubContract!{payer -> ALPH: 1 alph}(
+      node,
+      recordTemplateId,
+      encodedImmutableFields,
+      encodedMutableFields
+    )
+    emit NameRegistered(name, owner)
+  }
+}

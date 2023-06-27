@@ -72,6 +72,7 @@ class Factory extends ContractFactory<
       ExpectAssetAddress: BigInt(2),
       NameHasBeenRegistered: BigInt(3),
       ContractNotExists: BigInt(4),
+      PrimaryRecordNotExists: BigInt(5),
     },
   };
 

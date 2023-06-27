@@ -24,15 +24,14 @@ import {
   ContractInstance,
   getContractEventsCurrentCount,
 } from "@alephium/web3";
-import { default as RecordContractJson } from "../Record.ral.json";
+import { default as SecondaryRecordContractJson } from "../registrars/SecondaryRecord.ral.json";
 import { getContractByCodeHash } from "./contracts";
 
 // Custom types for the contract
-export namespace RecordTypes {
+export namespace SecondaryRecordTypes {
   export type Fields = {
     registrar: HexString;
     owner: Address;
-    ttl: bigint;
     resolver: HexString;
     refundAddress: Address;
   };
@@ -40,17 +39,9 @@ export namespace RecordTypes {
   export type State = ContractState<Fields>;
 
   export interface CallMethodTable {
-    getRegistrar: {
-      params: Omit<CallContractParams<{}>, "args">;
-      result: CallContractResult<HexString>;
-    };
     getOwner: {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<Address>;
-    };
-    getTTL: {
-      params: Omit<CallContractParams<{}>, "args">;
-      result: CallContractResult<bigint>;
     };
     getResolver: {
       params: Omit<CallContractParams<{}>, "args">;
@@ -75,7 +66,10 @@ export namespace RecordTypes {
   };
 }
 
-class Factory extends ContractFactory<RecordInstance, RecordTypes.Fields> {
+class Factory extends ContractFactory<
+  SecondaryRecordInstance,
+  SecondaryRecordTypes.Fields
+> {
   consts = {
     ErrorCodes: {
       InvalidCaller: BigInt(0),
@@ -83,56 +77,60 @@ class Factory extends ContractFactory<RecordInstance, RecordTypes.Fields> {
       ExpectAssetAddress: BigInt(2),
       NameHasBeenRegistered: BigInt(3),
       ContractNotExists: BigInt(4),
+      PrimaryRecordNotExists: BigInt(5),
     },
   };
 
-  at(address: string): RecordInstance {
-    return new RecordInstance(address);
+  at(address: string): SecondaryRecordInstance {
+    return new SecondaryRecordInstance(address);
   }
 
   tests = {
-    getRegistrar: async (
-      params: Omit<TestContractParams<RecordTypes.Fields, never>, "testArgs">
-    ): Promise<TestContractResult<HexString>> => {
-      return testMethod(this, "getRegistrar", params);
-    },
     getOwner: async (
-      params: Omit<TestContractParams<RecordTypes.Fields, never>, "testArgs">
+      params: Omit<
+        TestContractParams<SecondaryRecordTypes.Fields, never>,
+        "testArgs"
+      >
     ): Promise<TestContractResult<Address>> => {
       return testMethod(this, "getOwner", params);
     },
-    setOwner: async (
-      params: TestContractParams<RecordTypes.Fields, { newOwner: Address }>
-    ): Promise<TestContractResult<null>> => {
-      return testMethod(this, "setOwner", params);
-    },
-    getTTL: async (
-      params: Omit<TestContractParams<RecordTypes.Fields, never>, "testArgs">
-    ): Promise<TestContractResult<bigint>> => {
-      return testMethod(this, "getTTL", params);
-    },
-    setTTL: async (
-      params: TestContractParams<RecordTypes.Fields, { newTTL: bigint }>
-    ): Promise<TestContractResult<null>> => {
-      return testMethod(this, "setTTL", params);
-    },
     getResolver: async (
-      params: Omit<TestContractParams<RecordTypes.Fields, never>, "testArgs">
+      params: Omit<
+        TestContractParams<SecondaryRecordTypes.Fields, never>,
+        "testArgs"
+      >
     ): Promise<TestContractResult<HexString>> => {
       return testMethod(this, "getResolver", params);
     },
-    setResolver: async (
-      params: TestContractParams<RecordTypes.Fields, { newResolver: HexString }>
-    ): Promise<TestContractResult<null>> => {
-      return testMethod(this, "setResolver", params);
-    },
     getRefundAddress: async (
-      params: Omit<TestContractParams<RecordTypes.Fields, never>, "testArgs">
+      params: Omit<
+        TestContractParams<SecondaryRecordTypes.Fields, never>,
+        "testArgs"
+      >
     ): Promise<TestContractResult<Address>> => {
       return testMethod(this, "getRefundAddress", params);
     },
+    setOwner: async (
+      params: TestContractParams<
+        SecondaryRecordTypes.Fields,
+        { newOwner: Address }
+      >
+    ): Promise<TestContractResult<null>> => {
+      return testMethod(this, "setOwner", params);
+    },
+    setResolver: async (
+      params: TestContractParams<
+        SecondaryRecordTypes.Fields,
+        { newResolver: HexString }
+      >
+    ): Promise<TestContractResult<null>> => {
+      return testMethod(this, "setResolver", params);
+    },
     destroy: async (
-      params: Omit<TestContractParams<RecordTypes.Fields, never>, "testArgs">
+      params: TestContractParams<
+        SecondaryRecordTypes.Fields,
+        { node: HexString }
+      >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "destroy", params);
     },
@@ -140,63 +138,41 @@ class Factory extends ContractFactory<RecordInstance, RecordTypes.Fields> {
 }
 
 // Use this object to test and deploy the contract
-export const Record = new Factory(
+export const SecondaryRecord = new Factory(
   Contract.fromJson(
-    RecordContractJson,
+    SecondaryRecordContractJson,
     "",
-    "db1b74b79b7a21500c4ae9b072987b594192e2e751fb8160f24800824f71663d"
+    "b60091ea5be04efec3a9eae229bb7450c3ea4105d61bc1bd81127cbbf8c7ca6c"
   )
 );
 
 // Use this class to interact with the blockchain
-export class RecordInstance extends ContractInstance {
+export class SecondaryRecordInstance extends ContractInstance {
   constructor(address: Address) {
     super(address);
   }
 
-  async fetchState(): Promise<RecordTypes.State> {
-    return fetchContractState(Record, this);
+  async fetchState(): Promise<SecondaryRecordTypes.State> {
+    return fetchContractState(SecondaryRecord, this);
   }
 
   methods = {
-    getRegistrar: async (
-      params?: RecordTypes.CallMethodParams<"getRegistrar">
-    ): Promise<RecordTypes.CallMethodResult<"getRegistrar">> => {
-      return callMethod(
-        Record,
-        this,
-        "getRegistrar",
-        params === undefined ? {} : params,
-        getContractByCodeHash
-      );
-    },
     getOwner: async (
-      params?: RecordTypes.CallMethodParams<"getOwner">
-    ): Promise<RecordTypes.CallMethodResult<"getOwner">> => {
+      params?: SecondaryRecordTypes.CallMethodParams<"getOwner">
+    ): Promise<SecondaryRecordTypes.CallMethodResult<"getOwner">> => {
       return callMethod(
-        Record,
+        SecondaryRecord,
         this,
         "getOwner",
         params === undefined ? {} : params,
         getContractByCodeHash
       );
     },
-    getTTL: async (
-      params?: RecordTypes.CallMethodParams<"getTTL">
-    ): Promise<RecordTypes.CallMethodResult<"getTTL">> => {
-      return callMethod(
-        Record,
-        this,
-        "getTTL",
-        params === undefined ? {} : params,
-        getContractByCodeHash
-      );
-    },
     getResolver: async (
-      params?: RecordTypes.CallMethodParams<"getResolver">
-    ): Promise<RecordTypes.CallMethodResult<"getResolver">> => {
+      params?: SecondaryRecordTypes.CallMethodParams<"getResolver">
+    ): Promise<SecondaryRecordTypes.CallMethodResult<"getResolver">> => {
       return callMethod(
-        Record,
+        SecondaryRecord,
         this,
         "getResolver",
         params === undefined ? {} : params,
@@ -204,10 +180,10 @@ export class RecordInstance extends ContractInstance {
       );
     },
     getRefundAddress: async (
-      params?: RecordTypes.CallMethodParams<"getRefundAddress">
-    ): Promise<RecordTypes.CallMethodResult<"getRefundAddress">> => {
+      params?: SecondaryRecordTypes.CallMethodParams<"getRefundAddress">
+    ): Promise<SecondaryRecordTypes.CallMethodResult<"getRefundAddress">> => {
       return callMethod(
-        Record,
+        SecondaryRecord,
         this,
         "getRefundAddress",
         params === undefined ? {} : params,
@@ -216,14 +192,14 @@ export class RecordInstance extends ContractInstance {
     },
   };
 
-  async multicall<Calls extends RecordTypes.MultiCallParams>(
+  async multicall<Calls extends SecondaryRecordTypes.MultiCallParams>(
     calls: Calls
-  ): Promise<RecordTypes.MultiCallResults<Calls>> {
+  ): Promise<SecondaryRecordTypes.MultiCallResults<Calls>> {
     return (await multicallMethods(
-      Record,
+      SecondaryRecord,
       this,
       calls,
       getContractByCodeHash
-    )) as RecordTypes.MultiCallResults<Calls>;
+    )) as SecondaryRecordTypes.MultiCallResults<Calls>;
   }
 }

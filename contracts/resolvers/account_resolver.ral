@@ -1,6 +1,5 @@
 Contract AccountResolver(
-  ansRegistry: ANSRegistry,
-  registrar: ByteVec,
+  registrar: Registrar,
   accountInfoTemplateId: ByteVec
 ) extends Constants() implements Resolver {
   event NewAccountInfoCreated(node: ByteVec, pubkey: ByteVec, addresses: ByteVec)
@@ -10,7 +9,7 @@ Contract AccountResolver(
 
   @using(preapprovedAssets = true)
   pub fn newAccountInfo(node: ByteVec, payer: Address, pubkey: ByteVec, addresses: ByteVec) -> () {
-    let record = Record(subContractIdOf!(ansRegistry, node))
+    let record = Record(subContractIdOf!(registrar, node))
     checkCaller!(callerAddress!() == record.getOwner(), ErrorCodes.InvalidCaller)
     let (encodedImmutableFields, encodedMutableFields) = AccountInfo.encodeFields!(Resolver(selfContractId!()), pubkey, addresses)
     copyCreateSubContract!{payer -> ALPH: 1 alph}(
@@ -23,7 +22,7 @@ Contract AccountResolver(
   }
 
   pub fn setAddress(node: ByteVec, chainId: U256, address: ByteVec) -> () {
-    let record = Record(subContractIdOf!(ansRegistry, node))
+    let record = Record(subContractIdOf!(registrar, node))
     checkCaller!(callerAddress!() == record.getOwner(), ErrorCodes.InvalidCaller)
     AccountInfo(subContractId!(node)).setAddress(chainId, address)
     emit AddressUpdated(node, chainId, address)
@@ -34,7 +33,7 @@ Contract AccountResolver(
   }
 
   pub fn setPubkey(node: ByteVec, pubkey: ByteVec) -> () {
-    let record = Record(subContractIdOf!(ansRegistry, node))
+    let record = Record(subContractIdOf!(registrar, node))
     checkCaller!(callerAddress!() == record.getOwner(), ErrorCodes.InvalidCaller)
     AccountInfo(subContractId!(node)).setPubkey(pubkey)
     emit PubkeyUpdated(node, pubkey)
@@ -45,7 +44,8 @@ Contract AccountResolver(
   }
 
   pub fn removeNode(node: ByteVec, refundAddress: Address) -> () {
-    checkCaller!(callerContractId!() == registrar, ErrorCodes.InvalidCaller)
+    let recordId = subContractIdOf!(registrar, node)
+    checkCaller!(callerContractId!() == recordId, ErrorCodes.InvalidCaller)
     let accountInfoId = subContractId!(node)
     if (contractExists!(accountInfoId)) {
       AccountInfo(accountInfoId).destroy(refundAddress)

@@ -2,9 +2,12 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export * from "./ANSRegistry";
-export * from "./Record";
-export * from "./Registrar";
+export * from "./PrimaryRecord";
+export * from "./PrimaryRegistrar";
+export * from "./SecondaryRecord";
+export * from "./SecondaryRegistrar";
 export * from "./AccountInfo";
 export * from "./AccountResolver";
+export * from "./PrimaryRecordOwner";
+export * from "./SecondaryRecordOwner";
 export * from "./scripts";

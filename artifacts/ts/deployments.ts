@@ -5,12 +5,10 @@
 import { RunScriptResult, DeployContractExecutionResult } from "@alephium/cli";
 import { NetworkId } from "@alephium/web3";
 import {
-  Record,
-  RecordInstance,
-  ANSRegistry,
-  ANSRegistryInstance,
-  Registrar,
-  RegistrarInstance,
+  PrimaryRecord,
+  PrimaryRecordInstance,
+  PrimaryRegistrar,
+  PrimaryRegistrarInstance,
   AccountInfo,
   AccountInfoInstance,
   AccountResolver,
@@ -21,33 +19,25 @@ import { default as devnetDeployments } from "../.deployments.devnet.json";
 export type Deployments = {
   deployerAddress: string;
   contracts: {
-    Record: DeployContractExecutionResult<RecordInstance>;
-    ANSRegistry: DeployContractExecutionResult<ANSRegistryInstance>;
-    Registrar: DeployContractExecutionResult<RegistrarInstance>;
+    PrimaryRecord: DeployContractExecutionResult<PrimaryRecordInstance>;
+    PrimaryRegistrar: DeployContractExecutionResult<PrimaryRegistrarInstance>;
     AccountInfo: DeployContractExecutionResult<AccountInfoInstance>;
     AccountResolver: DeployContractExecutionResult<AccountResolverInstance>;
   };
-  scripts: { SetupANS: RunScriptResult };
 };
 
 function toDeployments(json: any): Deployments {
   const contracts = {
-    Record: {
-      ...json.contracts.Record,
-      contractInstance: Record.at(
-        json.contracts.Record.contractInstance.address
+    PrimaryRecord: {
+      ...json.contracts.PrimaryRecord,
+      contractInstance: PrimaryRecord.at(
+        json.contracts.PrimaryRecord.contractInstance.address
       ),
     },
-    ANSRegistry: {
-      ...json.contracts.ANSRegistry,
-      contractInstance: ANSRegistry.at(
-        json.contracts.ANSRegistry.contractInstance.address
-      ),
-    },
-    Registrar: {
-      ...json.contracts.Registrar,
-      contractInstance: Registrar.at(
-        json.contracts.Registrar.contractInstance.address
+    PrimaryRegistrar: {
+      ...json.contracts.PrimaryRegistrar,
+      contractInstance: PrimaryRegistrar.at(
+        json.contracts.PrimaryRegistrar.contractInstance.address
       ),
     },
     AccountInfo: {

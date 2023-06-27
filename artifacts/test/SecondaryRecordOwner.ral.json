@@ -1,0 +1,38 @@
+{
+  "version": "v2.3.5",
+  "name": "SecondaryRecordOwner",
+  "bytecode": "01010e01000101000516000d0cce000105",
+  "codeHash": "d4fc9435911b1815c226fe271b0846aac84b098d50bf3ae8496093398c817bf6",
+  "fieldsSig": {
+    "names": [
+      "record"
+    ],
+    "types": [
+      "ByteVec"
+    ],
+    "isMutable": [
+      false
+    ]
+  },
+  "eventsSig": [],
+  "functions": [
+    {
+      "name": "destroyRecord",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
+        "node"
+      ],
+      "paramTypes": [
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": []
+    }
+  ],
+  "constants": [],
+  "enums": []
+}

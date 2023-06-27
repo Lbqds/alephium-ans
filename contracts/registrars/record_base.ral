@@ -1,0 +1,29 @@
+Abstract Contract RecordBase(
+  mut owner: Address,
+  mut resolver: Resolver,
+  refundAddress: Address
+) extends Constants() implements Record {
+  pub fn getOwner() -> Address {
+    return owner
+  }
+
+  @using(updateFields = true)
+  pub fn setOwner(newOwner: Address) -> () {
+    checkCaller!(callerAddress!() == owner, ErrorCodes.InvalidCaller)
+    owner = newOwner
+  }
+
+  pub fn getResolver() -> Resolver {
+    return resolver
+  }
+
+  @using(updateFields = true)
+  pub fn setResolver(newResolver: Resolver) -> () {
+    checkCaller!(callerAddress!() == owner, ErrorCodes.InvalidCaller)
+    resolver = newResolver
+  }
+
+  pub fn getRefundAddress() -> Address {
+    return refundAddress
+  }
+}
