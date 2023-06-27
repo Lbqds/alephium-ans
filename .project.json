@@ -16,6 +16,20 @@
       "codeHashDebug": "125ae52bad2a8ead1fa3ac791690114e7562404daa592c08546a1257c6a6176e",
       "warnings": []
     },
+    "AccountInfo": {
+      "sourceFile": "resolvers/account_info.ral",
+      "sourceCodeHash": "32e5739076f631752136df300b697ef2fd1b10fee4b01a67b983edab8dea1af9",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "9f41e2b03b94eee005a632fa7868b52b342910089286e5bc969e333283b47f23",
+      "warnings": []
+    },
+    "AccountResolver": {
+      "sourceFile": "resolvers/account_resolver.ral",
+      "sourceCodeHash": "588dc14a5555735ad91d330899c570a1b1d003af2ae069e877589344937f3e12",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "ac3ad943e9b194ad955348da4092ca80f9068ef5bfd1fe70a9e295c72dfd2c66",
+      "warnings": []
+    },
     "Constants": {
       "sourceFile": "constants.ral",
       "sourceCodeHash": "4c225d788a5e5507da4b2f0eb143114a938b6cf0e2ef9b9aae84cf64e3dd6b04",
@@ -23,25 +37,11 @@
       "codeHashDebug": "",
       "warnings": []
     },
-    "DefaultResolver": {
-      "sourceFile": "default_resolver.ral",
-      "sourceCodeHash": "bfad9bbc51018d24627f3eb61b35e29649c5931be8814cb70bb209679dfb2ca1",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": "534e86b9ad3db38f6d7726f66d0047beb56e805de79eb0662694ddd10657e8a6",
-      "warnings": []
-    },
     "Record": {
       "sourceFile": "record.ral",
       "sourceCodeHash": "e6f1f3e99332209a82497c2d39e2f847f0b25247155790e15d68196dee086cd6",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "db1b74b79b7a21500c4ae9b072987b594192e2e751fb8160f24800824f71663d",
-      "warnings": []
-    },
-    "RecordInfo": {
-      "sourceFile": "record_info.ral",
-      "sourceCodeHash": "feae11dbd5b128d60d18f9637b4746e02abe39b38c9052cf755cb627102d85a3",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": "9f41e2b03b94eee005a632fa7868b52b342910089286e5bc969e333283b47f23",
       "warnings": []
     },
     "Register": {
@@ -59,7 +59,7 @@
       "warnings": []
     },
     "Resolver": {
-      "sourceFile": "resolver.ral",
+      "sourceFile": "resolvers/resolver.ral",
       "sourceCodeHash": "a79e897d76c957a8d0f756e7fa1b58614f2d9663a0f844d958a5bdaa972dfc14",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "",

@@ -18,7 +18,7 @@ export interface NetworkConfig {
   groupIndex: number
   registrarId: string
   ansRegistryId: string
-  defaultResolverId: string
+  accountResolverId: string
 }
 
 export const Config = loadConfig(process.env.NEXT_PUBLIC_NETWORK as NetworkId)
@@ -34,7 +34,7 @@ function loadConfig(networkId: NetworkId): NetworkConfig {
       groupIndex: groupOfAddress(deployments.deployerAddress),
       registrarId: deployments.contracts.Registrar.contractInstance.contractId,
       ansRegistryId: deployments.contracts.ANSRegistry.contractInstance.contractId,
-      defaultResolverId: deployments.contracts.DefaultResolver.contractInstance.contractId
+      accountResolverId: deployments.contracts.AccountResolver.contractInstance.contractId
     }
   } catch (error) {
     console.log(`Failed to load deployments on ${networkId}, error: ${error}`)

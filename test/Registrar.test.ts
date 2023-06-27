@@ -1,4 +1,4 @@
-import { binToHex, Contract, ContractDestroyedEvent, ONE_ALPH, subContractId, web3 } from "@alephium/web3"
+import { binToHex, Contract, ONE_ALPH, subContractId, web3 } from "@alephium/web3"
 import {
   alph,
   createANSRegistry,
@@ -6,7 +6,7 @@ import {
   defaultInitialAsset,
   randomAssetAddress,
   subContractAddress,
-  createDefaultResolver,
+  createAccountResolver,
   randomContractId,
   DefaultGroup,
   getContractState,
@@ -16,7 +16,7 @@ import {
   createRegistrar
 } from "./fixtures/ANSFixture"
 import { keccak256 } from "ethers/lib/utils"
-import { DefaultResolverTypes, RecordInfo, RecordTypes, Registrar, RegistrarTypes } from "../artifacts/ts"
+import { AccountResolverTypes, AccountInfo, RecordTypes, Registrar, RegistrarTypes } from "../artifacts/ts"
 import { expectAssertionError } from "@alephium/web3-test"
 
 describe("test registrar", () => {
@@ -34,7 +34,7 @@ describe("test registrar", () => {
     const ansRegistryFixture = createANSRegistry(randomAssetAddress())
     const registrarOwner = randomAssetAddress()
     const registrarFixture = createRegistrar(registrarOwner, ansRegistryFixture)
-    const resolverFixture = createDefaultResolver(registrarFixture)
+    const resolverFixture = createAccountResolver(registrarFixture)
 
     async function register(subNode: string, subNodeOwner: string, rentDuration: number) {
       return Registrar.tests.register({
@@ -85,7 +85,7 @@ describe("test registrar", () => {
     const ansRegistryFixture = createANSRegistry(randomAssetAddress())
     const registrarOwner = randomAssetAddress()
     const registrarFixture = createRegistrar(registrarOwner, ansRegistryFixture)
-    const resolverFixture = createDefaultResolver(registrarFixture)
+    const resolverFixture = createAccountResolver(registrarFixture)
     const name = "test"
     const previousOwner = randomAssetAddress()
     const newOwner = randomAssetAddress()
@@ -196,7 +196,7 @@ describe("test registrar", () => {
     const ansRegistryFixture = createANSRegistry(randomAssetAddress())
     const registrarOwner = randomAssetAddress()
     const registrarFixture = createRegistrar(registrarOwner, ansRegistryFixture)
-    const resolverFixture = createDefaultResolver(registrarFixture)
+    const resolverFixture = createAccountResolver(registrarFixture)
     const subNodeLabel = keccak256(encoder.encode("test")).slice(2)
     const subNode = keccak256(Buffer.from(RootNode + subNodeLabel)).slice(2)
     const subNodeOwner = randomAssetAddress()
@@ -208,7 +208,7 @@ describe("test registrar", () => {
       resolver: resolverFixture.contractId,
       refundAddress: subNodeOwner
     }, subRecordAddress)
-    const recordInfo = RecordInfo.stateForTest(
+    const accountInfo = AccountInfo.stateForTest(
       { resolver: resolverFixture.contractId, pubkey: '', addresses: '' },
       defaultInitialAsset,
       subContractAddress(resolverFixture.contractId, subNode, DefaultGroup)
@@ -221,7 +221,7 @@ describe("test registrar", () => {
         initialAsset: defaultInitialAsset,
         inputAssets: [{ address: caller, asset: { alphAmount: ONE_ALPH }}],
         testArgs: { node: subNode },
-        existingContracts: [subRecord, ...resolverFixture.states(), recordInfo]
+        existingContracts: [subRecord, ...resolverFixture.states(), accountInfo]
       })
     }
 
@@ -231,8 +231,8 @@ describe("test registrar", () => {
     expect(testResult.events.length).toEqual(3)
 
     expect(testResult.events.filter((e) => e.eventIndex === Contract.ContractDestroyedEventIndex).length).toEqual(2)
-    const recordInfoRemovedEvent = testResult.events.find((e) => e.eventIndex === 3)! as DefaultResolverTypes.RecordInfoRemovedEvent
-    expect(recordInfoRemovedEvent.fields.node).toEqual(subNode)
+    const accountInfoRemovedEvent = testResult.events.find((e) => e.eventIndex === 3)! as AccountResolverTypes.AccountInfoRemovedEvent
+    expect(accountInfoRemovedEvent.fields.node).toEqual(subNode)
   })
 
   it('should update record profile', async () => {

@@ -40,7 +40,7 @@ async function register(
       registrar: Config.registrarId,
       name: binToHex(normalize(name)),
       rentalPeriod: BigInt(rentalPeriodMs),
-      resolver: Config.defaultResolverId
+      resolver: Config.accountResolverId
     },
     attoAlphAmount: ONE_ALPH + DUST_AMOUNT * 2n
   })

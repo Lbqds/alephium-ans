@@ -24,20 +24,20 @@ import {
   ContractInstance,
   getContractEventsCurrentCount,
 } from "@alephium/web3";
-import { default as DefaultResolverContractJson } from "../DefaultResolver.ral.json";
+import { default as AccountResolverContractJson } from "../resolvers/AccountResolver.ral.json";
 import { getContractByCodeHash } from "./contracts";
 
 // Custom types for the contract
-export namespace DefaultResolverTypes {
+export namespace AccountResolverTypes {
   export type Fields = {
     ansRegistry: HexString;
     registrar: HexString;
-    recordInfoTemplateId: HexString;
+    accountInfoTemplateId: HexString;
   };
 
   export type State = ContractState<Fields>;
 
-  export type NewRecordInfoCreatedEvent = ContractEvent<{
+  export type NewAccountInfoCreatedEvent = ContractEvent<{
     node: HexString;
     pubkey: HexString;
     addresses: HexString;
@@ -51,14 +51,14 @@ export namespace DefaultResolverTypes {
     node: HexString;
     newPubkey: HexString;
   }>;
-  export type RecordInfoRemovedEvent = ContractEvent<{ node: HexString }>;
+  export type AccountInfoRemovedEvent = ContractEvent<{ node: HexString }>;
 
   export interface CallMethodTable {
     getAddress: {
       params: CallContractParams<{ node: HexString; chainId: bigint }>;
       result: CallContractResult<HexString>;
     };
-    getPubKey: {
+    getPubkey: {
       params: CallContractParams<{ node: HexString }>;
       result: CallContractResult<HexString>;
     };
@@ -78,8 +78,8 @@ export namespace DefaultResolverTypes {
 }
 
 class Factory extends ContractFactory<
-  DefaultResolverInstance,
-  DefaultResolverTypes.Fields
+  AccountResolverInstance,
+  AccountResolverTypes.Fields
 > {
   consts = {
     ErrorCodes: {
@@ -91,22 +91,22 @@ class Factory extends ContractFactory<
     },
   };
 
-  at(address: string): DefaultResolverInstance {
-    return new DefaultResolverInstance(address);
+  at(address: string): AccountResolverInstance {
+    return new AccountResolverInstance(address);
   }
 
   tests = {
     removeNode: async (
       params: TestContractParams<
-        DefaultResolverTypes.Fields,
+        AccountResolverTypes.Fields,
         { node: HexString; refundAddress: Address }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "removeNode", params);
     },
-    newRecordInfo: async (
+    newAccountInfo: async (
       params: TestContractParams<
-        DefaultResolverTypes.Fields,
+        AccountResolverTypes.Fields,
         {
           node: HexString;
           payer: Address;
@@ -115,11 +115,11 @@ class Factory extends ContractFactory<
         }
       >
     ): Promise<TestContractResult<null>> => {
-      return testMethod(this, "newRecordInfo", params);
+      return testMethod(this, "newAccountInfo", params);
     },
     setAddress: async (
       params: TestContractParams<
-        DefaultResolverTypes.Fields,
+        AccountResolverTypes.Fields,
         { node: HexString; chainId: bigint; address: HexString }
       >
     ): Promise<TestContractResult<null>> => {
@@ -127,7 +127,7 @@ class Factory extends ContractFactory<
     },
     getAddress: async (
       params: TestContractParams<
-        DefaultResolverTypes.Fields,
+        AccountResolverTypes.Fields,
         { node: HexString; chainId: bigint }
       >
     ): Promise<TestContractResult<HexString>> => {
@@ -135,65 +135,65 @@ class Factory extends ContractFactory<
     },
     setPubkey: async (
       params: TestContractParams<
-        DefaultResolverTypes.Fields,
+        AccountResolverTypes.Fields,
         { node: HexString; pubkey: HexString }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "setPubkey", params);
     },
-    getPubKey: async (
+    getPubkey: async (
       params: TestContractParams<
-        DefaultResolverTypes.Fields,
+        AccountResolverTypes.Fields,
         { node: HexString }
       >
     ): Promise<TestContractResult<HexString>> => {
-      return testMethod(this, "getPubKey", params);
+      return testMethod(this, "getPubkey", params);
     },
   };
 }
 
 // Use this object to test and deploy the contract
-export const DefaultResolver = new Factory(
+export const AccountResolver = new Factory(
   Contract.fromJson(
-    DefaultResolverContractJson,
+    AccountResolverContractJson,
     "",
-    "534e86b9ad3db38f6d7726f66d0047beb56e805de79eb0662694ddd10657e8a6"
+    "ac3ad943e9b194ad955348da4092ca80f9068ef5bfd1fe70a9e295c72dfd2c66"
   )
 );
 
 // Use this class to interact with the blockchain
-export class DefaultResolverInstance extends ContractInstance {
+export class AccountResolverInstance extends ContractInstance {
   constructor(address: Address) {
     super(address);
   }
 
-  async fetchState(): Promise<DefaultResolverTypes.State> {
-    return fetchContractState(DefaultResolver, this);
+  async fetchState(): Promise<AccountResolverTypes.State> {
+    return fetchContractState(AccountResolver, this);
   }
 
   async getContractEventsCurrentCount(): Promise<number> {
     return getContractEventsCurrentCount(this.address);
   }
 
-  subscribeNewRecordInfoCreatedEvent(
-    options: SubscribeOptions<DefaultResolverTypes.NewRecordInfoCreatedEvent>,
+  subscribeNewAccountInfoCreatedEvent(
+    options: SubscribeOptions<AccountResolverTypes.NewAccountInfoCreatedEvent>,
     fromCount?: number
   ): EventSubscription {
     return subscribeContractEvent(
-      DefaultResolver.contract,
+      AccountResolver.contract,
       this,
       options,
-      "NewRecordInfoCreated",
+      "NewAccountInfoCreated",
       fromCount
     );
   }
 
   subscribeAddressUpdatedEvent(
-    options: SubscribeOptions<DefaultResolverTypes.AddressUpdatedEvent>,
+    options: SubscribeOptions<AccountResolverTypes.AddressUpdatedEvent>,
     fromCount?: number
   ): EventSubscription {
     return subscribeContractEvent(
-      DefaultResolver.contract,
+      AccountResolver.contract,
       this,
       options,
       "AddressUpdated",
@@ -202,11 +202,11 @@ export class DefaultResolverInstance extends ContractInstance {
   }
 
   subscribePubkeyUpdatedEvent(
-    options: SubscribeOptions<DefaultResolverTypes.PubkeyUpdatedEvent>,
+    options: SubscribeOptions<AccountResolverTypes.PubkeyUpdatedEvent>,
     fromCount?: number
   ): EventSubscription {
     return subscribeContractEvent(
-      DefaultResolver.contract,
+      AccountResolver.contract,
       this,
       options,
       "PubkeyUpdated",
@@ -214,30 +214,30 @@ export class DefaultResolverInstance extends ContractInstance {
     );
   }
 
-  subscribeRecordInfoRemovedEvent(
-    options: SubscribeOptions<DefaultResolverTypes.RecordInfoRemovedEvent>,
+  subscribeAccountInfoRemovedEvent(
+    options: SubscribeOptions<AccountResolverTypes.AccountInfoRemovedEvent>,
     fromCount?: number
   ): EventSubscription {
     return subscribeContractEvent(
-      DefaultResolver.contract,
+      AccountResolver.contract,
       this,
       options,
-      "RecordInfoRemoved",
+      "AccountInfoRemoved",
       fromCount
     );
   }
 
   subscribeAllEvents(
     options: SubscribeOptions<
-      | DefaultResolverTypes.NewRecordInfoCreatedEvent
-      | DefaultResolverTypes.AddressUpdatedEvent
-      | DefaultResolverTypes.PubkeyUpdatedEvent
-      | DefaultResolverTypes.RecordInfoRemovedEvent
+      | AccountResolverTypes.NewAccountInfoCreatedEvent
+      | AccountResolverTypes.AddressUpdatedEvent
+      | AccountResolverTypes.PubkeyUpdatedEvent
+      | AccountResolverTypes.AccountInfoRemovedEvent
     >,
     fromCount?: number
   ): EventSubscription {
     return subscribeContractEvents(
-      DefaultResolver.contract,
+      AccountResolver.contract,
       this,
       options,
       fromCount
@@ -246,37 +246,37 @@ export class DefaultResolverInstance extends ContractInstance {
 
   methods = {
     getAddress: async (
-      params: DefaultResolverTypes.CallMethodParams<"getAddress">
-    ): Promise<DefaultResolverTypes.CallMethodResult<"getAddress">> => {
+      params: AccountResolverTypes.CallMethodParams<"getAddress">
+    ): Promise<AccountResolverTypes.CallMethodResult<"getAddress">> => {
       return callMethod(
-        DefaultResolver,
+        AccountResolver,
         this,
         "getAddress",
         params,
         getContractByCodeHash
       );
     },
-    getPubKey: async (
-      params: DefaultResolverTypes.CallMethodParams<"getPubKey">
-    ): Promise<DefaultResolverTypes.CallMethodResult<"getPubKey">> => {
+    getPubkey: async (
+      params: AccountResolverTypes.CallMethodParams<"getPubkey">
+    ): Promise<AccountResolverTypes.CallMethodResult<"getPubkey">> => {
       return callMethod(
-        DefaultResolver,
+        AccountResolver,
         this,
-        "getPubKey",
+        "getPubkey",
         params,
         getContractByCodeHash
       );
     },
   };
 
-  async multicall<Calls extends DefaultResolverTypes.MultiCallParams>(
+  async multicall<Calls extends AccountResolverTypes.MultiCallParams>(
     calls: Calls
-  ): Promise<DefaultResolverTypes.MultiCallResults<Calls>> {
+  ): Promise<AccountResolverTypes.MultiCallResults<Calls>> {
     return (await multicallMethods(
-      DefaultResolver,
+      AccountResolver,
       this,
       calls,
       getContractByCodeHash
-    )) as DefaultResolverTypes.MultiCallResults<Calls>;
+    )) as AccountResolverTypes.MultiCallResults<Calls>;
   }
 }

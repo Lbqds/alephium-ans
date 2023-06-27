@@ -1,4 +1,4 @@
-Contract RecordInfo(
+Contract AccountInfo(
   resolver: Resolver,
   mut pubkey: ByteVec,
   mut addresses: ByteVec // chainId + length + address

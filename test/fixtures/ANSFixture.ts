@@ -14,12 +14,12 @@ import * as base58 from 'bs58'
 import {
   ANSRegistry,
   ANSRegistryTypes,
-  DefaultResolver,
-  DefaultResolverTypes,
+  AccountResolver,
+  AccountResolverTypes,
   Record,
   RecordTypes,
-  RecordInfo,
-  RecordInfoTypes,
+  AccountInfo,
+  AccountInfoTypes,
   Registrar,
   RegistrarTypes
 } from "../../artifacts/ts"
@@ -99,8 +99,8 @@ export function zeroPad(value: string, byteLength: number): string {
   return value
 }
 
-function createRecordInfoTemplate(): ContractFixture<RecordInfoTypes.Fields> {
-  const state = RecordInfo.stateForTest({
+function createAccountInfoTemplate(): ContractFixture<AccountInfoTypes.Fields> {
+  const state = AccountInfo.stateForTest({
     resolver: '',
     pubkey: '',
     addresses: ''
@@ -108,18 +108,18 @@ function createRecordInfoTemplate(): ContractFixture<RecordInfoTypes.Fields> {
   return new ContractFixture(state, [])
 }
 
-export function createDefaultResolver(registrarFixture: ContractFixture<RegistrarTypes.Fields>): ContractFixture<DefaultResolverTypes.Fields> {
-  const recordInfoTemplate = createRecordInfoTemplate()
-  const state = DefaultResolver.stateForTest({
+export function createAccountResolver(registrarFixture: ContractFixture<RegistrarTypes.Fields>): ContractFixture<AccountResolverTypes.Fields> {
+  const accountInfoTemplate = createAccountInfoTemplate()
+  const state = AccountResolver.stateForTest({
     ansRegistry: registrarFixture.selfState.fields.ansRegistry,
     registrar: registrarFixture.contractId,
-    recordInfoTemplateId: recordInfoTemplate.contractId,
+    accountInfoTemplateId: accountInfoTemplate.contractId,
   }, defaultInitialAsset)
   return new ContractFixture(
     state,
     [
       ...registrarFixture.states(),
-      recordInfoTemplate.selfState,
+      accountInfoTemplate.selfState,
     ]
   )
 }

@@ -1,27 +1,26 @@
 import { Deployer, DeployFunction } from '@alephium/cli'
-import { ContractFactory, Fields } from '@alephium/web3'
 import {
-  RecordInfo,
-  DefaultResolverTypes,
-  DefaultResolver
+  AccountInfo,
+  AccountResolverTypes,
+  AccountResolver
 } from '../artifacts/ts'
 
 const deployResolver: DeployFunction<undefined> = async (deployer: Deployer): Promise<void> => {
-  const recordInfoFields = {
+  const accountInfo = {
     resolver: '',
     pubkey: '',
     addresses: ''
   }
-  const recordInfoTemplateResult = await deployer.deployContract(RecordInfo, { initialFields: recordInfoFields })
+  const accountInfoTemplateResult = await deployer.deployContract(AccountInfo, { initialFields: accountInfo })
   const ansRegistryId = deployer.getDeployContractResult('ANSRegistry').contractInstance.contractId
   const registrarId = deployer.getDeployContractResult('Registrar').contractInstance.contractId
-  const initialFields: DefaultResolverTypes.Fields = {
+  const initialFields: AccountResolverTypes.Fields = {
     ansRegistry: ansRegistryId,
     registrar: registrarId,
-    recordInfoTemplateId: recordInfoTemplateResult.contractInstance.contractId
+    accountInfoTemplateId: accountInfoTemplateResult.contractInstance.contractId
   }
-  const result = await deployer.deployContract(DefaultResolver, { initialFields: initialFields })
-  console.log(`Default resolver contract address: ${result.contractInstance.address}, contract id: ${result.contractInstance.contractId}`)
+  const result = await deployer.deployContract(AccountResolver, { initialFields: initialFields })
+  console.log(`Account resolver contract address: ${result.contractInstance.address}, contract id: ${result.contractInstance.contractId}`)
 }
 
 export default deployResolver

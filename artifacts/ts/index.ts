@@ -3,8 +3,8 @@
 /* eslint-disable */
 
 export * from "./ANSRegistry";
-export * from "./DefaultResolver";
 export * from "./Record";
-export * from "./RecordInfo";
 export * from "./Registrar";
+export * from "./AccountInfo";
+export * from "./AccountResolver";
 export * from "./scripts";

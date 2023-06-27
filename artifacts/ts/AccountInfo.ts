@@ -24,11 +24,11 @@ import {
   ContractInstance,
   getContractEventsCurrentCount,
 } from "@alephium/web3";
-import { default as RecordInfoContractJson } from "../RecordInfo.ral.json";
+import { default as AccountInfoContractJson } from "../resolvers/AccountInfo.ral.json";
 import { getContractByCodeHash } from "./contracts";
 
 // Custom types for the contract
-export namespace RecordInfoTypes {
+export namespace AccountInfoTypes {
   export type Fields = {
     resolver: HexString;
     pubkey: HexString;
@@ -62,8 +62,8 @@ export namespace RecordInfoTypes {
 }
 
 class Factory extends ContractFactory<
-  RecordInfoInstance,
-  RecordInfoTypes.Fields
+  AccountInfoInstance,
+  AccountInfoTypes.Fields
 > {
   consts = {
     ErrorCodes: {
@@ -75,27 +75,27 @@ class Factory extends ContractFactory<
     },
   };
 
-  at(address: string): RecordInfoInstance {
-    return new RecordInfoInstance(address);
+  at(address: string): AccountInfoInstance {
+    return new AccountInfoInstance(address);
   }
 
   tests = {
     setAddress: async (
       params: TestContractParams<
-        RecordInfoTypes.Fields,
+        AccountInfoTypes.Fields,
         { chainId: bigint; address: HexString }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "setAddress", params);
     },
     getAddress: async (
-      params: TestContractParams<RecordInfoTypes.Fields, { chainId: bigint }>
+      params: TestContractParams<AccountInfoTypes.Fields, { chainId: bigint }>
     ): Promise<TestContractResult<HexString>> => {
       return testMethod(this, "getAddress", params);
     },
     setPubkey: async (
       params: TestContractParams<
-        RecordInfoTypes.Fields,
+        AccountInfoTypes.Fields,
         { newPubkey: HexString }
       >
     ): Promise<TestContractResult<null>> => {
@@ -103,7 +103,7 @@ class Factory extends ContractFactory<
     },
     getPubkey: async (
       params: Omit<
-        TestContractParams<RecordInfoTypes.Fields, never>,
+        TestContractParams<AccountInfoTypes.Fields, never>,
         "testArgs"
       >
     ): Promise<TestContractResult<HexString>> => {
@@ -111,7 +111,7 @@ class Factory extends ContractFactory<
     },
     destroy: async (
       params: TestContractParams<
-        RecordInfoTypes.Fields,
+        AccountInfoTypes.Fields,
         { refundAddress: Address }
       >
     ): Promise<TestContractResult<null>> => {
@@ -121,30 +121,30 @@ class Factory extends ContractFactory<
 }
 
 // Use this object to test and deploy the contract
-export const RecordInfo = new Factory(
+export const AccountInfo = new Factory(
   Contract.fromJson(
-    RecordInfoContractJson,
+    AccountInfoContractJson,
     "",
     "9f41e2b03b94eee005a632fa7868b52b342910089286e5bc969e333283b47f23"
   )
 );
 
 // Use this class to interact with the blockchain
-export class RecordInfoInstance extends ContractInstance {
+export class AccountInfoInstance extends ContractInstance {
   constructor(address: Address) {
     super(address);
   }
 
-  async fetchState(): Promise<RecordInfoTypes.State> {
-    return fetchContractState(RecordInfo, this);
+  async fetchState(): Promise<AccountInfoTypes.State> {
+    return fetchContractState(AccountInfo, this);
   }
 
   methods = {
     getAddress: async (
-      params: RecordInfoTypes.CallMethodParams<"getAddress">
-    ): Promise<RecordInfoTypes.CallMethodResult<"getAddress">> => {
+      params: AccountInfoTypes.CallMethodParams<"getAddress">
+    ): Promise<AccountInfoTypes.CallMethodResult<"getAddress">> => {
       return callMethod(
-        RecordInfo,
+        AccountInfo,
         this,
         "getAddress",
         params,
@@ -152,10 +152,10 @@ export class RecordInfoInstance extends ContractInstance {
       );
     },
     getPubkey: async (
-      params?: RecordInfoTypes.CallMethodParams<"getPubkey">
-    ): Promise<RecordInfoTypes.CallMethodResult<"getPubkey">> => {
+      params?: AccountInfoTypes.CallMethodParams<"getPubkey">
+    ): Promise<AccountInfoTypes.CallMethodResult<"getPubkey">> => {
       return callMethod(
-        RecordInfo,
+        AccountInfo,
         this,
         "getPubkey",
         params === undefined ? {} : params,
@@ -164,14 +164,14 @@ export class RecordInfoInstance extends ContractInstance {
     },
   };
 
-  async multicall<Calls extends RecordInfoTypes.MultiCallParams>(
+  async multicall<Calls extends AccountInfoTypes.MultiCallParams>(
     calls: Calls
-  ): Promise<RecordInfoTypes.MultiCallResults<Calls>> {
+  ): Promise<AccountInfoTypes.MultiCallResults<Calls>> {
     return (await multicallMethods(
-      RecordInfo,
+      AccountInfo,
       this,
       calls,
       getContractByCodeHash
-    )) as RecordInfoTypes.MultiCallResults<Calls>;
+    )) as AccountInfoTypes.MultiCallResults<Calls>;
   }
 }

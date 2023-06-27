@@ -9,12 +9,12 @@ import {
   RecordInstance,
   ANSRegistry,
   ANSRegistryInstance,
-  RecordInfo,
-  RecordInfoInstance,
-  DefaultResolver,
-  DefaultResolverInstance,
   Registrar,
   RegistrarInstance,
+  AccountInfo,
+  AccountInfoInstance,
+  AccountResolver,
+  AccountResolverInstance,
 } from ".";
 import { default as devnetDeployments } from "../.deployments.devnet.json";
 
@@ -23,9 +23,9 @@ export type Deployments = {
   contracts: {
     Record: DeployContractExecutionResult<RecordInstance>;
     ANSRegistry: DeployContractExecutionResult<ANSRegistryInstance>;
-    RecordInfo: DeployContractExecutionResult<RecordInfoInstance>;
-    DefaultResolver: DeployContractExecutionResult<DefaultResolverInstance>;
     Registrar: DeployContractExecutionResult<RegistrarInstance>;
+    AccountInfo: DeployContractExecutionResult<AccountInfoInstance>;
+    AccountResolver: DeployContractExecutionResult<AccountResolverInstance>;
   };
   scripts: { SetupANS: RunScriptResult };
 };
@@ -44,22 +44,22 @@ function toDeployments(json: any): Deployments {
         json.contracts.ANSRegistry.contractInstance.address
       ),
     },
-    RecordInfo: {
-      ...json.contracts.RecordInfo,
-      contractInstance: RecordInfo.at(
-        json.contracts.RecordInfo.contractInstance.address
-      ),
-    },
-    DefaultResolver: {
-      ...json.contracts.DefaultResolver,
-      contractInstance: DefaultResolver.at(
-        json.contracts.DefaultResolver.contractInstance.address
-      ),
-    },
     Registrar: {
       ...json.contracts.Registrar,
       contractInstance: Registrar.at(
         json.contracts.Registrar.contractInstance.address
+      ),
+    },
+    AccountInfo: {
+      ...json.contracts.AccountInfo,
+      contractInstance: AccountInfo.at(
+        json.contracts.AccountInfo.contractInstance.address
+      ),
+    },
+    AccountResolver: {
+      ...json.contracts.AccountResolver,
+      contractInstance: AccountResolver.at(
+        json.contracts.AccountResolver.contractInstance.address
       ),
     },
   };
