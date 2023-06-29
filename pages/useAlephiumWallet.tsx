@@ -16,7 +16,7 @@ export class AlephiumWallet {
   }
 }
 
-export function useAlephiumWallet() {
+export default function useAlephiumWallet() {
   const context = useAlephiumConnectContext()
 
   return useMemo(() => {

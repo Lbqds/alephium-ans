@@ -20,7 +20,6 @@ function ShowProfile({name}: {name: string}) {
   const [isAvailable, setAvailable] = useState<boolean>(false)
   const [error, setError] = useState<undefined | string>(undefined)
   const [owner, setOwner] = useState<undefined | string>(undefined)
-  const [ttl, setTTL] = useState<undefined | number>(undefined)
   const ans = useANS()
 
   useEffect(() => {
@@ -40,10 +39,9 @@ function ShowProfile({name}: {name: string}) {
       return
     }
 
-    ans.getRecord(name)
+    ans.getPrimaryRecord(name)
       .then((fields) => {
         setOwner(fields.owner)
-        setTTL(Number(fields.ttl))
         setError(undefined)
       })
       .catch(e => {
@@ -64,7 +62,6 @@ function ShowProfile({name}: {name: string}) {
         ) :(
           <div>
             <p>Owner: {owner}</p>
-            <p>Expires: {new Date(ttl as number).toUTCString()}</p>
           </div>
         )
       }

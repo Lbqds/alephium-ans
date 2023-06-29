@@ -2,12 +2,12 @@ import { addressFromContractId, subContractId, NetworkId, groupOfAddress, web3 }
 import { keccak256, toUtf8Bytes } from "ethers/lib/utils";
 import { createContext, useContext } from "react";
 import { ReactNode } from "react";
-import { Record, RecordTypes } from "../artifacts/ts";
-import { loadDeployments } from "../artifacts/ts/deployments";
+import configuration from "../alephium.config";
+import { default as allDeployments } from "../artifacts/.deployments.devnet.json"
+import { PrimaryRecord, PrimaryRecordTypes } from "../artifacts/ts";
 const uts46 = require("idna-uts46-hx/uts46bundle.js")
 
 // namehash("alph")
-const AlphRootNode = "b2453cbabd12c58b21d32b6c70e6c41c8ca2918d7f56c1b88e838edf168776bf"
 const NodeUrl = process.env.NEXT_PUBLIC_NETWORK === 'devnet'
   ? 'http://127.0.0.1:22973'
   : '' // TODO: support testnet
@@ -16,9 +16,7 @@ web3.setCurrentNodeProvider(NodeUrl)
 
 export interface NetworkConfig {
   groupIndex: number
-  registrarId: string
-  ansRegistryId: string
-  accountResolverId: string
+  primaryRegistrarId: string
 }
 
 export const Config = loadConfig(process.env.NEXT_PUBLIC_NETWORK as NetworkId)
@@ -27,14 +25,16 @@ function loadConfig(networkId: NetworkId): NetworkConfig {
   if (networkId === 'mainnet' || networkId === 'testnet') {
     throw new Error('Not support now')
   }
+  const primaryGroup = configuration.networks[networkId].settings.primaryGroup
+  const deployments = allDeployments.find((d) => groupOfAddress(d.deployerAddress) === primaryGroup)
+  if (deployments === undefined) {
+    throw new Error('The contracts have not been deployed to the primary group')
+  }
 
   try {
-    const deployments =  loadDeployments(networkId)
     return {
       groupIndex: groupOfAddress(deployments.deployerAddress),
-      registrarId: deployments.contracts.Registrar.contractInstance.contractId,
-      ansRegistryId: deployments.contracts.ANSRegistry.contractInstance.contractId,
-      accountResolverId: deployments.contracts.AccountResolver.contractInstance.contractId
+      primaryRegistrarId: deployments.contracts.PrimaryRecord!.contractInstance.contractId,
     }
   } catch (error) {
     console.log(`Failed to load deployments on ${networkId}, error: ${error}`)
@@ -44,10 +44,7 @@ function loadConfig(networkId: NetworkId): NetworkConfig {
 
 export interface ANS {
   isAvailable(node: string): Promise<boolean>
-  getRecord(node: string): Promise<RecordTypes.Fields>
-  getAddresses(node: string): Promise<Map<number, string>>
-  getPubkey(node: string): Promise<string>
-  getName(address: string): Promise<string>
+  getPrimaryRecord(node: string): Promise<PrimaryRecordTypes.Fields>
 }
 
 // @ts-ignore
@@ -72,20 +69,20 @@ export function validateName(name: string) {
   }
 }
 
-function getSubNodeContractId(name: string): string {
+function getPrimaryRecordContractId(name: string): string {
   const label = keccak256(normalize(name)).slice(2)
-  const subNodePath = keccak256(Buffer.from(AlphRootNode + label, 'hex')).slice(2)
-  return subContractId(Config.ansRegistryId, subNodePath, Config.groupIndex)
+  const subNodePath = keccak256(Buffer.from(label, 'hex')).slice(2)
+  return subContractId(Config.primaryRegistrarId, subNodePath, Config.groupIndex)
 }
 
-function getSubNodeContractAddress(label: string): string {
-  return addressFromContractId(getSubNodeContractId(label))
+function getPrimaryRecordContractAdd(name: string): string {
+  return addressFromContractId(getPrimaryRecordContractId(name))
 }
 
 const defaultANS: ANS = {
   async isAvailable(name: string): Promise<boolean> {
     try {
-      const recordContractAddress = getSubNodeContractAddress(name)
+      const recordContractAddress = getPrimaryRecordContractAdd(name)
       await web3.getCurrentNodeProvider().contracts.getContractsAddressState(
         recordContractAddress,
         {group: Config.groupIndex}
@@ -96,25 +93,12 @@ const defaultANS: ANS = {
     }
   },
 
-  async getRecord(name: string): Promise<RecordTypes.Fields> {
-    const recordContractAddress = getSubNodeContractAddress(name)
-    const recordInstance = Record.at(recordContractAddress)
+  async getPrimaryRecord(name: string): Promise<PrimaryRecordTypes.Fields> {
+    const recordContractAddress = getPrimaryRecordContractAdd(name)
+    const recordInstance = PrimaryRecord.at(recordContractAddress)
     const state = await recordInstance.fetchState()
     return state.fields
   },
-
-  // TODO: implement
-  async getAddresses(name: string): Promise<Map<number, string>> {
-    return new Map<number, string>()
-  },
-
-  async getPubkey(name: string): Promise<string> {
-    return name
-  },
-
-  async getName(address: string): Promise<string> {
-    return address
-  }
 }
 
 export const ANSProvider = ({

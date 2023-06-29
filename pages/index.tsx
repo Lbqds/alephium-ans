@@ -2,7 +2,7 @@ import Head from 'next/head'
 import { SearchInput } from '../utils/search-input'
 import styled from 'styled-components'
 import { Container, Stack, TopRight } from '../utils/styles'
-import WalletButton from './wallet-button'
+import WalletButton from './walletButton'
 
 export const SearchTitle = styled.div`
   display: flex;
