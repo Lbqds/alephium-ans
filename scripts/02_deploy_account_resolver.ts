@@ -7,12 +7,7 @@ import {
 } from '../artifacts/ts'
 
 const deployResolver: DeployFunction<Settings> = async (deployer: Deployer, network: Network<Settings>): Promise<void> => {
-  const accountInfo = {
-    resolver: '',
-    pubkey: '',
-    addresses: ''
-  }
-  const accountInfoTemplateResult = await deployer.deployContract(AccountInfo, { initialFields: accountInfo })
+  const accountInfoTemplateResult = await deployer.deployContract(AccountInfo, { initialFields: AccountInfo.getInitialFieldsWithDefaultValues() })
   const registrarId = deployer.account.group === network.settings.primaryGroup
     ? deployer.getDeployContractResult('PrimaryRegistrar').contractInstance.contractId
     : deployer.getDeployContractResult('SecondaryRegistrar').contractInstance.contractId

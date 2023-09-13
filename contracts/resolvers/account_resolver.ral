@@ -2,34 +2,34 @@ Contract AccountResolver(
   registrar: Registrar,
   accountInfoTemplateId: ByteVec
 ) extends Constants() implements Resolver {
-  event NewAccountInfoCreated(node: ByteVec, pubkey: ByteVec, addresses: ByteVec)
-  event AddressUpdated(node: ByteVec, chainId: U256, newAddress: ByteVec)
+  event NewAccountInfoCreated(node: ByteVec, pubkey: ByteVec, address: Address)
+  event AddressUpdated(node: ByteVec, newAddress: Address)
   event PubkeyUpdated(node: ByteVec, newPubkey: ByteVec)
   event AccountInfoRemoved(node: ByteVec)
 
   @using(preapprovedAssets = true)
-  pub fn newAccountInfo(node: ByteVec, payer: Address, pubkey: ByteVec, addresses: ByteVec) -> () {
+  pub fn newAccountInfo(node: ByteVec, payer: Address, pubkey: ByteVec, address: Address) -> () {
     let record = Record(subContractIdOf!(registrar, node))
     checkCaller!(callerAddress!() == record.getOwner(), ErrorCodes.InvalidCaller)
-    let (encodedImmutableFields, encodedMutableFields) = AccountInfo.encodeFields!(Resolver(selfContractId!()), pubkey, addresses)
+    let (encodedImmutableFields, encodedMutableFields) = AccountInfo.encodeFields!(Resolver(selfContractId!()), pubkey, address)
     copyCreateSubContract!{payer -> ALPH: 1 alph}(
       node,
       accountInfoTemplateId,
       encodedImmutableFields,
       encodedMutableFields
     )
-    emit NewAccountInfoCreated(node, pubkey, addresses)
+    emit NewAccountInfoCreated(node, pubkey, address)
   }
 
-  pub fn setAddress(node: ByteVec, chainId: U256, address: ByteVec) -> () {
+  pub fn setAddress(node: ByteVec, address: Address) -> () {
     let record = Record(subContractIdOf!(registrar, node))
     checkCaller!(callerAddress!() == record.getOwner(), ErrorCodes.InvalidCaller)
-    AccountInfo(subContractId!(node)).setAddress(chainId, address)
-    emit AddressUpdated(node, chainId, address)
+    AccountInfo(subContractId!(node)).setAddress(address)
+    emit AddressUpdated(node, address)
   }
 
-  pub fn getAddress(node: ByteVec, chainId: U256) -> ByteVec {
-    return AccountInfo(subContractId!(node)).getAddress(chainId)
+  pub fn getAddress(node: ByteVec) -> Address {
+    return AccountInfo(subContractId!(node)).getAddress()
   }
 
   pub fn setPubkey(node: ByteVec, pubkey: ByteVec) -> () {

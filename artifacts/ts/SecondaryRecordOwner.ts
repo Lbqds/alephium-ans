@@ -9,7 +9,7 @@ import {
   TestContractResult,
   HexString,
   ContractFactory,
-  SubscribeOptions,
+  EventSubscribeOptions,
   EventSubscription,
   CallContractParams,
   CallContractResult,
@@ -40,6 +40,10 @@ class Factory extends ContractFactory<
   SecondaryRecordOwnerInstance,
   SecondaryRecordOwnerTypes.Fields
 > {
+  getInitialFieldsWithDefaultValues() {
+    return this.contract.getInitialFieldsWithDefaultValues() as SecondaryRecordOwnerTypes.Fields;
+  }
+
   at(address: string): SecondaryRecordOwnerInstance {
     return new SecondaryRecordOwnerInstance(address);
   }

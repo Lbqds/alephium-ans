@@ -9,7 +9,7 @@ import {
   TestContractResult,
   HexString,
   ContractFactory,
-  SubscribeOptions,
+  EventSubscribeOptions,
   EventSubscription,
   CallContractParams,
   CallContractResult,
@@ -70,6 +70,10 @@ class Factory extends ContractFactory<
   SecondaryRecordInstance,
   SecondaryRecordTypes.Fields
 > {
+  getInitialFieldsWithDefaultValues() {
+    return this.contract.getInitialFieldsWithDefaultValues() as SecondaryRecordTypes.Fields;
+  }
+
   consts = {
     ErrorCodes: {
       InvalidCaller: BigInt(0),

@@ -1,5 +1,5 @@
 {
-  "fullNodeVersion": "v2.3.5",
+  "fullNodeVersion": "v2.5.5",
   "compilerOptionsUsed": {
     "ignoreUnusedConstantsWarnings": true,
     "ignoreUnusedVariablesWarnings": false,
@@ -11,16 +11,16 @@
   "infos": {
     "AccountInfo": {
       "sourceFile": "resolvers/account_info.ral",
-      "sourceCodeHash": "32e5739076f631752136df300b697ef2fd1b10fee4b01a67b983edab8dea1af9",
+      "sourceCodeHash": "d738c8c78394db93b3782b5329a9fbeb4338ce57ebc0ab41b27a685fe814ed56",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "9f41e2b03b94eee005a632fa7868b52b342910089286e5bc969e333283b47f23",
+      "codeHashDebug": "9df3ee296eec93ac44c16d34fe4ec91dfe1825755d65ab754d1dc5519062a458",
       "warnings": []
     },
     "AccountResolver": {
       "sourceFile": "resolvers/account_resolver.ral",
-      "sourceCodeHash": "25bebc72e19efae3c5a77052b98d84efe0aeda8b738d68b93f15c995aab13b6f",
+      "sourceCodeHash": "7a97ff5ab5ac9d580efafae55c2cb0fb8f018cf5fedd40b8fd1ba7a93302b2dc",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "afb858c254bb8a3ad6ae0f4715baf86091c9b235ceea5c8afe8c60e1af6130d0",
+      "codeHashDebug": "230ca09dc874076d521635df66966c7c67bc5677530a4f119fcf3b3ab9b56fd6",
       "warnings": []
     },
     "Constants": {

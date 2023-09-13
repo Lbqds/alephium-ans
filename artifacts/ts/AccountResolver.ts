@@ -9,7 +9,7 @@ import {
   TestContractResult,
   HexString,
   ContractFactory,
-  SubscribeOptions,
+  EventSubscribeOptions,
   EventSubscription,
   CallContractParams,
   CallContractResult,
@@ -39,12 +39,11 @@ export namespace AccountResolverTypes {
   export type NewAccountInfoCreatedEvent = ContractEvent<{
     node: HexString;
     pubkey: HexString;
-    addresses: HexString;
+    address: Address;
   }>;
   export type AddressUpdatedEvent = ContractEvent<{
     node: HexString;
-    chainId: bigint;
-    newAddress: HexString;
+    newAddress: Address;
   }>;
   export type PubkeyUpdatedEvent = ContractEvent<{
     node: HexString;
@@ -54,8 +53,8 @@ export namespace AccountResolverTypes {
 
   export interface CallMethodTable {
     getAddress: {
-      params: CallContractParams<{ node: HexString; chainId: bigint }>;
-      result: CallContractResult<HexString>;
+      params: CallContractParams<{ node: HexString }>;
+      result: CallContractResult<Address>;
     };
     getPubkey: {
       params: CallContractParams<{ node: HexString }>;
@@ -80,6 +79,16 @@ class Factory extends ContractFactory<
   AccountResolverInstance,
   AccountResolverTypes.Fields
 > {
+  getInitialFieldsWithDefaultValues() {
+    return this.contract.getInitialFieldsWithDefaultValues() as AccountResolverTypes.Fields;
+  }
+
+  eventIndex = {
+    NewAccountInfoCreated: 0,
+    AddressUpdated: 1,
+    PubkeyUpdated: 2,
+    AccountInfoRemoved: 3,
+  };
   consts = {
     ErrorCodes: {
       InvalidCaller: BigInt(0),
@@ -107,12 +116,7 @@ class Factory extends ContractFactory<
     newAccountInfo: async (
       params: TestContractParams<
         AccountResolverTypes.Fields,
-        {
-          node: HexString;
-          payer: Address;
-          pubkey: HexString;
-          addresses: HexString;
-        }
+        { node: HexString; payer: Address; pubkey: HexString; address: Address }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "newAccountInfo", params);
@@ -120,7 +124,7 @@ class Factory extends ContractFactory<
     setAddress: async (
       params: TestContractParams<
         AccountResolverTypes.Fields,
-        { node: HexString; chainId: bigint; address: HexString }
+        { node: HexString; address: Address }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "setAddress", params);
@@ -128,9 +132,9 @@ class Factory extends ContractFactory<
     getAddress: async (
       params: TestContractParams<
         AccountResolverTypes.Fields,
-        { node: HexString; chainId: bigint }
+        { node: HexString }
       >
-    ): Promise<TestContractResult<HexString>> => {
+    ): Promise<TestContractResult<Address>> => {
       return testMethod(this, "getAddress", params);
     },
     setPubkey: async (
@@ -157,7 +161,7 @@ export const AccountResolver = new Factory(
   Contract.fromJson(
     AccountResolverContractJson,
     "",
-    "afb858c254bb8a3ad6ae0f4715baf86091c9b235ceea5c8afe8c60e1af6130d0"
+    "230ca09dc874076d521635df66966c7c67bc5677530a4f119fcf3b3ab9b56fd6"
   )
 );
 
@@ -176,7 +180,7 @@ export class AccountResolverInstance extends ContractInstance {
   }
 
   subscribeNewAccountInfoCreatedEvent(
-    options: SubscribeOptions<AccountResolverTypes.NewAccountInfoCreatedEvent>,
+    options: EventSubscribeOptions<AccountResolverTypes.NewAccountInfoCreatedEvent>,
     fromCount?: number
   ): EventSubscription {
     return subscribeContractEvent(
@@ -189,7 +193,7 @@ export class AccountResolverInstance extends ContractInstance {
   }
 
   subscribeAddressUpdatedEvent(
-    options: SubscribeOptions<AccountResolverTypes.AddressUpdatedEvent>,
+    options: EventSubscribeOptions<AccountResolverTypes.AddressUpdatedEvent>,
     fromCount?: number
   ): EventSubscription {
     return subscribeContractEvent(
@@ -202,7 +206,7 @@ export class AccountResolverInstance extends ContractInstance {
   }
 
   subscribePubkeyUpdatedEvent(
-    options: SubscribeOptions<AccountResolverTypes.PubkeyUpdatedEvent>,
+    options: EventSubscribeOptions<AccountResolverTypes.PubkeyUpdatedEvent>,
     fromCount?: number
   ): EventSubscription {
     return subscribeContractEvent(
@@ -215,7 +219,7 @@ export class AccountResolverInstance extends ContractInstance {
   }
 
   subscribeAccountInfoRemovedEvent(
-    options: SubscribeOptions<AccountResolverTypes.AccountInfoRemovedEvent>,
+    options: EventSubscribeOptions<AccountResolverTypes.AccountInfoRemovedEvent>,
     fromCount?: number
   ): EventSubscription {
     return subscribeContractEvent(
@@ -228,7 +232,7 @@ export class AccountResolverInstance extends ContractInstance {
   }
 
   subscribeAllEvents(
-    options: SubscribeOptions<
+    options: EventSubscribeOptions<
       | AccountResolverTypes.NewAccountInfoCreatedEvent
       | AccountResolverTypes.AddressUpdatedEvent
       | AccountResolverTypes.PubkeyUpdatedEvent

@@ -1,4 +1,4 @@
-import { addressFromContractId, binToHex, subContractId, web3 } from "@alephium/web3"
+import { Address, addressFromContractId, binToHex, subContractId, web3 } from "@alephium/web3"
 import { randomBytes } from "crypto"
 import {
   alph,
@@ -18,17 +18,14 @@ import { AccountResolver, AccountResolverTypes, AccountInfo, AccountInfoTypes } 
 import { expectAssertionError } from "@alephium/web3-test"
 
 describe("test default resolver", () => {
-  const AlphChainId = 1234
-  const EthChainId = 60
-
   beforeAll(async () => {
     web3.setCurrentNodeProvider('http://127.0.0.1:22973', undefined, fetch)
     await buildProject()
   })
 
-  function createAccountInfo(resolver: string, pubkey: string, addresses: string, contractAddress: string): AccountInfoTypes.State {
+  function createAccountInfo(resolver: string, pubkey: string, address: Address, contractAddress: string): AccountInfoTypes.State {
     return AccountInfo.stateForTest(
-      { resolver, pubkey, addresses },
+      { resolver, pubkey, address },
       defaultInitialAsset,
       contractAddress,
     )
@@ -41,7 +38,7 @@ describe("test default resolver", () => {
     const nodeOwner = randomAssetAddress()
     const record = createPrimaryRecord(subContractAddress(registrarFixture.contractId, node, DefaultGroup), nodeOwner)
     const pubkey = binToHex(randomBytes(32))
-    const addresses = binToHex(randomBytes(33))
+    const address = randomAssetAddress()
 
     async function newAccountInfo(caller: string) {
       return await AccountResolver.tests.newAccountInfo({
@@ -49,7 +46,7 @@ describe("test default resolver", () => {
         initialFields: resolverFixture.initialFields(),
         initialAsset: defaultInitialAsset,
         inputAssets: [{ address: caller, asset: { alphAmount: alph(2) } }],
-        testArgs: { node, payer: nodeOwner, pubkey, addresses  },
+        testArgs: { node, payer: nodeOwner, pubkey, address  },
         existingContracts: [record, ...resolverFixture.states()]
       })
     }
@@ -60,16 +57,16 @@ describe("test default resolver", () => {
     const accountInfoId = subContractId(resolverFixture.contractId, node, 0)
     const accountInfoState = getContractState<AccountInfoTypes.Fields>(result.contracts, accountInfoId)
     expect(accountInfoState.fields.pubkey).toEqual(pubkey)
-    expect(accountInfoState.fields.addresses).toEqual(addresses)
+    expect(accountInfoState.fields.address).toEqual(address)
     expect(result.events.length).toEqual(2)
 
     const event = result.events[1] as AccountResolverTypes.NewAccountInfoCreatedEvent
     expect(event.fields.node).toEqual(node)
     expect(event.fields.pubkey).toEqual(pubkey)
-    expect(event.fields.addresses).toEqual(addresses)
+    expect(event.fields.address).toEqual(address)
   })
 
-  it('should set/get addresses', async () => {
+  it('should set/get address', async () => {
     const registrarFixture = createPrimaryRegistrar(randomAssetAddress())
     const resolverFixture = createAccountResolver(registrarFixture)
     const nodeOwner = randomAssetAddress()
@@ -78,53 +75,47 @@ describe("test default resolver", () => {
 
     const contractId = subContractId(resolverFixture.contractId, node, DefaultGroup)
 
-    async function setAddress(caller: string, chainId: number, address: string, accountInfoOpt?: AccountInfoTypes.State) {
+    async function setAddress(caller: string, address: Address, accountInfoOpt?: AccountInfoTypes.State) {
       const accountInfo = accountInfoOpt ?? createAccountInfo(resolverFixture.selfState.contractId, '', '', addressFromContractId(contractId))
       const result = await AccountResolver.tests.setAddress({
         address: resolverFixture.address,
         initialFields: resolverFixture.initialFields(),
         initialAsset: defaultInitialAsset,
         inputAssets: [{ address: caller, asset: { alphAmount: alph(2) } }],
-        testArgs: { node, chainId: BigInt(chainId), address },
+        testArgs: { node, address },
         existingContracts: [record, accountInfo, ...resolverFixture.dependencies]
       })
       expect(result.events.length).toEqual(1)
       const event = result.events[0] as AccountResolverTypes.AddressUpdatedEvent
       expect(event.fields.node).toEqual(node)
-      expect(event.fields.chainId).toEqual(BigInt(chainId))
       expect(event.fields.newAddress).toEqual(address)
       return getContractState<AccountInfoTypes.Fields>(result.contracts, contractId)
     }
 
-    async function getAddress(chainId: number, accountInfo: AccountInfoTypes.State) {
+    async function getAddress(accountInfo: AccountInfoTypes.State) {
       const result = await AccountResolver.tests.getAddress({
         address: resolverFixture.address,
         initialFields: resolverFixture.initialFields(),
         initialAsset: defaultInitialAsset,
-        testArgs: { node, chainId: BigInt(chainId) },
+        testArgs: { node },
         existingContracts: [record, accountInfo, ...resolverFixture.dependencies]
       })
       return result.returns
     }
 
-    const alphAddress = binToHex(base58.decode(nodeOwner))
+    const alphAddress = randomAssetAddress()
     await expectAssertionError(
-      setAddress(randomAssetAddress(), AlphChainId, alphAddress),
+      setAddress(randomAssetAddress(), alphAddress),
       resolverFixture.address,
       Number(ErrorCodes.InvalidCaller)
     )
 
-    const accontInfoState0 = await setAddress(nodeOwner, AlphChainId, alphAddress)
-    expect(await getAddress(AlphChainId, accontInfoState0)).toEqual(alphAddress)
+    const accontInfoState0 = await setAddress(nodeOwner, alphAddress)
+    expect(await getAddress(accontInfoState0)).toEqual(alphAddress)
 
     const newAlphAddress = binToHex(base58.decode(randomAssetAddress()))
-    const accountInfoState1 = await setAddress(nodeOwner, AlphChainId, newAlphAddress, accontInfoState0)
-    expect(await getAddress(AlphChainId, accountInfoState1)).toEqual(newAlphAddress)
-
-    const ethAddress = binToHex(randomBytes(20))
-    const accountInfoState2 = await setAddress(nodeOwner, EthChainId, ethAddress, accountInfoState1)
-    expect(await getAddress(AlphChainId, accountInfoState2)).toEqual(newAlphAddress)
-    expect(await getAddress(EthChainId, accountInfoState2)).toEqual(ethAddress)
+    const accountInfoState1 = await setAddress(nodeOwner, newAlphAddress, accontInfoState0)
+    expect(await getAddress(accountInfoState1)).toEqual(newAlphAddress)
   })
 
   it('should set/get pubkey', async () => {

@@ -1,18 +1,18 @@
 {
-  "version": "v2.3.5",
+  "version": "v2.5.5",
   "name": "AccountInfo",
-  "bytecode": "0305407640cd40dd40e640f501000208004047b3ce00410c7b16006716014366441601441702a0014317030c170416041603314c402ca001160416040e2a626d1705a00116040e2a16040f2a626c170616040f2a16062a1707160516002f4c0da0010c160462160244a001160716036244a10102160717044a7fd0a001160244a10101000106014034a0014317010c170216021601314c4026a001160216020e2a626d1703a00116020e2a16020f2a626c170416020f2a16042a1705160316002f4c07a00116020f2a16056202160517024a7fd60d047c7b18010001010007b3ce00410c7b1600a100010000000102a00002010201010007b3ce00410c7b1600b0",
-  "codeHash": "9f41e2b03b94eee005a632fa7868b52b342910089286e5bc969e333283b47f23",
+  "bytecode": "03051019402940324041010001010007b3ce00410c7b1600a101010000000102a00102010001010007b3ce00410c7b1600a100010000000102a00002010201010007b3ce00410c7b1600b0",
+  "codeHash": "9df3ee296eec93ac44c16d34fe4ec91dfe1825755d65ab754d1dc5519062a458",
   "fieldsSig": {
     "names": [
       "resolver",
       "pubkey",
-      "addresses"
+      "address"
     ],
     "types": [
       "ByteVec",
       "ByteVec",
-      "ByteVec"
+      "Address"
     ],
     "isMutable": [
       false,
@@ -28,15 +28,12 @@
       "useAssetsInContract": false,
       "isPublic": true,
       "paramNames": [
-        "chainId",
-        "address"
+        "newAddress"
       ],
       "paramTypes": [
-        "U256",
-        "ByteVec"
+        "Address"
       ],
       "paramIsMutable": [
-        false,
         false
       ],
       "returnTypes": []
@@ -46,17 +43,11 @@
       "usePreapprovedAssets": false,
       "useAssetsInContract": false,
       "isPublic": true,
-      "paramNames": [
-        "chainId"
-      ],
-      "paramTypes": [
-        "U256"
-      ],
-      "paramIsMutable": [
-        false
-      ],
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
       "returnTypes": [
-        "ByteVec"
+        "Address"
       ]
     },
     {

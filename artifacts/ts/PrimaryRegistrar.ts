@@ -9,7 +9,7 @@ import {
   TestContractResult,
   HexString,
   ContractFactory,
-  SubscribeOptions,
+  EventSubscribeOptions,
   EventSubscription,
   CallContractParams,
   CallContractResult,
@@ -46,6 +46,11 @@ class Factory extends ContractFactory<
   PrimaryRegistrarInstance,
   PrimaryRegistrarTypes.Fields
 > {
+  getInitialFieldsWithDefaultValues() {
+    return this.contract.getInitialFieldsWithDefaultValues() as PrimaryRegistrarTypes.Fields;
+  }
+
+  eventIndex = { NameRegistered: 0 };
   consts = {
     ErrorCodes: {
       InvalidCaller: BigInt(0),
@@ -113,7 +118,7 @@ export class PrimaryRegistrarInstance extends ContractInstance {
   }
 
   subscribeNameRegisteredEvent(
-    options: SubscribeOptions<PrimaryRegistrarTypes.NameRegisteredEvent>,
+    options: EventSubscribeOptions<PrimaryRegistrarTypes.NameRegisteredEvent>,
     fromCount?: number
   ): EventSubscription {
     return subscribeContractEvent(

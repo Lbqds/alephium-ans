@@ -1,42 +1,16 @@
 Contract AccountInfo(
   resolver: Resolver,
   mut pubkey: ByteVec,
-  mut addresses: ByteVec // chainId + length + address
+  mut address: Address
 ) extends Constants() {
   @using(updateFields = true)
-  pub fn setAddress(chainId: U256, address: ByteVec) -> () {
+  pub fn setAddress(newAddress: Address) -> () {
     checkCaller!(callerContractId!() == contractId!(resolver), ErrorCodes.InvalidCaller)
-    let newAddress = u256To2Byte!(chainId) ++ u256To1Byte!(size!(address)) ++ address
-    let length = size!(addresses)
-    let mut index = 0
-    while (index < length) {
-      let id = u256From2Byte!(byteVecSlice!(addresses, index, index + 2))
-      let addrLength = u256From1Byte!(byteVecSlice!(addresses, index + 2, index + 3))
-      let nextAddrIndex = index + 3 + addrLength
-      if (id == chainId) {
-        addresses = byteVecSlice!(addresses, 0, index)
-          ++ newAddress
-          ++ byteVecSlice!(addresses, nextAddrIndex, length)
-        return
-      }
-      index = nextAddrIndex
-    }
-    addresses = addresses ++ newAddress
+    address = newAddress
   }
 
-  pub fn getAddress(chainId: U256) -> ByteVec {
-    let length = size!(addresses)
-    let mut index = 0
-    while (index < length) {
-      let id = u256From2Byte!(byteVecSlice!(addresses, index, index + 2))
-      let addrLength = u256From1Byte!(byteVecSlice!(addresses, index + 2, index + 3))
-      let nextAddrIndex = index + 3 + addrLength
-      if (id == chainId) {
-        return byteVecSlice!(addresses, index + 3, nextAddrIndex)
-      }
-      index = nextAddrIndex
-    }
-    panic!(ErrorCodes.InvalidArgs)
+  pub fn getAddress() -> Address {
+    return address
   }
 
   @using(updateFields = true)

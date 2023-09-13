@@ -9,7 +9,7 @@ import {
   TestContractResult,
   HexString,
   ContractFactory,
-  SubscribeOptions,
+  EventSubscribeOptions,
   EventSubscription,
   CallContractParams,
   CallContractResult,
@@ -32,15 +32,15 @@ export namespace AccountInfoTypes {
   export type Fields = {
     resolver: HexString;
     pubkey: HexString;
-    addresses: HexString;
+    address: Address;
   };
 
   export type State = ContractState<Fields>;
 
   export interface CallMethodTable {
     getAddress: {
-      params: CallContractParams<{ chainId: bigint }>;
-      result: CallContractResult<HexString>;
+      params: Omit<CallContractParams<{}>, "args">;
+      result: CallContractResult<Address>;
     };
     getPubkey: {
       params: Omit<CallContractParams<{}>, "args">;
@@ -65,6 +65,10 @@ class Factory extends ContractFactory<
   AccountInfoInstance,
   AccountInfoTypes.Fields
 > {
+  getInitialFieldsWithDefaultValues() {
+    return this.contract.getInitialFieldsWithDefaultValues() as AccountInfoTypes.Fields;
+  }
+
   consts = {
     ErrorCodes: {
       InvalidCaller: BigInt(0),
@@ -84,14 +88,17 @@ class Factory extends ContractFactory<
     setAddress: async (
       params: TestContractParams<
         AccountInfoTypes.Fields,
-        { chainId: bigint; address: HexString }
+        { newAddress: Address }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "setAddress", params);
     },
     getAddress: async (
-      params: TestContractParams<AccountInfoTypes.Fields, { chainId: bigint }>
-    ): Promise<TestContractResult<HexString>> => {
+      params: Omit<
+        TestContractParams<AccountInfoTypes.Fields, never>,
+        "testArgs"
+      >
+    ): Promise<TestContractResult<Address>> => {
       return testMethod(this, "getAddress", params);
     },
     setPubkey: async (
@@ -126,7 +133,7 @@ export const AccountInfo = new Factory(
   Contract.fromJson(
     AccountInfoContractJson,
     "",
-    "9f41e2b03b94eee005a632fa7868b52b342910089286e5bc969e333283b47f23"
+    "9df3ee296eec93ac44c16d34fe4ec91dfe1825755d65ab754d1dc5519062a458"
   )
 );
 
@@ -142,13 +149,13 @@ export class AccountInfoInstance extends ContractInstance {
 
   methods = {
     getAddress: async (
-      params: AccountInfoTypes.CallMethodParams<"getAddress">
+      params?: AccountInfoTypes.CallMethodParams<"getAddress">
     ): Promise<AccountInfoTypes.CallMethodResult<"getAddress">> => {
       return callMethod(
         AccountInfo,
         this,
         "getAddress",
-        params,
+        params === undefined ? {} : params,
         getContractByCodeHash
       );
     },
