@@ -141,6 +141,20 @@
             "type": "U256",
             "value": "5"
           }
+        },
+        {
+          "name": "NameHasExpired",
+          "value": {
+            "type": "U256",
+            "value": "6"
+          }
+        },
+        {
+          "name": "InvalidCredentialTokenId",
+          "value": {
+            "type": "U256",
+            "value": "7"
+          }
         }
       ]
     }

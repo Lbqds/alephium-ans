@@ -35,11 +35,6 @@ export namespace SecondaryRegistrarTypes {
   };
 
   export type State = ContractState<Fields>;
-
-  export type NameRegisteredEvent = ContractEvent<{
-    name: HexString;
-    owner: Address;
-  }>;
 }
 
 class Factory extends ContractFactory<
@@ -50,7 +45,6 @@ class Factory extends ContractFactory<
     return this.contract.getInitialFieldsWithDefaultValues() as SecondaryRegistrarTypes.Fields;
   }
 
-  eventIndex = { NameRegistered: 0 };
   consts = {
     ErrorCodes: {
       InvalidCaller: BigInt(0),
@@ -59,6 +53,8 @@ class Factory extends ContractFactory<
       NameHasBeenRegistered: BigInt(3),
       ContractNotExists: BigInt(4),
       PrimaryRecordNotExists: BigInt(5),
+      NameHasExpired: BigInt(6),
+      InvalidCredentialTokenId: BigInt(7),
     },
   };
 
@@ -70,7 +66,14 @@ class Factory extends ContractFactory<
     register: async (
       params: TestContractParams<
         SecondaryRegistrarTypes.Fields,
-        { name: HexString; owner: Address; payer: Address; resolver: HexString }
+        {
+          name: HexString;
+          owner: Address;
+          payer: Address;
+          resolver: HexString;
+          credentialTokenId: HexString;
+          ttl: bigint;
+        }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "register", params);
@@ -83,7 +86,7 @@ export const SecondaryRegistrar = new Factory(
   Contract.fromJson(
     SecondaryRegistrarContractJson,
     "",
-    "a6064c2207259176d88d050f3d27529ca2d0ed0bc7e4eb90af29441d03c1c871"
+    "b43c1d3f90bb76d958b2650f389b2ee36bc78a543612e4a3c073380961664586"
   )
 );
 
@@ -95,22 +98,5 @@ export class SecondaryRegistrarInstance extends ContractInstance {
 
   async fetchState(): Promise<SecondaryRegistrarTypes.State> {
     return fetchContractState(SecondaryRegistrar, this);
-  }
-
-  async getContractEventsCurrentCount(): Promise<number> {
-    return getContractEventsCurrentCount(this.address);
-  }
-
-  subscribeNameRegisteredEvent(
-    options: EventSubscribeOptions<SecondaryRegistrarTypes.NameRegisteredEvent>,
-    fromCount?: number
-  ): EventSubscription {
-    return subscribeContractEvent(
-      SecondaryRegistrar.contract,
-      this,
-      options,
-      "NameRegistered",
-      fromCount
-    );
   }
 }

@@ -6,5 +6,7 @@ Abstract Contract Constants() {
     NameHasBeenRegistered  = 3
     ContractNotExists      = 4
     PrimaryRecordNotExists = 5
+    NameHasExpired         = 6
+    InvalidCredentialTokenId = 7
   }
 }

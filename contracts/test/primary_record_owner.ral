@@ -1,6 +1,6 @@
 Contract PrimaryRecordOwner(record: PrimaryRecord) {
-  @using(checkExternalCaller = false, assetsInContract = true)
+  @using(checkExternalCaller = false)
   pub fn destroyRecord(node: ByteVec) -> () {
-    record.destroy{selfAddress!() -> tokenId!(record): 1}(node)
+    record.destroy(node)
   }
 }

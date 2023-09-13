@@ -1,23 +1,26 @@
 {
   "version": "v2.5.5",
   "name": "SecondaryRecord",
-  "bytecode": "040609121b402b403b4060010000000102a00002010000000102a00102010000000102ce0102010001010007b4a000450c7b1600a100010001010007b4a000450c7b1600a101010201010015b3ce0041b4a000451b0c7ba0011400424c061600ce010e0ca0010100ce01b0",
-  "codeHash": "b60091ea5be04efec3a9eae229bb7450c3ea4105d61bc1bd81127cbbf8c7ca6c",
+  "bytecode": "050809121b40244044405440644074010000000102a00002010000000102a00102010000000102ce0102010000000102a00202010201010011b3ce00410c7ba0011400424c061600ce010e0ca0010100ce01b0010001010007b4a000450c7b1600a100010001010007b4a000450c7b1600a101010001010007b3ce00410c7b1600a102",
+  "codeHash": "a114be7923fdbe534dc536a8c58562f8323a263159364344f123d68f6ec8b41f",
   "fieldsSig": {
     "names": [
       "registrar",
       "owner",
       "resolver",
+      "ttl",
       "refundAddress"
     ],
     "types": [
       "ByteVec",
       "Address",
       "ByteVec",
+      "U256",
       "Address"
     ],
     "isMutable": [
       false,
+      true,
       true,
       true,
       false
@@ -62,6 +65,34 @@
       ]
     },
     {
+      "name": "getTTL",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "destroy",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": true,
+      "isPublic": true,
+      "paramNames": [
+        "node"
+      ],
+      "paramTypes": [
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": []
+    },
+    {
       "name": "setOwner",
       "usePreapprovedAssets": false,
       "useAssetsInContract": false,
@@ -94,15 +125,15 @@
       "returnTypes": []
     },
     {
-      "name": "destroy",
+      "name": "setTTL",
       "usePreapprovedAssets": false,
-      "useAssetsInContract": true,
+      "useAssetsInContract": false,
       "isPublic": true,
       "paramNames": [
-        "node"
+        "newTTL"
       ],
       "paramTypes": [
-        "ByteVec"
+        "U256"
       ],
       "paramIsMutable": [
         false
@@ -155,6 +186,20 @@
           "value": {
             "type": "U256",
             "value": "5"
+          }
+        },
+        {
+          "name": "NameHasExpired",
+          "value": {
+            "type": "U256",
+            "value": "6"
+          }
+        },
+        {
+          "name": "InvalidCredentialTokenId",
+          "value": {
+            "type": "U256",
+            "value": "7"
           }
         }
       ]

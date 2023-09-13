@@ -1,0 +1,25 @@
+import "std/fungible_token_interface"
+
+Contract RecordToken(registrar: ByteVec, name: ByteVec) extends Constants() implements IFungibleToken {
+  pub fn getSymbol() -> ByteVec {
+    return name
+  }
+
+  pub fn getName() -> ByteVec {
+    return name
+  }
+
+  pub fn getDecimals() -> U256 {
+    return 0
+  }
+
+  pub fn getTotalSupply() -> U256 {
+    return 1
+  }
+
+  @using(assetsInContract = true)
+  pub fn destroy(refundAddress: Address) -> () {
+    checkCaller!(callerContractId!() == registrar, ErrorCodes.InvalidCaller)
+    destroySelf!(refundAddress)
+  }
+}

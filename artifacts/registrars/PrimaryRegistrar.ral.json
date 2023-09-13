@@ -1,19 +1,22 @@
 {
   "version": "v2.5.5",
   "name": "PrimaryRegistrar",
-  "bytecode": "0203405640674077010304080040301600430c300d7b1602480e7b16004f4f17041604cb17051605c54c050f047c7b1816021301641601160313026417071706160213c40de0b6b3a7640000a21604ce00160616070dc21805160016015f010102020008b4a000450c7b16001601a8010001010007b4a000450c7b1600a100",
-  "codeHash": "66197a343d9e39daed319d816569593bb176b9a377dd7ff778a65c8b3fe32df7",
+  "bytecode": "0307408d41294136416b41b441c541d50103050c0040461600430c300d7b1602480e7b160413c09a7ec800340d7b16004f1705561706160516060004160216040002a9160616042a1707160516076b441708160213c40de0b6b3a7640000a216081600160200031709b116021302641601160316071609130464170b170a160213c40de0b6b3a7640000a21605ce00160a160bc11805160016011607600103030b0040581601480e7b160213c09a7ec800340d7b16004f17031603cb1704b40c0d16040100450c7b5617050c0d160401031706160516063413067b160116020002a916030c0d160401036b44cb1707160116070dbd16010d0c16070104160616022a1708160316086b441709160113c40de0b6b3a7640000a21609160016010003170a16080d0c16040107160a0d0c1604010806160016085f0000010101041343e816002c02000303050114b116011406414c5048000113036413006417041703160213c40de0b6b3a7640000a21600ce01160316040d1602c9020000020600402a1600cb17021602c54c4024160217030c0d16030103170416011604314c060f047c7b184a13160016046b44cb17050c0d160301020d0c1605010416000d0c16030104010102020008b4a000450c7b16001601a8010001010007b4a000450c7b1600a100",
+  "codeHash": "8a549a925b9a0066b714f5f01f8a730a40af76a3bebfcffafae1eeb900f43eb2",
   "fieldsSig": {
     "names": [
       "registrarOwner",
-      "recordTemplateId"
+      "recordTemplateId",
+      "recordTokenTemplateId"
     ],
     "types": [
       "Address",
+      "ByteVec",
       "ByteVec"
     ],
     "isMutable": [
       true,
+      false,
       false
     ]
   },
@@ -22,11 +25,24 @@
       "name": "NameRegistered",
       "fieldNames": [
         "name",
-        "owner"
+        "owner",
+        "ttl"
       ],
       "fieldTypes": [
         "ByteVec",
-        "Address"
+        "Address",
+        "U256"
+      ]
+    },
+    {
+      "name": "NameRenew",
+      "fieldNames": [
+        "name",
+        "ttl"
+      ],
+      "fieldTypes": [
+        "ByteVec",
+        "U256"
       ]
     }
   ],
@@ -40,17 +56,103 @@
         "name",
         "owner",
         "payer",
-        "resolver"
+        "resolver",
+        "duration"
       ],
       "paramTypes": [
         "ByteVec",
         "Address",
         "Address",
-        "ByteVec"
+        "ByteVec",
+        "U256"
       ],
       "paramIsMutable": [
         false,
         false,
+        false,
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "renew",
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
+        "name",
+        "payer",
+        "duration"
+      ],
+      "paramTypes": [
+        "ByteVec",
+        "Address",
+        "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "cost",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": false,
+      "paramNames": [
+        "duration"
+      ],
+      "paramTypes": [
+        "U256"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "createRecordToken",
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": false,
+      "paramNames": [
+        "path",
+        "name",
+        "payer"
+      ],
+      "paramTypes": [
+        "ByteVec",
+        "ByteVec",
+        "Address"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false
+      ],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "preRegister",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": false,
+      "paramNames": [
+        "node",
+        "currentTs"
+      ],
+      "paramTypes": [
+        "ByteVec",
+        "U256"
+      ],
+      "paramIsMutable": [
         false,
         false
       ],
@@ -92,7 +194,15 @@
       "returnTypes": []
     }
   ],
-  "constants": [],
+  "constants": [
+    {
+      "name": "MinRentDuration",
+      "value": {
+        "type": "U256",
+        "value": "2592000000"
+      }
+    }
+  ],
   "enums": [
     {
       "name": "ErrorCodes",
@@ -137,6 +247,20 @@
           "value": {
             "type": "U256",
             "value": "5"
+          }
+        },
+        {
+          "name": "NameHasExpired",
+          "value": {
+            "type": "U256",
+            "value": "6"
+          }
+        },
+        {
+          "name": "InvalidCredentialTokenId",
+          "value": {
+            "type": "U256",
+            "value": "7"
           }
         }
       ]

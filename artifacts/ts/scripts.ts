@@ -11,10 +11,26 @@ import {
   SignerProvider,
   HexString,
 } from "@alephium/web3";
-import { default as RegisterScriptJson } from "../scripts/Register.ral.json";
+import { default as RegisterPrimaryRecordScriptJson } from "../scripts/RegisterPrimaryRecord.ral.json";
+import { default as RegisterSecondaryRecordScriptJson } from "../scripts/RegisterSecondaryRecord.ral.json";
+import { default as RenewPrimaryRecordScriptJson } from "../scripts/RenewPrimaryRecord.ral.json";
 
-export const Register = new ExecutableScript<{
+export const RegisterPrimaryRecord = new ExecutableScript<{
   registrar: HexString;
   name: HexString;
   resolver: HexString;
-}>(Script.fromJson(RegisterScriptJson));
+  duration: bigint;
+}>(Script.fromJson(RegisterPrimaryRecordScriptJson));
+export const RegisterSecondaryRecord = new ExecutableScript<{
+  registrar: HexString;
+  name: HexString;
+  resolver: HexString;
+  credentialTokenId: HexString;
+  ttl: bigint;
+}>(Script.fromJson(RegisterSecondaryRecordScriptJson));
+export const RenewPrimaryRecord = new ExecutableScript<{
+  registrar: HexString;
+  name: HexString;
+  recordTokenId: HexString;
+  duration: bigint;
+}>(Script.fromJson(RenewPrimaryRecordScriptJson));

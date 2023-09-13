@@ -1,15 +1,18 @@
 Contract PrimaryRecord(
+  registrar: ByteVec,
   mut owner: Address,
   mut resolver: Resolver,
-  refundAddress: Address
-) extends Constants(), RecordBase(owner, resolver, refundAddress) {
-  @using(preapprovedAssets = true, assetsInContract = true)
-  pub fn destroy(node: ByteVec) -> () {
-    checkCaller!(callerAddress!() == owner, ErrorCodes.InvalidCaller)
-    if (contractId!(resolver) != #) {
-      resolver.removeNode(node, refundAddress)
-    }
-    burnToken!(callerAddress!(), selfContractId!(), 1)
-    destroySelf!(refundAddress)
+  mut ttl: U256,
+  refundAddress: Address,
+  mut recordTokenId: ByteVec
+) extends Constants(), RecordBase(registrar, owner, resolver, ttl, refundAddress) {
+  @using(updateFields = true)
+  pub fn setRecordTokenId(newRecordTokenId: ByteVec) -> () {
+    checkCaller!(callerContractId!() == registrar, ErrorCodes.InvalidCaller)
+    recordTokenId = newRecordTokenId
+  }
+
+  pub fn getRecordTokenId() -> ByteVec {
+    return recordTokenId
   }
 }

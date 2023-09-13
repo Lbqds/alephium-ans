@@ -1,25 +1,107 @@
-Contract PrimaryRegistrar(mut registrarOwner: Address, recordTemplateId: ByteVec) extends Constants() implements Registrar {
-  // TODO: do we need to consider the front-run
-  @using(preapprovedAssets = true, checkExternalCaller = false)
-  pub fn register(name: ByteVec, owner: Address, payer: Address, resolver: Resolver) -> () {
-    assert!(size!(name) != 0, ErrorCodes.InvalidArgs)
-    assert!(isAssetAddress!(payer), ErrorCodes.ExpectAssetAddress)
+Contract PrimaryRegistrar(
+  mut registrarOwner: Address,
+  recordTemplateId: ByteVec,
+  recordTokenTemplateId: ByteVec
+) extends Constants() implements Registrar {
+  const MinRentDuration = 2592000000 // 3 months in ms
 
-    let node = keccak256!(keccak256!(name))
+  fn cost(duration: U256) -> U256 {
+    return 1e-15 alph * duration
+  }
+
+  @using(preapprovedAssets = true)
+  fn createRecordToken(path: ByteVec, name: ByteVec, payer: Address) -> ByteVec {
+    let (tokenImmFields, tokenMutFields) = RecordToken.encodeFields!(selfContractId!(), name) // TODO: add the ANS prefix
+    return copyCreateSubContractWithToken!{payer -> ALPH: 1 alph}(
+      path,
+      recordTokenTemplateId,
+      tokenImmFields,
+      tokenMutFields,
+      1,
+      payer
+    )
+  }
+
+  fn preRegister(node: ByteVec, currentTs: U256) -> () {
     let recordId = subContractId!(node)
     if (contractExists!(recordId)) {
-      panic!(ErrorCodes.NameHasBeenRegistered)
+      let record = Record(recordId)
+      let ttl = record.getTTL()
+      if (currentTs < ttl) {
+        panic!(ErrorCodes.NameHasBeenRegistered)
+      } else {
+        let recordToken = RecordToken(subContractId!(node ++ u256To32Byte!(ttl)))
+        recordToken.destroy(record.getRefundAddress())
+        record.destroy(node)
+      }
     }
+  }
 
-    let (encodedImmutableFields, encodedMutableFields) = PrimaryRecord.encodeFields!(owner, resolver, payer)
-    copyCreateSubContractWithToken!{payer -> ALPH: 1 alph}(
+  @using(preapprovedAssets = true, checkExternalCaller = false)
+  pub fn register(
+    name: ByteVec,
+    owner: Address,
+    payer: Address,
+    resolver: Resolver,
+    duration: U256
+  ) -> () {
+    assert!(size!(name) != 0, ErrorCodes.InvalidArgs)
+    assert!(isAssetAddress!(payer), ErrorCodes.ExpectAssetAddress)
+    assert!(duration >= MinRentDuration, ErrorCodes.InvalidArgs)
+
+    let node = keccak256!(name)
+    let currentTs = blockTimeStamp!()
+    preRegister(node, currentTs)
+
+    transferTokenToSelf!(payer, ALPH, cost(duration))
+
+    let ttl = currentTs + duration
+    let recordTokenPath = node ++ u256To32Byte!(ttl)
+    let recordTokenId = createRecordToken{payer -> ALPH: 1 alph}(recordTokenPath, name, payer)
+
+    let (recordImmFields, recordMutFields) = PrimaryRecord.encodeFields!(
+      selfContractId!(),
+      owner,
+      resolver,
+      ttl,
+      payer,
+      recordTokenId
+    )
+    copyCreateSubContract!{payer -> ALPH: 1 alph}(
       node,
       recordTemplateId,
-      encodedImmutableFields,
-      encodedMutableFields,
-      1
+      recordImmFields,
+      recordMutFields
     )
-    emit NameRegistered(name, owner)
+    emit NameRegistered(name, owner, ttl)
+  }
+
+  @using(preapprovedAssets = true)
+  pub fn renew(name: ByteVec, payer: Address, duration: U256) -> () {
+    assert!(isAssetAddress!(payer), ErrorCodes.ExpectAssetAddress)
+    assert!(duration >= MinRentDuration, ErrorCodes.InvalidArgs)
+
+    let node = keccak256!(name)
+    let record = PrimaryRecord(subContractId!(node))
+    checkCaller!(callerAddress!() == record.getOwner(), ErrorCodes.InvalidCaller)
+
+    let currentTs = blockTimeStamp!()
+    let currentTTL = record.getTTL()
+    assert!(currentTs >= currentTTL, ErrorCodes.NameHasExpired)
+
+    transferTokenToSelf!(payer, ALPH, cost(duration))
+
+    let recordTokenId = subContractId!(node ++ u256To32Byte!(record.getTTL()))
+    burnToken!(payer, recordTokenId, 1)
+    RecordToken(recordTokenId).destroy(payer)
+
+    let newTTL = currentTTL + duration
+    let recordTokenPath = node ++ u256To32Byte!(newTTL)
+    let newRecordTokenId = createRecordToken{payer -> ALPH: 1 alph}(recordTokenPath, name, payer)
+    record.setTTL(newTTL)
+    record.setRecordTokenId(newRecordTokenId)
+
+    emit NameRenew(name, newTTL)
   }
 
   @using(preapprovedAssets = true, assetsInContract = true)

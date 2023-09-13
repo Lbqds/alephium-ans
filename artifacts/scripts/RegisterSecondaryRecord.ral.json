@@ -1,0 +1,40 @@
+{
+  "version": "v2.5.5",
+  "name": "RegisterSecondaryRecord",
+  "bytecodeTemplate": "01010300010013b4170016007a13c40de0b6b3a7640000a2{3}0da3{1}16001600{2}{3}{4}13060c{0}0100",
+  "fieldsSig": {
+    "names": [
+      "registrar",
+      "name",
+      "resolver",
+      "credentialTokenId",
+      "ttl"
+    ],
+    "types": [
+      "ByteVec",
+      "ByteVec",
+      "ByteVec",
+      "ByteVec",
+      "U256"
+    ],
+    "isMutable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "functions": [
+    {
+      "name": "main",
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": []
+    }
+  ]
+}

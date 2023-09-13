@@ -97,6 +97,8 @@ class Factory extends ContractFactory<
       NameHasBeenRegistered: BigInt(3),
       ContractNotExists: BigInt(4),
       PrimaryRecordNotExists: BigInt(5),
+      NameHasExpired: BigInt(6),
+      InvalidCredentialTokenId: BigInt(7),
     },
   };
 

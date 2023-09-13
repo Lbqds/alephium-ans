@@ -2,14 +2,7 @@ Contract SecondaryRecord(
   registrar: ByteVec,
   mut owner: Address,
   mut resolver: Resolver,
+  mut ttl: U256,
   refundAddress: Address
-) extends Constants(), RecordBase(owner, resolver, refundAddress) {
-  @using(assetsInContract = true)
-  pub fn destroy(node: ByteVec) -> () {
-    checkCaller!((callerContractId!() == registrar) || (callerAddress!() == owner), ErrorCodes.InvalidCaller)
-    if (contractId!(resolver) != #) {
-      resolver.removeNode(node, refundAddress)
-    }
-    destroySelf!(refundAddress)
-  }
+) extends Constants(), RecordBase(registrar, owner, resolver, ttl, refundAddress) {
 }

@@ -1,24 +1,33 @@
-Contract SecondaryRegistrar(primaryRegistrar: PrimaryRegistrar, recordTemplateId: ByteVec) extends Constants() implements Registrar {
+Contract SecondaryRegistrar(primaryRegistrar: PrimaryRegistrar, recordTemplateId: ByteVec) extends Constants() {
   @using(preapprovedAssets = true, checkExternalCaller = false)
-  pub fn register(name: ByteVec, owner: Address, payer: Address, resolver: Resolver) -> () {
+  pub fn register(
+    name: ByteVec,
+    owner: Address,
+    payer: Address,
+    resolver: Resolver,
+    credentialTokenId: ByteVec,
+    ttl: U256
+  ) -> () {
     assert!(size!(name) != 0, ErrorCodes.InvalidArgs)
     assert!(isAssetAddress!(payer), ErrorCodes.ExpectAssetAddress)
-    let node = keccak256!(keccak256!(name))
-    let primaryRecordId = subContractIdOf!(primaryRegistrar, node)
-    assert!(tokenRemaining!(payer, primaryRecordId) == 1, ErrorCodes.PrimaryRecordNotExists)
+
+    let node = keccak256!(name)
+    let recordTokenPath = node ++ u256To32Byte!(ttl)
+    let recordTokenId = subContractIdOf!(primaryRegistrar, recordTokenPath)
+    assert!(recordTokenId == credentialTokenId, ErrorCodes.InvalidCredentialTokenId)
+    assert!(tokenRemaining!(payer, recordTokenId) == 1, ErrorCodes.PrimaryRecordNotExists)
 
     let secondaryRecordId = subContractId!(node)
     if (contractExists!(secondaryRecordId)) {
       SecondaryRecord(secondaryRecordId).destroy(node)
     }
 
-    let (encodedImmutableFields, encodedMutableFields) = SecondaryRecord.encodeFields!(selfContractId!(), owner, resolver, payer)
+    let (encodedImmutableFields, encodedMutableFields) = SecondaryRecord.encodeFields!(selfContractId!(), owner, resolver, ttl, payer)
     copyCreateSubContract!{payer -> ALPH: 1 alph}(
       node,
       recordTemplateId,
       encodedImmutableFields,
       encodedMutableFields
     )
-    emit NameRegistered(name, owner)
   }
 }

@@ -33,6 +33,7 @@ export namespace SecondaryRecordTypes {
     registrar: HexString;
     owner: Address;
     resolver: HexString;
+    ttl: bigint;
     refundAddress: Address;
   };
 
@@ -50,6 +51,10 @@ export namespace SecondaryRecordTypes {
     getRefundAddress: {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<Address>;
+    };
+    getTTL: {
+      params: Omit<CallContractParams<{}>, "args">;
+      result: CallContractResult<bigint>;
     };
   }
   export type CallMethodParams<T extends keyof CallMethodTable> =
@@ -82,6 +87,8 @@ class Factory extends ContractFactory<
       NameHasBeenRegistered: BigInt(3),
       ContractNotExists: BigInt(4),
       PrimaryRecordNotExists: BigInt(5),
+      NameHasExpired: BigInt(6),
+      InvalidCredentialTokenId: BigInt(7),
     },
   };
 
@@ -114,6 +121,22 @@ class Factory extends ContractFactory<
     ): Promise<TestContractResult<Address>> => {
       return testMethod(this, "getRefundAddress", params);
     },
+    getTTL: async (
+      params: Omit<
+        TestContractParams<SecondaryRecordTypes.Fields, never>,
+        "testArgs"
+      >
+    ): Promise<TestContractResult<bigint>> => {
+      return testMethod(this, "getTTL", params);
+    },
+    destroy: async (
+      params: TestContractParams<
+        SecondaryRecordTypes.Fields,
+        { node: HexString }
+      >
+    ): Promise<TestContractResult<null>> => {
+      return testMethod(this, "destroy", params);
+    },
     setOwner: async (
       params: TestContractParams<
         SecondaryRecordTypes.Fields,
@@ -130,13 +153,13 @@ class Factory extends ContractFactory<
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "setResolver", params);
     },
-    destroy: async (
+    setTTL: async (
       params: TestContractParams<
         SecondaryRecordTypes.Fields,
-        { node: HexString }
+        { newTTL: bigint }
       >
     ): Promise<TestContractResult<null>> => {
-      return testMethod(this, "destroy", params);
+      return testMethod(this, "setTTL", params);
     },
   };
 }
@@ -146,7 +169,7 @@ export const SecondaryRecord = new Factory(
   Contract.fromJson(
     SecondaryRecordContractJson,
     "",
-    "b60091ea5be04efec3a9eae229bb7450c3ea4105d61bc1bd81127cbbf8c7ca6c"
+    "a114be7923fdbe534dc536a8c58562f8323a263159364344f123d68f6ec8b41f"
   )
 );
 
@@ -190,6 +213,17 @@ export class SecondaryRecordInstance extends ContractInstance {
         SecondaryRecord,
         this,
         "getRefundAddress",
+        params === undefined ? {} : params,
+        getContractByCodeHash
+      );
+    },
+    getTTL: async (
+      params?: SecondaryRecordTypes.CallMethodParams<"getTTL">
+    ): Promise<SecondaryRecordTypes.CallMethodResult<"getTTL">> => {
+      return callMethod(
+        SecondaryRecord,
+        this,
+        "getTTL",
         params === undefined ? {} : params,
         getContractByCodeHash
       );

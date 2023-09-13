@@ -1,6 +1,10 @@
 Interface Registrar {
-  event NameRegistered(name: ByteVec, owner: Address)
+  event NameRegistered(name: ByteVec, owner: Address, ttl: U256)
+  event NameRenew(name: ByteVec, ttl: U256)
 
   @using(preapprovedAssets = true, checkExternalCaller = false)
-  pub fn register(name: ByteVec, owner: Address, payer: Address, resolver: Resolver) -> ()
+  pub fn register(name: ByteVec, owner: Address, payer: Address, resolver: Resolver, duration: U256) -> ()
+
+  @using(preapprovedAssets = true, checkExternalCaller = false)
+  pub fn renew(name: ByteVec, payer: Address, duration: U256) -> ()
 }

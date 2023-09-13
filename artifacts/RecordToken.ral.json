@@ -1,50 +1,29 @@
 {
   "version": "v2.5.5",
-  "name": "PrimaryRecord",
-  "bytecode": "060a09121b402440444054406440744084408d010000000102a00002010000000102a00102010000000102ce0102010000000102a00202010201010011b3ce00410c7ba0011400424c061600ce010e0ca0010100ce01b0010001010007b4a000450c7b1600a100010001010007b4a000450c7b1600a101010001010007b3ce00410c7b1600a102010001010007b3ce00410c7b1600a103010000000102a00302",
-  "codeHash": "1e790b6768b90c85668bcc837fabd84ed985066500ab390b834833fc9892d895",
+  "name": "RecordToken",
+  "bytecode": "030509121a40224031010000000102ce0102010000000102ce01020100000001020c020100000001020d02010201010007b3ce00410c7b1600b0",
+  "codeHash": "a664b4bd3070d857687a38de41f41a4372307d5c98a98a787e2185689799bfdb",
   "fieldsSig": {
     "names": [
       "registrar",
-      "owner",
-      "resolver",
-      "ttl",
-      "refundAddress",
-      "recordTokenId"
+      "name",
+      "__stdInterfaceId"
     ],
     "types": [
       "ByteVec",
-      "Address",
       "ByteVec",
-      "U256",
-      "Address",
       "ByteVec"
     ],
     "isMutable": [
       false,
-      true,
-      true,
-      true,
       false,
-      true
+      false
     ]
   },
   "eventsSig": [],
   "functions": [
     {
-      "name": "getOwner",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": false,
-      "isPublic": true,
-      "paramNames": [],
-      "paramTypes": [],
-      "paramIsMutable": [],
-      "returnTypes": [
-        "Address"
-      ]
-    },
-    {
-      "name": "getResolver",
+      "name": "getSymbol",
       "usePreapprovedAssets": false,
       "useAssetsInContract": false,
       "isPublic": true,
@@ -56,7 +35,7 @@
       ]
     },
     {
-      "name": "getRefundAddress",
+      "name": "getName",
       "usePreapprovedAssets": false,
       "useAssetsInContract": false,
       "isPublic": true,
@@ -64,11 +43,23 @@
       "paramTypes": [],
       "paramIsMutable": [],
       "returnTypes": [
-        "Address"
+        "ByteVec"
       ]
     },
     {
-      "name": "getTTL",
+      "name": "getDecimals",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "getTotalSupply",
       "usePreapprovedAssets": false,
       "useAssetsInContract": false,
       "isPublic": true,
@@ -85,23 +76,7 @@
       "useAssetsInContract": true,
       "isPublic": true,
       "paramNames": [
-        "node"
-      ],
-      "paramTypes": [
-        "ByteVec"
-      ],
-      "paramIsMutable": [
-        false
-      ],
-      "returnTypes": []
-    },
-    {
-      "name": "setOwner",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": false,
-      "isPublic": true,
-      "paramNames": [
-        "newOwner"
+        "refundAddress"
       ],
       "paramTypes": [
         "Address"
@@ -110,66 +85,6 @@
         false
       ],
       "returnTypes": []
-    },
-    {
-      "name": "setResolver",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": false,
-      "isPublic": true,
-      "paramNames": [
-        "newResolver"
-      ],
-      "paramTypes": [
-        "ByteVec"
-      ],
-      "paramIsMutable": [
-        false
-      ],
-      "returnTypes": []
-    },
-    {
-      "name": "setTTL",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": false,
-      "isPublic": true,
-      "paramNames": [
-        "newTTL"
-      ],
-      "paramTypes": [
-        "U256"
-      ],
-      "paramIsMutable": [
-        false
-      ],
-      "returnTypes": []
-    },
-    {
-      "name": "setRecordTokenId",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": false,
-      "isPublic": true,
-      "paramNames": [
-        "newRecordTokenId"
-      ],
-      "paramTypes": [
-        "ByteVec"
-      ],
-      "paramIsMutable": [
-        false
-      ],
-      "returnTypes": []
-    },
-    {
-      "name": "getRecordTokenId",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": false,
-      "isPublic": true,
-      "paramNames": [],
-      "paramTypes": [],
-      "paramIsMutable": [],
-      "returnTypes": [
-        "ByteVec"
-      ]
     }
   ],
   "constants": [],
@@ -235,5 +150,6 @@
         }
       ]
     }
-  ]
+  ],
+  "stdInterfaceId": "0001"
 }

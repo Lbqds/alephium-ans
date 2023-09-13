@@ -1,6 +1,8 @@
 Abstract Contract RecordBase(
+  registrar: ByteVec,
   mut owner: Address,
   mut resolver: Resolver,
+  mut ttl: U256,
   refundAddress: Address
 ) extends Constants() implements Record {
   pub fn getOwner() -> Address {
@@ -25,5 +27,24 @@ Abstract Contract RecordBase(
 
   pub fn getRefundAddress() -> Address {
     return refundAddress
+  }
+
+  pub fn getTTL() -> U256 {
+    return ttl
+  }
+
+  @using(updateFields = true)
+  pub fn setTTL(newTTL: U256) -> () {
+    checkCaller!(callerContractId!() == registrar, ErrorCodes.InvalidCaller)
+    ttl = newTTL
+  }
+
+  @using(assetsInContract = true)
+  pub fn destroy(node: ByteVec) -> () {
+    checkCaller!(callerContractId!() == registrar, ErrorCodes.InvalidCaller)
+    if (contractId!(resolver) != #) {
+      resolver.removeNode(node, refundAddress)
+    }
+    destroySelf!(refundAddress)
   }
 }

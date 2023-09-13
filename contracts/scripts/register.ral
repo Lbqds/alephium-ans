@@ -1,4 +1,0 @@
-TxScript Register(registrar: PrimaryRegistrar, name: ByteVec, resolver: Resolver) {
-  let owner = callerAddress!()
-  registrar.register{owner -> ALPH: tokenRemaining!(owner, ALPH)}(name, owner, owner, resolver)
-}

@@ -32,6 +32,7 @@ export namespace PrimaryRegistrarTypes {
   export type Fields = {
     registrarOwner: Address;
     recordTemplateId: HexString;
+    recordTokenTemplateId: HexString;
   };
 
   export type State = ContractState<Fields>;
@@ -39,7 +40,9 @@ export namespace PrimaryRegistrarTypes {
   export type NameRegisteredEvent = ContractEvent<{
     name: HexString;
     owner: Address;
+    ttl: bigint;
   }>;
+  export type NameRenewEvent = ContractEvent<{ name: HexString; ttl: bigint }>;
 }
 
 class Factory extends ContractFactory<
@@ -50,8 +53,9 @@ class Factory extends ContractFactory<
     return this.contract.getInitialFieldsWithDefaultValues() as PrimaryRegistrarTypes.Fields;
   }
 
-  eventIndex = { NameRegistered: 0 };
+  eventIndex = { NameRegistered: 0, NameRenew: 1 };
   consts = {
+    MinRentDuration: BigInt(2592000000),
     ErrorCodes: {
       InvalidCaller: BigInt(0),
       InvalidArgs: BigInt(1),
@@ -59,6 +63,8 @@ class Factory extends ContractFactory<
       NameHasBeenRegistered: BigInt(3),
       ContractNotExists: BigInt(4),
       PrimaryRecordNotExists: BigInt(5),
+      NameHasExpired: BigInt(6),
+      InvalidCredentialTokenId: BigInt(7),
     },
   };
 
@@ -70,10 +76,48 @@ class Factory extends ContractFactory<
     register: async (
       params: TestContractParams<
         PrimaryRegistrarTypes.Fields,
-        { name: HexString; owner: Address; payer: Address; resolver: HexString }
+        {
+          name: HexString;
+          owner: Address;
+          payer: Address;
+          resolver: HexString;
+          duration: bigint;
+        }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "register", params);
+    },
+    renew: async (
+      params: TestContractParams<
+        PrimaryRegistrarTypes.Fields,
+        { name: HexString; payer: Address; duration: bigint }
+      >
+    ): Promise<TestContractResult<null>> => {
+      return testMethod(this, "renew", params);
+    },
+    cost: async (
+      params: TestContractParams<
+        PrimaryRegistrarTypes.Fields,
+        { duration: bigint }
+      >
+    ): Promise<TestContractResult<bigint>> => {
+      return testMethod(this, "cost", params);
+    },
+    createRecordToken: async (
+      params: TestContractParams<
+        PrimaryRegistrarTypes.Fields,
+        { path: HexString; name: HexString; payer: Address }
+      >
+    ): Promise<TestContractResult<HexString>> => {
+      return testMethod(this, "createRecordToken", params);
+    },
+    preRegister: async (
+      params: TestContractParams<
+        PrimaryRegistrarTypes.Fields,
+        { node: HexString; currentTs: bigint }
+      >
+    ): Promise<TestContractResult<null>> => {
+      return testMethod(this, "preRegister", params);
     },
     withdraw: async (
       params: TestContractParams<
@@ -99,7 +143,7 @@ export const PrimaryRegistrar = new Factory(
   Contract.fromJson(
     PrimaryRegistrarContractJson,
     "",
-    "66197a343d9e39daed319d816569593bb176b9a377dd7ff778a65c8b3fe32df7"
+    "8a549a925b9a0066b714f5f01f8a730a40af76a3bebfcffafae1eeb900f43eb2"
   )
 );
 
@@ -126,6 +170,34 @@ export class PrimaryRegistrarInstance extends ContractInstance {
       this,
       options,
       "NameRegistered",
+      fromCount
+    );
+  }
+
+  subscribeNameRenewEvent(
+    options: EventSubscribeOptions<PrimaryRegistrarTypes.NameRenewEvent>,
+    fromCount?: number
+  ): EventSubscription {
+    return subscribeContractEvent(
+      PrimaryRegistrar.contract,
+      this,
+      options,
+      "NameRenew",
+      fromCount
+    );
+  }
+
+  subscribeAllEvents(
+    options: EventSubscribeOptions<
+      | PrimaryRegistrarTypes.NameRegisteredEvent
+      | PrimaryRegistrarTypes.NameRenewEvent
+    >,
+    fromCount?: number
+  ): EventSubscription {
+    return subscribeContractEvents(
+      PrimaryRegistrar.contract,
+      this,
+      options,
       fromCount
     );
   }

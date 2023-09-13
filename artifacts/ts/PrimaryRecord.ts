@@ -30,9 +30,12 @@ import { getContractByCodeHash } from "./contracts";
 // Custom types for the contract
 export namespace PrimaryRecordTypes {
   export type Fields = {
+    registrar: HexString;
     owner: Address;
     resolver: HexString;
+    ttl: bigint;
     refundAddress: Address;
+    recordTokenId: HexString;
   };
 
   export type State = ContractState<Fields>;
@@ -49,6 +52,14 @@ export namespace PrimaryRecordTypes {
     getRefundAddress: {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<Address>;
+    };
+    getTTL: {
+      params: Omit<CallContractParams<{}>, "args">;
+      result: CallContractResult<bigint>;
+    };
+    getRecordTokenId: {
+      params: Omit<CallContractParams<{}>, "args">;
+      result: CallContractResult<HexString>;
     };
   }
   export type CallMethodParams<T extends keyof CallMethodTable> =
@@ -81,6 +92,8 @@ class Factory extends ContractFactory<
       NameHasBeenRegistered: BigInt(3),
       ContractNotExists: BigInt(4),
       PrimaryRecordNotExists: BigInt(5),
+      NameHasExpired: BigInt(6),
+      InvalidCredentialTokenId: BigInt(7),
     },
   };
 
@@ -113,6 +126,19 @@ class Factory extends ContractFactory<
     ): Promise<TestContractResult<Address>> => {
       return testMethod(this, "getRefundAddress", params);
     },
+    getTTL: async (
+      params: Omit<
+        TestContractParams<PrimaryRecordTypes.Fields, never>,
+        "testArgs"
+      >
+    ): Promise<TestContractResult<bigint>> => {
+      return testMethod(this, "getTTL", params);
+    },
+    destroy: async (
+      params: TestContractParams<PrimaryRecordTypes.Fields, { node: HexString }>
+    ): Promise<TestContractResult<null>> => {
+      return testMethod(this, "destroy", params);
+    },
     setOwner: async (
       params: TestContractParams<
         PrimaryRecordTypes.Fields,
@@ -129,10 +155,26 @@ class Factory extends ContractFactory<
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "setResolver", params);
     },
-    destroy: async (
-      params: TestContractParams<PrimaryRecordTypes.Fields, { node: HexString }>
+    setTTL: async (
+      params: TestContractParams<PrimaryRecordTypes.Fields, { newTTL: bigint }>
     ): Promise<TestContractResult<null>> => {
-      return testMethod(this, "destroy", params);
+      return testMethod(this, "setTTL", params);
+    },
+    setRecordTokenId: async (
+      params: TestContractParams<
+        PrimaryRecordTypes.Fields,
+        { newRecordTokenId: HexString }
+      >
+    ): Promise<TestContractResult<null>> => {
+      return testMethod(this, "setRecordTokenId", params);
+    },
+    getRecordTokenId: async (
+      params: Omit<
+        TestContractParams<PrimaryRecordTypes.Fields, never>,
+        "testArgs"
+      >
+    ): Promise<TestContractResult<HexString>> => {
+      return testMethod(this, "getRecordTokenId", params);
     },
   };
 }
@@ -142,7 +184,7 @@ export const PrimaryRecord = new Factory(
   Contract.fromJson(
     PrimaryRecordContractJson,
     "",
-    "0d828dfda703f6817981883611662f282434010ff0218c7c4c30b9f8fd0c08f0"
+    "1e790b6768b90c85668bcc837fabd84ed985066500ab390b834833fc9892d895"
   )
 );
 
@@ -186,6 +228,28 @@ export class PrimaryRecordInstance extends ContractInstance {
         PrimaryRecord,
         this,
         "getRefundAddress",
+        params === undefined ? {} : params,
+        getContractByCodeHash
+      );
+    },
+    getTTL: async (
+      params?: PrimaryRecordTypes.CallMethodParams<"getTTL">
+    ): Promise<PrimaryRecordTypes.CallMethodResult<"getTTL">> => {
+      return callMethod(
+        PrimaryRecord,
+        this,
+        "getTTL",
+        params === undefined ? {} : params,
+        getContractByCodeHash
+      );
+    },
+    getRecordTokenId: async (
+      params?: PrimaryRecordTypes.CallMethodParams<"getRecordTokenId">
+    ): Promise<PrimaryRecordTypes.CallMethodResult<"getRecordTokenId">> => {
+      return callMethod(
+        PrimaryRecord,
+        this,
+        "getRecordTokenId",
         params === undefined ? {} : params,
         getContractByCodeHash
       );

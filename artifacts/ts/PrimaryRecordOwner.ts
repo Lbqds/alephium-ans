@@ -65,7 +65,7 @@ export const PrimaryRecordOwner = new Factory(
   Contract.fromJson(
     PrimaryRecordOwnerContractJson,
     "",
-    "a8586228adfc687c34c9f4b7d423b113196e29a0b6212b088d8c0b63e0c11f91"
+    "fc58df069b4a1490e256beae9da64a9d7fdf32b31f1c3ceecfe2953cc6f6ce27"
   )
 );
 

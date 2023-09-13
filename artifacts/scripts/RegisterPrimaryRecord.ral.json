@@ -1,0 +1,37 @@
+{
+  "version": "v2.5.5",
+  "name": "RegisterPrimaryRecord",
+  "bytecodeTemplate": "0101030001000fb4170016001600a4a2{1}16001600{2}{3}110c{0}0100",
+  "fieldsSig": {
+    "names": [
+      "registrar",
+      "name",
+      "resolver",
+      "duration"
+    ],
+    "types": [
+      "ByteVec",
+      "ByteVec",
+      "ByteVec",
+      "U256"
+    ],
+    "isMutable": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "functions": [
+    {
+      "name": "main",
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": []
+    }
+  ]
+}

@@ -1,8 +1,8 @@
 {
   "version": "v2.5.5",
   "name": "PrimaryRecordOwner",
-  "bytecode": "010113010201010009b2ce000da316000d0cce000105",
-  "codeHash": "a8586228adfc687c34c9f4b7d423b113196e29a0b6212b088d8c0b63e0c11f91",
+  "bytecode": "01010e01000101000516000d0cce000104",
+  "codeHash": "fc58df069b4a1490e256beae9da64a9d7fdf32b31f1c3ceecfe2953cc6f6ce27",
   "fieldsSig": {
     "names": [
       "record"
@@ -19,7 +19,7 @@
     {
       "name": "destroyRecord",
       "usePreapprovedAssets": false,
-      "useAssetsInContract": true,
+      "useAssetsInContract": false,
       "isPublic": true,
       "paramNames": [
         "node"

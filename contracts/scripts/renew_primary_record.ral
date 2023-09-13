@@ -1,0 +1,4 @@
+TxScript RenewPrimaryRecord(registrar: PrimaryRegistrar, name: ByteVec, recordTokenId: ByteVec, duration: U256) {
+  let caller = callerAddress!()
+  registrar.renew{caller -> ALPH: tokenRemaining!(caller, ALPH), recordTokenId: 1}(name, caller, duration)
+}

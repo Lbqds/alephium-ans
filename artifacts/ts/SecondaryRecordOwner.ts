@@ -65,7 +65,7 @@ export const SecondaryRecordOwner = new Factory(
   Contract.fromJson(
     SecondaryRecordOwnerContractJson,
     "",
-    "d4fc9435911b1815c226fe271b0846aac84b098d50bf3ae8496093398c817bf6"
+    "fc58df069b4a1490e256beae9da64a9d7fdf32b31f1c3ceecfe2953cc6f6ce27"
   )
 );
 
