@@ -3,8 +3,10 @@ import {
   addressFromContractId,
   Asset,
   binToHex,
+  contractIdFromAddress,
   ContractState,
   Fields,
+  groupOfAddress,
   HexString,
   ONE_ALPH,
   Project,
@@ -113,11 +115,6 @@ export function randomAssetAddress(): string {
   return base58.encode(bytes)
 }
 
-export function randomContractId(groupIndex: number): string {
-  const contractId = binToHex(randomBytes(32))
-  return contractId.slice(0, -2) + groupIndex.toString(16).padStart(2, '0')
-}
-
 export function getContractState<T extends Fields>(contracts: ContractState[], idOrAddress: string): ContractState<T> {
   return contracts.find((c) => c.contractId === idOrAddress || c.address === idOrAddress)! as ContractState<T>
 }
@@ -142,4 +139,10 @@ export async function expectVMAssertionError(promise: Promise<any>, errorCode: s
 
 export function getCredentialTokenPath(node: HexString, ttl: bigint): HexString {
   return node + ttl.toString(16).padStart(64, '0')
+}
+
+export function randomContractId(group = 0): string {
+  const address = randomContractAddress()
+  if (groupOfAddress(address) === group) return binToHex(contractIdFromAddress(address))
+  return randomContractId(group)
 }

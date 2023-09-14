@@ -9,11 +9,12 @@ import {
   getContractState,
   createRecord,
   getCredentialTokenPath,
-  ErrorCodes
+  ErrorCodes,
+  randomContractId
 } from "./fixtures/ANSFixture"
 import { keccak256 } from "ethers/lib/utils"
 import { RecordTypes, SecondaryRegistrar } from "../artifacts/ts"
-import { expectAssertionError, randomContractId } from "@alephium/web3-test"
+import { expectAssertionError } from "@alephium/web3-test"
 
 describe("test secondary registrar", () => {
   const encoder = new TextEncoder()
@@ -35,7 +36,7 @@ describe("test secondary registrar", () => {
     return subContractId(primaryRegistrarId, path, DefaultGroup)
   }
 
-  async function register(nodeOwner: string, credentialTokenId: string, ttl: bigint, extraContracts: ContractState[] = []) {
+  async function register(nodeOwner: string, credentialTokenId: string, ttl: bigint, currentTs: number, extraContracts: ContractState[] = []) {
     return SecondaryRegistrar.tests.register({
       address: registrarFixture.address,
       initialFields: registrarFixture.initialFields(),
@@ -48,7 +49,8 @@ describe("test secondary registrar", () => {
         credentialTokenId,
         ttl
       },
-      existingContracts: [...registrarFixture.states(), ...extraContracts]
+      existingContracts: [...registrarFixture.states(), ...extraContracts],
+      blockTimeStamp: currentTs
     })
   }
 
@@ -57,7 +59,7 @@ describe("test secondary registrar", () => {
     const ttl = 100n
     const credentialTokenId = getCredentialTokenId(ttl)
 
-    const testResult = await register(nodeOwner, credentialTokenId, ttl)
+    const testResult = await register(nodeOwner, credentialTokenId, ttl, 99)
     const recordState = getContractState<RecordTypes.Fields>(testResult.contracts, secondaryRecordId)
     expect(recordState.fields.owner).toEqual(nodeOwner)
     expect(recordState.fields.ttl).toEqual(ttl)
@@ -65,19 +67,20 @@ describe("test secondary registrar", () => {
     const contractOutput = testResult.txOutputs.find((o) => o.address === addressFromContractId(secondaryRecordId))!
     expect(contractOutput.tokens).toEqual([])
 
-    expectAssertionError(register(nodeOwner, randomContractId(), ttl), registrarFixture.address, Number(ErrorCodes.InvalidCredentialToken))
-    expectAssertionError(register(nodeOwner, credentialTokenId, ttl + 1n), registrarFixture.address, Number(ErrorCodes.InvalidCredentialToken))
+    expectAssertionError(register(nodeOwner, credentialTokenId, ttl, 100), registrarFixture.address, Number(ErrorCodes.InvalidArgs))
+    expectAssertionError(register(nodeOwner, randomContractId(), ttl, 99), registrarFixture.address, Number(ErrorCodes.InvalidCredentialToken))
+    expectAssertionError(register(nodeOwner, credentialTokenId, ttl + 1n, 99), registrarFixture.address, Number(ErrorCodes.InvalidCredentialToken))
   })
 
   test('remove the expired record and create a new record', async () => {
     const nodeOwner = randomAssetAddress()
     const secondaryRecord = createRecord(addressFromContractId(secondaryRecordId), registrarFixture.contractId, nodeOwner, 100n)
     const invalidCredentialTokenId = getCredentialTokenId(99n)
-    expectAssertionError(register(nodeOwner, invalidCredentialTokenId, 99n, [secondaryRecord]), registrarFixture.address, Number(ErrorCodes.InvalidCredentialToken))
+    expectAssertionError(register(nodeOwner, invalidCredentialTokenId, 99n, 98, [secondaryRecord]), registrarFixture.address, Number(ErrorCodes.InvalidCredentialToken))
 
     const ttl = 101n
     const credentialTokenId = getCredentialTokenId(ttl)
-    const testResult = await register(nodeOwner, credentialTokenId, ttl, [secondaryRecord])
+    const testResult = await register(nodeOwner, credentialTokenId, ttl, 98, [secondaryRecord])
     const newSecondaryRecord = getContractState<RecordTypes.Fields>(testResult.contracts, secondaryRecordId)
     expect(newSecondaryRecord.fields.ttl).toEqual(ttl)
   })

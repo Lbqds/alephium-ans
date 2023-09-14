@@ -9,10 +9,13 @@ Contract SecondaryRegistrar(primaryRegistrar: PrimaryRegistrar, recordTemplateId
   ) -> () {
     assert!(size!(name) != 0, ErrorCodes.InvalidArgs)
     assert!(isAssetAddress!(payer), ErrorCodes.ExpectAssetAddress)
+    assert!(blockTimeStamp!() < ttl, ErrorCodes.InvalidArgs)
 
     let node = keccak256!(name)
     let credentialTokenPath = node ++ u256To32Byte!(ttl)
-    let expectedCredentialTokenId = subContractIdOf!(primaryRegistrar, credentialTokenPath)
+    // TODO: improve this
+    let primaryRegistrarGroup = byteVecSlice!(contractId!(primaryRegistrar), 31, 32)
+    let expectedCredentialTokenId = byteVecSlice!(subContractIdOf!(primaryRegistrar, credentialTokenPath), 0, 31) ++ primaryRegistrarGroup
     assert!(credentialTokenId == expectedCredentialTokenId, ErrorCodes.InvalidCredentialToken)
     assert!(tokenRemaining!(payer, credentialTokenId) == 1, ErrorCodes.InvalidCredentialToken)
 

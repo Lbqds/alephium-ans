@@ -11,10 +11,21 @@ import {
   SignerProvider,
   HexString,
 } from "@alephium/web3";
+import { default as BurnCredentialTokenScriptJson } from "../scripts/BurnCredentialToken.ral.json";
+import { default as MintCredentialTokenScriptJson } from "../scripts/MintCredentialToken.ral.json";
 import { default as RegisterPrimaryRecordScriptJson } from "../scripts/RegisterPrimaryRecord.ral.json";
 import { default as RegisterSecondaryRecordScriptJson } from "../scripts/RegisterSecondaryRecord.ral.json";
 import { default as RenewPrimaryRecordScriptJson } from "../scripts/RenewPrimaryRecord.ral.json";
 
+export const BurnCredentialToken = new ExecutableScript<{
+  registrar: HexString;
+  name: HexString;
+  credentialTokenId: HexString;
+}>(Script.fromJson(BurnCredentialTokenScriptJson));
+export const MintCredentialToken = new ExecutableScript<{
+  registrar: HexString;
+  name: HexString;
+}>(Script.fromJson(MintCredentialTokenScriptJson));
 export const RegisterPrimaryRecord = new ExecutableScript<{
   registrar: HexString;
   name: HexString;
@@ -29,6 +40,5 @@ export const RegisterSecondaryRecord = new ExecutableScript<{
 export const RenewPrimaryRecord = new ExecutableScript<{
   registrar: HexString;
   name: HexString;
-  credentialTokenId: HexString;
   duration: bigint;
 }>(Script.fromJson(RenewPrimaryRecordScriptJson));

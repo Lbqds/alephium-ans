@@ -1,5 +1,5 @@
 {
-  "fullNodeVersion": "v2.5.5",
+  "fullNodeVersion": "v2.5.6",
   "compilerOptionsUsed": {
     "ignoreUnusedConstantsWarnings": true,
     "ignoreUnusedVariablesWarnings": false,
@@ -9,6 +9,13 @@
     "ignoreCheckExternalCallerWarnings": false
   },
   "infos": {
+    "BurnCredentialToken": {
+      "sourceFile": "scripts/burn_credential_token.ral",
+      "sourceCodeHash": "ac04199ad4949b94154868f010c43ac6116c77135ea1fc4293a4cb488b50a56f",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "",
+      "warnings": []
+    },
     "Constants": {
       "sourceFile": "constants.ral",
       "sourceCodeHash": "2c261ace228dd3ede9a56cd677bf3c87f7f85b272b608f6bda864f8fe96c9bf5",
@@ -26,6 +33,13 @@
     "IFungibleToken": {
       "sourceFile": "../node_modules/@alephium/web3/std/fungible_token_interface.ral",
       "sourceCodeHash": "6809cb06fb20fa7edf529461998beeebd12b1636d439612cca2f84214dbf4a20",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "",
+      "warnings": []
+    },
+    "MintCredentialToken": {
+      "sourceFile": "scripts/mint_credential_token.ral",
+      "sourceCodeHash": "85fa529167da5eee1ca66fabb880c910f52e5730d6ab62439f96d5789b1c2888",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "",
       "warnings": []
@@ -74,16 +88,16 @@
     },
     "RenewPrimaryRecord": {
       "sourceFile": "scripts/renew_primary_record.ral",
-      "sourceCodeHash": "c9377895ed90a0b464a6a79b5f8e224f613fef958c36e6e706d1c88756960116",
+      "sourceCodeHash": "03750e3cbf02600711660164d43b95b2274b2712e163e3dbd820ad8984ba9461",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "",
       "warnings": []
     },
     "SecondaryRegistrar": {
       "sourceFile": "registrars/secondary_registrar.ral",
-      "sourceCodeHash": "dc1d45a37b38d2b266dd6ef724b6f8eeafa018ab6a746a2e1a2344cbd299f7da",
+      "sourceCodeHash": "3bf7053db95d4dea5daa1c7eac662d5266227d44992b27d35ef1c108cf51b1eb",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "9fc2b4049322253e129579f170dfd3c8aa2e67b9bf1c3d219d367664b39f54f1",
+      "codeHashDebug": "82935317d92a654c2d0faddea944d1da2c595ae3c7538d44d96201f80513b98d",
       "warnings": []
     }
   }

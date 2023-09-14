@@ -13,11 +13,12 @@ import {
   createCredentialToken,
   getCredentialTokenPath,
   expectVMAssertionError,
-  MinRegistrationDuration
+  MinRegistrationDuration,
+  randomContractId
 } from "./fixtures/ANSFixture"
 import { keccak256 } from "ethers/lib/utils"
 import { RecordTypes, PrimaryRegistrar, PrimaryRegistrarTypes } from "../artifacts/ts"
-import { expectAssertionError, randomContractId } from "@alephium/web3-test"
+import { expectAssertionError } from "@alephium/web3-test"
 
 function cost(duration: bigint): bigint {
   return 1000n * duration
