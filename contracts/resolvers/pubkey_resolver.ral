@@ -1,0 +1,43 @@
+Contract PubkeyResolver(
+  registrar: Registrar,
+  pubkeyInfoTemplateId: ByteVec
+) extends Constants() implements Resolver {
+  event NewPubkeyInfoCreated(node: ByteVec, pubkey: ByteVec)
+  event PubkeyUpdated(node: ByteVec, newPubkey: ByteVec)
+  event PubkeyInfoRemoved(node: ByteVec)
+
+  @using(preapprovedAssets = true)
+  pub fn newPubkeyInfo(node: ByteVec, payer: Address, pubkey: ByteVec) -> () {
+    let record = Record(subContractIdOf!(registrar, node))
+    checkCaller!(callerAddress!() == record.getOwner(), ErrorCodes.InvalidCaller)
+    let (encodedImmutableFields, encodedMutableFields) = PubkeyInfo.encodeFields!(Resolver(selfContractId!()), pubkey)
+    copyCreateSubContract!{payer -> ALPH: 1 alph}(
+      node,
+      pubkeyInfoTemplateId,
+      encodedImmutableFields,
+      encodedMutableFields
+    )
+    emit NewPubkeyInfoCreated(node, pubkey)
+  }
+
+  pub fn setPubkey(node: ByteVec, pubkey: ByteVec) -> () {
+    let record = Record(subContractIdOf!(registrar, node))
+    checkCaller!(callerAddress!() == record.getOwner(), ErrorCodes.InvalidCaller)
+    PubkeyInfo(subContractId!(node)).setPubkey(pubkey)
+    emit PubkeyUpdated(node, pubkey)
+  }
+
+  pub fn getPubkey(node: ByteVec) -> ByteVec {
+    return PubkeyInfo(subContractId!(node)).getPubkey()
+  }
+
+  pub fn removeNode(node: ByteVec, refundAddress: Address) -> () {
+    let recordId = subContractIdOf!(registrar, node)
+    checkCaller!(callerContractId!() == recordId, ErrorCodes.InvalidCaller)
+    let pubkeyInfoId = subContractId!(node)
+    if (contractExists!(pubkeyInfoId)) {
+      PubkeyInfo(pubkeyInfoId).destroy(refundAddress)
+      emit PubkeyInfoRemoved(node)
+    }
+  }
+}

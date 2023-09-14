@@ -9,8 +9,8 @@ import {
   PrimaryRegistrar,
   SecondaryRecord,
   SecondaryRegistrar,
-  AccountInfo,
-  AccountResolver,
+  PubkeyInfo,
+  PubkeyResolver,
   PrimaryRecordOwner,
   SecondaryRecordOwner,
 } from ".";
@@ -24,8 +24,8 @@ export function getContractByCodeHash(codeHash: string): Contract {
       PrimaryRegistrar,
       SecondaryRecord,
       SecondaryRegistrar,
-      AccountInfo,
-      AccountResolver,
+      PubkeyInfo,
+      PubkeyResolver,
       PrimaryRecordOwner,
       SecondaryRecordOwner,
     ];

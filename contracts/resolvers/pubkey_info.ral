@@ -1,18 +1,4 @@
-Contract AccountInfo(
-  resolver: Resolver,
-  mut pubkey: ByteVec,
-  mut address: Address
-) extends Constants() {
-  @using(updateFields = true)
-  pub fn setAddress(newAddress: Address) -> () {
-    checkCaller!(callerContractId!() == contractId!(resolver), ErrorCodes.InvalidCaller)
-    address = newAddress
-  }
-
-  pub fn getAddress() -> Address {
-    return address
-  }
-
+Contract PubkeyInfo(resolver: Resolver, mut pubkey: ByteVec) extends Constants() {
   @using(updateFields = true)
   pub fn setPubkey(newPubkey: ByteVec) -> () {
     checkCaller!(callerContractId!() == contractId!(resolver), ErrorCodes.InvalidCaller)

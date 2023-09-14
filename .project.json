@@ -9,20 +9,6 @@
     "ignoreCheckExternalCallerWarnings": false
   },
   "infos": {
-    "AccountInfo": {
-      "sourceFile": "resolvers/account_info.ral",
-      "sourceCodeHash": "d738c8c78394db93b3782b5329a9fbeb4338ce57ebc0ab41b27a685fe814ed56",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": "9df3ee296eec93ac44c16d34fe4ec91dfe1825755d65ab754d1dc5519062a458",
-      "warnings": []
-    },
-    "AccountResolver": {
-      "sourceFile": "resolvers/account_resolver.ral",
-      "sourceCodeHash": "7a97ff5ab5ac9d580efafae55c2cb0fb8f018cf5fedd40b8fd1ba7a93302b2dc",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": "230ca09dc874076d521635df66966c7c67bc5677530a4f119fcf3b3ab9b56fd6",
-      "warnings": []
-    },
     "Constants": {
       "sourceFile": "constants.ral",
       "sourceCodeHash": "3449d2553a9be72265557b27fb1b0326dd5297de98e6268ed387feda554c2d5f",
@@ -56,6 +42,20 @@
       "sourceCodeHash": "c517b31d2d40e74656a0249855ace928f5546012f9b0bc5b4857b1629cf9d7e8",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "8a549a925b9a0066b714f5f01f8a730a40af76a3bebfcffafae1eeb900f43eb2",
+      "warnings": []
+    },
+    "PubkeyInfo": {
+      "sourceFile": "resolvers/pubkey_info.ral",
+      "sourceCodeHash": "afeb64d764fed8414126612ac642598243a5210652718fa1380db39e4e26fef3",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "82e9ddc2555312d69d44883102417388852090d655cbf5ff044c939f6348c81a",
+      "warnings": []
+    },
+    "PubkeyResolver": {
+      "sourceFile": "resolvers/pubkey_resolver.ral",
+      "sourceCodeHash": "dd2b7b4fa75d8b6492e0128e3aee31945c72c24497bcc28fe79da5e2dbbce57e",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "f830ba665c29246c2a622af6f674de1798415d1cc34e077e14556044d599bf32",
       "warnings": []
     },
     "Record": {

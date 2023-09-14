@@ -1,0 +1,131 @@
+{
+  "version": "v2.5.5",
+  "name": "PubkeyInfo",
+  "bytecode": "020310194028010001010007b3ce00410c7b1600a100010000000102a00002010201010007b3ce00410c7b1600b0",
+  "codeHash": "82e9ddc2555312d69d44883102417388852090d655cbf5ff044c939f6348c81a",
+  "fieldsSig": {
+    "names": [
+      "resolver",
+      "pubkey"
+    ],
+    "types": [
+      "ByteVec",
+      "ByteVec"
+    ],
+    "isMutable": [
+      false,
+      true
+    ]
+  },
+  "eventsSig": [],
+  "functions": [
+    {
+      "name": "setPubkey",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
+        "newPubkey"
+      ],
+      "paramTypes": [
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "getPubkey",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "destroy",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": true,
+      "isPublic": true,
+      "paramNames": [
+        "refundAddress"
+      ],
+      "paramTypes": [
+        "Address"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": []
+    }
+  ],
+  "constants": [],
+  "enums": [
+    {
+      "name": "ErrorCodes",
+      "fields": [
+        {
+          "name": "InvalidCaller",
+          "value": {
+            "type": "U256",
+            "value": "0"
+          }
+        },
+        {
+          "name": "InvalidArgs",
+          "value": {
+            "type": "U256",
+            "value": "1"
+          }
+        },
+        {
+          "name": "ExpectAssetAddress",
+          "value": {
+            "type": "U256",
+            "value": "2"
+          }
+        },
+        {
+          "name": "NameHasBeenRegistered",
+          "value": {
+            "type": "U256",
+            "value": "3"
+          }
+        },
+        {
+          "name": "ContractNotExists",
+          "value": {
+            "type": "U256",
+            "value": "4"
+          }
+        },
+        {
+          "name": "PrimaryRecordNotExists",
+          "value": {
+            "type": "U256",
+            "value": "5"
+          }
+        },
+        {
+          "name": "NameHasExpired",
+          "value": {
+            "type": "U256",
+            "value": "6"
+          }
+        },
+        {
+          "name": "InvalidCredentialTokenId",
+          "value": {
+            "type": "U256",
+            "value": "7"
+          }
+        }
+      ]
+    }
+  ]
+}
