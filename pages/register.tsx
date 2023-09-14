@@ -4,7 +4,7 @@ import { useCallback, useRef, useState } from 'react'
 import styled from "styled-components"
 import { Config, normalize, validateName } from '../utils/ans-provider'
 import { Container, Stack, TopRight } from "../utils/styles"
-import { Register as RegisterANS } from '../artifacts/ts/scripts'
+import { RegisterPrimaryRecord as RegisterANS } from '../artifacts/ts/scripts'
 import WalletButton from './walletButton'
 import useAlephiumWallet from './useAlephiumWallet'
 
@@ -29,29 +29,50 @@ const Notification = styled.div`
   font-size: 1.6rem
 `
 
-async function register(signerProvider: SignerProvider, name: string) {
+function cost(duration: bigint): bigint {
+  return 1000n * duration
+}
+
+async function register(signerProvider: SignerProvider, name: string, months: number) {
+  const duration = BigInt(months) * 30n * 24n * 3600n * 1000n
+  const alphAmount = ONE_ALPH * 2n + cost(duration) + DUST_AMOUNT * 2n
   return RegisterANS.execute(signerProvider, {
     initialFields: {
       registrar: Config.primaryRegistrarId,
       name: binToHex(normalize(name)),
-      resolver: ''
+      duration
     },
-    attoAlphAmount: ONE_ALPH + DUST_AMOUNT * 2n
+    attoAlphAmount: alphAmount
   })
+}
+
+function validateMonths(input: string): number {
+  if (input === '') {
+    throw Error('Empty rental months')
+  }
+  const months = Number(input)
+  if (isNaN(months)) {
+    throw Error('Invalid rental months')
+  }
+  return months
 }
 
 export default function Register() {
   const [name, setName] = useState('')
+  const [months, setMonths] = useState('')
   const [error, setError] = useState<any>(null)
   const [registerError, setRegisterError] = useState(undefined)
   const [disable, setDisable] = useState(false)
   const [submitTxResult, setSubmitTxResult] = useState<SignExecuteScriptTxResult | undefined>(undefined)
   const nameInputRef = useRef<HTMLInputElement>(null)
+  const monthsInputRef = useRef<HTMLInputElement>(null)
   const wallet = useAlephiumWallet()
 
   const handleRegister = useCallback(() => {
+    let duration: number
     try {
       validateName(name)
+      duration = validateMonths(months)
       if (wallet === undefined) {
         throw Error('Wallet not connected')
       }
@@ -64,6 +85,7 @@ export default function Register() {
     register(
       wallet.signer,
       name,
+      duration
     ).then((result) => {
       setDisable(true)
       setSubmitTxResult(result)
@@ -71,7 +93,7 @@ export default function Register() {
       setDisable(true)
       setRegisterError(e)
     })
-  }, [name, wallet])
+  }, [name, wallet, months])
 
   return (
     <>
@@ -85,6 +107,11 @@ export default function Register() {
             ref={nameInputRef}
             placeholder='Name'
             onChange={(e) => setName(e.target.value)}
+          />
+          <Input
+            ref={monthsInputRef}
+            placeholder='Rental months'
+            onChange={(e) => setMonths(e.target.value)}
           />
           <Button onClick={() => handleRegister()} disabled={disable}>
             Register

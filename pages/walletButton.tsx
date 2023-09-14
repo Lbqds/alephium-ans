@@ -1,4 +1,4 @@
-import { AlephiumConnectButton, useAlephiumConnectContext, useConnect } from '@alephium/web3-react'
+import { AlephiumConnectButton } from '@alephium/web3-react'
 import styled from 'styled-components'
 
 const Button = styled.button`
@@ -11,20 +11,13 @@ const Button = styled.button`
 `
 
 const WalletButton = () => {
-  const context = useAlephiumConnectContext()
-  const { connect, disconnect } = useConnect({
-    addressGroup: context.addressGroup,
-    keyType: context.keyType,
-    networkId: context.network
-  })
-
   return (
     <AlephiumConnectButton.Custom displayAccount={(account) => account.address}>
-      {({ isConnected }) => {
+      {({ isConnected, show, disconnect }) => {
         return (
           isConnected ?
             <Button onClick={disconnect}>Disconnect</Button> :
-            <Button onClick={connect}>Connect</Button>
+            <Button onClick={show}>Connect</Button>
         )
       }}
     </AlephiumConnectButton.Custom>

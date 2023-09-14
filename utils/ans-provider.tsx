@@ -15,6 +15,7 @@ const NodeUrl = process.env.NEXT_PUBLIC_NETWORK === 'devnet'
 web3.setCurrentNodeProvider(NodeUrl)
 
 export interface NetworkConfig {
+  network: NetworkId
   groupIndex: number
   primaryRegistrarId: string
 }
@@ -33,8 +34,9 @@ function loadConfig(networkId: NetworkId): NetworkConfig {
 
   try {
     return {
+      network: networkId,
       groupIndex: groupOfAddress(deployments.deployerAddress),
-      primaryRegistrarId: deployments.contracts.PrimaryRecord!.contractInstance.contractId,
+      primaryRegistrarId: deployments.contracts.PrimaryRegistrar!.contractInstance.contractId,
     }
   } catch (error) {
     console.log(`Failed to load deployments on ${networkId}, error: ${error}`)
@@ -70,19 +72,18 @@ export function validateName(name: string) {
 }
 
 function getPrimaryRecordContractId(name: string): string {
-  const label = keccak256(normalize(name)).slice(2)
-  const subNodePath = keccak256(Buffer.from(label, 'hex')).slice(2)
-  return subContractId(Config.primaryRegistrarId, subNodePath, Config.groupIndex)
+  const node = keccak256(normalize(name)).slice(2)
+  return subContractId(Config.primaryRegistrarId, node, Config.groupIndex)
 }
 
-function getPrimaryRecordContractAdd(name: string): string {
+function getPrimaryRecordContractAddress(name: string): string {
   return addressFromContractId(getPrimaryRecordContractId(name))
 }
 
 const defaultANS: ANS = {
   async isAvailable(name: string): Promise<boolean> {
     try {
-      const recordContractAddress = getPrimaryRecordContractAdd(name)
+      const recordContractAddress = getPrimaryRecordContractAddress(name)
       await web3.getCurrentNodeProvider().contracts.getContractsAddressState(
         recordContractAddress,
         {group: Config.groupIndex}
@@ -94,7 +95,7 @@ const defaultANS: ANS = {
   },
 
   async getPrimaryRecord(name: string): Promise<PrimaryRecordTypes.Fields> {
-    const recordContractAddress = getPrimaryRecordContractAdd(name)
+    const recordContractAddress = getPrimaryRecordContractAddress(name)
     const recordInstance = PrimaryRecord.at(recordContractAddress)
     const state = await recordInstance.fetchState()
     return state.fields
