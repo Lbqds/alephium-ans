@@ -1,7 +1,7 @@
 Contract PrimaryRegistrar(
   mut registrarOwner: Address,
   recordTemplateId: ByteVec,
-  recordTokenTemplateId: ByteVec
+  credentialTokenTemplateId: ByteVec
 ) extends Constants() implements Registrar {
   const MinRentDuration = 2592000000 // 3 months in ms
 
@@ -10,11 +10,11 @@ Contract PrimaryRegistrar(
   }
 
   @using(preapprovedAssets = true)
-  fn createRecordToken(path: ByteVec, name: ByteVec, payer: Address) -> ByteVec {
-    let (tokenImmFields, tokenMutFields) = RecordToken.encodeFields!(selfContractId!(), name) // TODO: add the ANS prefix
+  fn createCredentialToken(path: ByteVec, name: ByteVec, payer: Address) -> ByteVec {
+    let (tokenImmFields, tokenMutFields) = CredentialToken.encodeFields!(selfContractId!(), name) // TODO: add the ANS prefix
     return copyCreateSubContractWithToken!{payer -> ALPH: 1 alph}(
       path,
-      recordTokenTemplateId,
+      credentialTokenTemplateId,
       tokenImmFields,
       tokenMutFields,
       1,
@@ -28,7 +28,7 @@ Contract PrimaryRegistrar(
       let record = PrimaryRecord(recordId)
       let ttl = record.getTTL()
       assert!(currentTs >= ttl, ErrorCodes.NameHasBeenRegistered)
-      RecordToken(record.getRecordTokenId()).destroy(record.getRefundAddress())
+      CredentialToken(record.getCredentialTokenId()).destroy(record.getRefundAddress())
       record.destroy()
     }
   }
@@ -51,15 +51,15 @@ Contract PrimaryRegistrar(
     transferTokenToSelf!(payer, ALPH, cost(duration))
 
     let ttl = currentTs + duration
-    let recordTokenPath = node ++ u256To32Byte!(ttl)
-    let recordTokenId = createRecordToken{payer -> ALPH: 1 alph}(recordTokenPath, name, payer)
+    let credentialTokenPath = node ++ u256To32Byte!(ttl)
+    let credentialTokenId = createCredentialToken{payer -> ALPH: 1 alph}(credentialTokenPath, name, payer)
 
     let (recordImmFields, recordMutFields) = PrimaryRecord.encodeFields!(
       selfContractId!(),
       owner,
       ttl,
       payer,
-      recordTokenId
+      credentialTokenId
     )
     copyCreateSubContract!{payer -> ALPH: 1 alph}(
       node,
@@ -85,15 +85,15 @@ Contract PrimaryRegistrar(
 
     transferTokenToSelf!(payer, ALPH, cost(duration))
 
-    let recordTokenId = record.getRecordTokenId()
-    burnToken!(payer, recordTokenId, 1)
-    RecordToken(recordTokenId).destroy(payer)
+    let credentialTokenId = record.getCredentialTokenId()
+    burnToken!(payer, credentialTokenId, 1)
+    CredentialToken(credentialTokenId).destroy(payer)
 
     let newTTL = currentTTL + duration
-    let recordTokenPath = node ++ u256To32Byte!(newTTL)
-    let newRecordTokenId = createRecordToken{payer -> ALPH: 1 alph}(recordTokenPath, name, payer)
+    let credentialTokenPath = node ++ u256To32Byte!(newTTL)
+    let newCredentialTokenId = createCredentialToken{payer -> ALPH: 1 alph}(credentialTokenPath, name, payer)
     record.setTTL(newTTL)
-    record.setRecordTokenId(newRecordTokenId)
+    record.setCredentialTokenId(newCredentialTokenId)
 
     emit NameRenewed(name, newTTL)
   }

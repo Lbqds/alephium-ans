@@ -2,7 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export * from "./RecordToken";
+export * from "./CredentialToken";
 export * from "./PrimaryRecord";
 export * from "./PrimaryRegistrar";
 export * from "./SecondaryRecord";

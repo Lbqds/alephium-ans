@@ -9,7 +9,7 @@
       "owner",
       "ttl",
       "refundAddress",
-      "recordTokenId"
+      "credentialTokenId"
     ],
     "types": [
       "ByteVec",
@@ -107,12 +107,12 @@
       "returnTypes": []
     },
     {
-      "name": "setRecordTokenId",
+      "name": "setCredentialTokenId",
       "usePreapprovedAssets": false,
       "useAssetsInContract": false,
       "isPublic": true,
       "paramNames": [
-        "newRecordTokenId"
+        "newCredentialTokenId"
       ],
       "paramTypes": [
         "ByteVec"
@@ -123,7 +123,7 @@
       "returnTypes": []
     },
     {
-      "name": "getRecordTokenId",
+      "name": "getCredentialTokenId",
       "usePreapprovedAssets": false,
       "useAssetsInContract": false,
       "isPublic": true,

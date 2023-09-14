@@ -29,6 +29,6 @@ export const RegisterSecondaryRecord = new ExecutableScript<{
 export const RenewPrimaryRecord = new ExecutableScript<{
   registrar: HexString;
   name: HexString;
-  recordTokenId: HexString;
+  credentialTokenId: HexString;
   duration: bigint;
 }>(Script.fromJson(RenewPrimaryRecordScriptJson));

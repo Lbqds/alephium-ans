@@ -84,7 +84,7 @@ export const SecondaryRegistrar = new Factory(
   Contract.fromJson(
     SecondaryRegistrarContractJson,
     "",
-    "d3f8cf640dd37f61478fd72992fa9af50bb9247fb4fe010284a6903f500f1df1"
+    "8037e1d62bc6bbdf04cad433144296c701b1c97416b091358de30841c8c8c99c"
   )
 );
 

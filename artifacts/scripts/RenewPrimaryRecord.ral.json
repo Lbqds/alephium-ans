@@ -6,7 +6,7 @@
     "names": [
       "registrar",
       "name",
-      "recordTokenId",
+      "credentialTokenId",
       "duration"
     ],
     "types": [

@@ -34,7 +34,7 @@ export namespace PrimaryRecordTypes {
     owner: Address;
     ttl: bigint;
     refundAddress: Address;
-    recordTokenId: HexString;
+    credentialTokenId: HexString;
   };
 
   export type State = ContractState<Fields>;
@@ -52,7 +52,7 @@ export namespace PrimaryRecordTypes {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<bigint>;
     };
-    getRecordTokenId: {
+    getCredentialTokenId: {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<HexString>;
     };
@@ -141,21 +141,21 @@ class Factory extends ContractFactory<
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "setTTL", params);
     },
-    setRecordTokenId: async (
+    setCredentialTokenId: async (
       params: TestContractParams<
         PrimaryRecordTypes.Fields,
-        { newRecordTokenId: HexString }
+        { newCredentialTokenId: HexString }
       >
     ): Promise<TestContractResult<null>> => {
-      return testMethod(this, "setRecordTokenId", params);
+      return testMethod(this, "setCredentialTokenId", params);
     },
-    getRecordTokenId: async (
+    getCredentialTokenId: async (
       params: Omit<
         TestContractParams<PrimaryRecordTypes.Fields, never>,
         "testArgs"
       >
     ): Promise<TestContractResult<HexString>> => {
-      return testMethod(this, "getRecordTokenId", params);
+      return testMethod(this, "getCredentialTokenId", params);
     },
   };
 }
@@ -213,13 +213,13 @@ export class PrimaryRecordInstance extends ContractInstance {
         getContractByCodeHash
       );
     },
-    getRecordTokenId: async (
-      params?: PrimaryRecordTypes.CallMethodParams<"getRecordTokenId">
-    ): Promise<PrimaryRecordTypes.CallMethodResult<"getRecordTokenId">> => {
+    getCredentialTokenId: async (
+      params?: PrimaryRecordTypes.CallMethodParams<"getCredentialTokenId">
+    ): Promise<PrimaryRecordTypes.CallMethodResult<"getCredentialTokenId">> => {
       return callMethod(
         PrimaryRecord,
         this,
-        "getRecordTokenId",
+        "getCredentialTokenId",
         params === undefined ? {} : params,
         getContractByCodeHash
       );

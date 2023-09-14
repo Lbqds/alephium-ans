@@ -3,15 +3,15 @@ Contract PrimaryRecord(
   mut owner: Address,
   mut ttl: U256,
   refundAddress: Address,
-  mut recordTokenId: ByteVec
+  mut credentialTokenId: ByteVec
 ) extends Constants(), RecordBase(registrar, owner, ttl, refundAddress) {
   @using(updateFields = true)
-  pub fn setRecordTokenId(newRecordTokenId: ByteVec) -> () {
+  pub fn setCredentialTokenId(newCredentialTokenId: ByteVec) -> () {
     checkCaller!(callerContractId!() == registrar, ErrorCodes.InvalidCaller)
-    recordTokenId = newRecordTokenId
+    credentialTokenId = newCredentialTokenId
   }
 
-  pub fn getRecordTokenId() -> ByteVec {
-    return recordTokenId
+  pub fn getCredentialTokenId() -> ByteVec {
+    return credentialTokenId
   }
 }

@@ -32,7 +32,7 @@ export namespace PrimaryRegistrarTypes {
   export type Fields = {
     registrarOwner: Address;
     recordTemplateId: HexString;
-    recordTokenTemplateId: HexString;
+    credentialTokenTemplateId: HexString;
   };
 
   export type State = ContractState<Fields>;
@@ -99,13 +99,13 @@ class Factory extends ContractFactory<
     ): Promise<TestContractResult<bigint>> => {
       return testMethod(this, "cost", params);
     },
-    createRecordToken: async (
+    createCredentialToken: async (
       params: TestContractParams<
         PrimaryRegistrarTypes.Fields,
         { path: HexString; name: HexString; payer: Address }
       >
     ): Promise<TestContractResult<HexString>> => {
-      return testMethod(this, "createRecordToken", params);
+      return testMethod(this, "createCredentialToken", params);
     },
     preRegister: async (
       params: TestContractParams<

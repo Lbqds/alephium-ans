@@ -7,7 +7,7 @@
     "names": [
       "registrarOwner",
       "recordTemplateId",
-      "recordTokenTemplateId"
+      "credentialTokenTemplateId"
     ],
     "types": [
       "Address",
@@ -113,7 +113,7 @@
       ]
     },
     {
-      "name": "createRecordToken",
+      "name": "createCredentialToken",
       "usePreapprovedAssets": true,
       "useAssetsInContract": false,
       "isPublic": false,

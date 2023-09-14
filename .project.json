@@ -16,6 +16,13 @@
       "codeHashDebug": "",
       "warnings": []
     },
+    "CredentialToken": {
+      "sourceFile": "credential_token.ral",
+      "sourceCodeHash": "82b07ce4770f23dc415ff344687f6cb9ca0331141288051be5fc9b4001b624da",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "a664b4bd3070d857687a38de41f41a4372307d5c98a98a787e2185689799bfdb",
+      "warnings": []
+    },
     "IFungibleToken": {
       "sourceFile": "../node_modules/@alephium/web3/std/fungible_token_interface.ral",
       "sourceCodeHash": "6809cb06fb20fa7edf529461998beeebd12b1636d439612cca2f84214dbf4a20",
@@ -25,7 +32,7 @@
     },
     "PrimaryRecord": {
       "sourceFile": "registrars/primary_record.ral",
-      "sourceCodeHash": "0bfb47e1f8a4e7f3146378429839aa58e9d675e8fe88df5e52603c705903cf02",
+      "sourceCodeHash": "62f95a8988029d1a25b1c7699f9d47fcf661e9345f9648aac4f54bcaa4059c3b",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "aa1d4ba6eebaa0ceb8e30484d08992702eacbf1351b182dfb009b8894bbba37c",
       "warnings": []
@@ -39,7 +46,7 @@
     },
     "PrimaryRegistrar": {
       "sourceFile": "registrars/primary_registrar.ral",
-      "sourceCodeHash": "9559666ebac803e2bf696b163cf6b67a5c1327faa3858270d00cee4170d4101d",
+      "sourceCodeHash": "dc93c335c9b72478f8177adf5b60ecaf7b9a8838170af28802346d85cb024327",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "a42cd36a3c0b7556391103643a9078ac6da04820afa7a219a7c138b9ac8b7a9f",
       "warnings": []
@@ -56,13 +63,6 @@
       "sourceCodeHash": "db88defd8d57b9c06969b9d64a8db629f6e863a36a0daeb3d3f066b22306d8f2",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "",
-      "warnings": []
-    },
-    "RecordToken": {
-      "sourceFile": "record_token.ral",
-      "sourceCodeHash": "786745b431f2a9607f1d46070dcf1e5a0dae5b2951a714415a9b2d54378cbcd2",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": "a664b4bd3070d857687a38de41f41a4372307d5c98a98a787e2185689799bfdb",
       "warnings": []
     },
     "RegisterPrimaryRecord": {
@@ -88,7 +88,7 @@
     },
     "RenewPrimaryRecord": {
       "sourceFile": "scripts/renew_primary_record.ral",
-      "sourceCodeHash": "dcde894592b5cec31987bb13c6dfba5872ea887df2a8add2125e6ad0e3381495",
+      "sourceCodeHash": "c9377895ed90a0b464a6a79b5f8e224f613fef958c36e6e706d1c88756960116",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "",
       "warnings": []
@@ -109,9 +109,9 @@
     },
     "SecondaryRegistrar": {
       "sourceFile": "registrars/secondary_registrar.ral",
-      "sourceCodeHash": "93cab28319316d403c49dcd516d6408d72ed3b2fb295673c57b572b06b6433bd",
+      "sourceCodeHash": "10e7f2ef3e4ff5edd9e2668e13b2db012c0c83f18e4596ebfff24b3f1b5c58ba",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "d3f8cf640dd37f61478fd72992fa9af50bb9247fb4fe010284a6903f500f1df1",
+      "codeHashDebug": "8037e1d62bc6bbdf04cad433144296c701b1c97416b091358de30841c8c8c99c",
       "warnings": []
     }
   }
