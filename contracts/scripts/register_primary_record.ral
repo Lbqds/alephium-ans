@@ -1,4 +1,4 @@
-TxScript RegisterPrimaryRecord(registrar: PrimaryRegistrar, name: ByteVec, resolver: Resolver, duration: U256) {
+TxScript RegisterPrimaryRecord(registrar: PrimaryRegistrar, name: ByteVec, duration: U256) {
   let owner = callerAddress!()
-  registrar.register{owner -> ALPH: tokenRemaining!(owner, ALPH)}(name, owner, owner, resolver, duration)
+  registrar.register{owner -> ALPH: tokenRemaining!(owner, ALPH)}(name, owner, owner, duration)
 }

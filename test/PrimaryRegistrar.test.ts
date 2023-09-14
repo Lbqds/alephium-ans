@@ -1,9 +1,8 @@
-import { addressFromContractId, binToHex, ContractState, DUST_AMOUNT, HexString, ONE_ALPH, subContractId, web3 } from "@alephium/web3"
+import { addressFromContractId, binToHex, ContractState, DUST_AMOUNT, ONE_ALPH, subContractId, web3 } from "@alephium/web3"
 import {
   alph,
   defaultInitialAsset,
   randomAssetAddress,
-  createPubkeyResolver,
   DefaultGroup,
   buildProject,
   createPrimaryRegistrar,
@@ -35,7 +34,6 @@ describe("test primary registrar", () => {
   test('register', async () => {
     const registrarOwner = randomAssetAddress()
     const registrarFixture = createPrimaryRegistrar(registrarOwner)
-    const resolverFixture = createPubkeyResolver(registrarFixture)
 
     const name = encoder.encode("test")
     const node = keccak256(name).slice(2)
@@ -52,10 +50,9 @@ describe("test primary registrar", () => {
           name: binToHex(name),
           owner: nodeOwner,
           payer: nodeOwner,
-          resolver: resolverFixture.contractId,
           duration: duration
         },
-        existingContracts: [...resolverFixture.states(), ...extraContracts],
+        existingContracts: [...registrarFixture.states(), ...extraContracts],
         blockTimeStamp: currentTs
       })
     }
@@ -68,7 +65,6 @@ describe("test primary registrar", () => {
 
     const recordState = getContractState<PrimaryRecordTypes.Fields>(testResult.contracts, recordId)
     expect(recordState.fields.owner).toEqual(nodeOwner)
-    expect(recordState.fields.resolver).toEqual(resolverFixture.contractId)
     expect(recordState.fields.ttl).toEqual(MinRentDuration)
 
     const recordTokenPath = getRecordTokenPath(node, MinRentDuration)
@@ -86,7 +82,6 @@ describe("test primary registrar", () => {
       addressFromContractId(recordId),
       registrarFixture.contractId,
       randomAssetAddress(),
-      '',
       100n
     )
     expectAssertionError(register(nodeOwner, MinRentDuration, 99, [record]), registrarFixture.address, Number(ErrorCodes.NameHasBeenRegistered))
@@ -95,7 +90,6 @@ describe("test primary registrar", () => {
   test('register with an expired name', async () => {
     const registrarOwner = randomAssetAddress()
     const registrarFixture = createPrimaryRegistrar(registrarOwner)
-    const resolverFixture = createPubkeyResolver(registrarFixture)
 
     const name = encoder.encode("test")
     const node = keccak256(name).slice(2)
@@ -106,7 +100,6 @@ describe("test primary registrar", () => {
       addressFromContractId(recordId),
       registrarFixture.contractId,
       prevNodeOwner,
-      '',
       100n,
       expiredRecordTokenId
     )
@@ -123,10 +116,9 @@ describe("test primary registrar", () => {
           name: binToHex(name),
           owner: nodeOwner,
           payer: nodeOwner,
-          resolver: resolverFixture.contractId,
           duration: duration
         },
-        existingContracts: [...resolverFixture.states(), expiredRecord, expiredRecordToken],
+        existingContracts: [...registrarFixture.states(), expiredRecord, expiredRecordToken],
         blockTimeStamp: 101
       })
     }
@@ -139,7 +131,6 @@ describe("test primary registrar", () => {
 
     const recordState = getContractState<PrimaryRecordTypes.Fields>(testResult.contracts, recordId)
     expect(recordState.fields.owner).toEqual(nodeOwner)
-    expect(recordState.fields.resolver).toEqual(resolverFixture.contractId)
     const ttl = MinRentDuration + 101n
     expect(recordState.fields.ttl).toEqual(ttl)
 
@@ -163,7 +154,6 @@ describe("test primary registrar", () => {
   test('renew', async () => {
     const registrarOwner = randomAssetAddress()
     const registrarFixture = createPrimaryRegistrar(registrarOwner)
-    const resolverFixture = createPubkeyResolver(registrarFixture)
 
     const name = encoder.encode("test")
     const node = keccak256(name).slice(2)
@@ -181,7 +171,7 @@ describe("test primary registrar", () => {
           payer: nodeOwner,
           duration: duration
         },
-        existingContracts: [...resolverFixture.states(), ...contractStates],
+        existingContracts: [...registrarFixture.states(), ...contractStates],
         blockTimeStamp: currentTs
       })
     }
@@ -192,7 +182,6 @@ describe("test primary registrar", () => {
         addressFromContractId(recordId),
         registrarFixture.contractId,
         nodeOwner,
-        '',
         ttl,
         recordTokenId
       )

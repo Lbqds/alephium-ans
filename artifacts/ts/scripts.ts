@@ -18,13 +18,11 @@ import { default as RenewPrimaryRecordScriptJson } from "../scripts/RenewPrimary
 export const RegisterPrimaryRecord = new ExecutableScript<{
   registrar: HexString;
   name: HexString;
-  resolver: HexString;
   duration: bigint;
 }>(Script.fromJson(RegisterPrimaryRecordScriptJson));
 export const RegisterSecondaryRecord = new ExecutableScript<{
   registrar: HexString;
   name: HexString;
-  resolver: HexString;
   credentialTokenId: HexString;
   ttl: bigint;
 }>(Script.fromJson(RegisterSecondaryRecordScriptJson));

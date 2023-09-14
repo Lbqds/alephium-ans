@@ -13,10 +13,6 @@ import {
 import { randomBytes } from "crypto"
 import * as base58 from 'bs58'
 import {
-  PubkeyResolver,
-  PubkeyResolverTypes,
-  PubkeyInfo,
-  PubkeyInfoTypes,
   PrimaryRegistrar,
   PrimaryRecordTypes,
   PrimaryRecord,
@@ -65,14 +61,12 @@ export function createPrimaryRecord(
   address: Address,
   registrar: string,
   owner = randomAssetAddress(),
-  resolver = '',
   ttl = 0n,
   recordTokenId = ''
 ): ContractState<PrimaryRecordTypes.Fields> {
   return PrimaryRecord.stateForTest({
     registrar,
     owner,
-    resolver,
     refundAddress: owner,
     ttl,
     recordTokenId
@@ -83,13 +77,11 @@ export function createSecondaryRecord(
   address: Address,
   registrar: string,
   owner = randomAssetAddress(),
-  resolver: string = '',
   ttl = 0n
 ): ContractState<SecondaryRecordTypes.Fields> {
   return SecondaryRecord.stateForTest({
     registrar,
     owner,
-    resolver,
     refundAddress: owner,
     ttl
   }, undefined, address)
@@ -105,26 +97,6 @@ export function createRecordToken(
 
 export function subContractAddress(parentId: string, path: string, groupIndex: number): string {
   return addressFromContractId(subContractId(parentId, path, groupIndex))
-}
-
-function createPubkeyInfoTemplate(): ContractFixture<PubkeyInfoTypes.Fields> {
-  const state = PubkeyInfo.stateForTest({ resolver: '', pubkey: '' }, defaultInitialAsset)
-  return new ContractFixture(state, [])
-}
-
-export function createPubkeyResolver(registrarFixture: ContractFixture<Fields>): ContractFixture<PubkeyResolverTypes.Fields> {
-  const pubkeyInfoTemplate = createPubkeyInfoTemplate()
-  const state = PubkeyResolver.stateForTest({
-    registrar: registrarFixture.contractId,
-    pubkeyInfoTemplateId: pubkeyInfoTemplate.contractId,
-  }, defaultInitialAsset)
-  return new ContractFixture(
-    state,
-    [
-      ...registrarFixture.states(),
-      pubkeyInfoTemplate.selfState,
-    ]
-  )
 }
 
 export function createPrimaryRegistrar(owner: string) {

@@ -1,4 +1,4 @@
-import { Address, binToHex, Contract, ContractDestroyedEvent, ContractState, ONE_ALPH, web3 } from "@alephium/web3"
+import { Address, Contract, ContractDestroyedEvent, ContractState, ONE_ALPH, web3 } from "@alephium/web3"
 import {
   randomAssetAddress,
   buildProject,
@@ -6,7 +6,6 @@ import {
   createSecondaryRecord
 } from "./fixtures/ANSFixture"
 import { PrimaryRecordOwner, PrimaryRecordTypes, SecondaryRecordOwner, SecondaryRecordTypes } from "../artifacts/ts"
-import { randomBytes } from "crypto"
 import { randomContractAddress } from "@alephium/web3-test"
 
 describe("test record", () => {
@@ -35,7 +34,6 @@ describe("test record", () => {
         initialFields: primaryRecordOwner.fields,
         initialAsset: { alphAmount: ONE_ALPH, tokens: [{ id: primaryRecord.contractId, amount: 1n }] },
         inputAssets: [{ address: caller, asset: { alphAmount: ONE_ALPH } }],
-        testArgs: { node: binToHex(randomBytes(4)) },
         existingContracts: [primaryRecord]
       })
     }
@@ -56,7 +54,6 @@ describe("test record", () => {
         initialFields: secondaryRecordOwner.fields,
         initialAsset: { alphAmount: ONE_ALPH },
         inputAssets: [{ address: caller, asset: { alphAmount: ONE_ALPH } }],
-        testArgs: { node: binToHex(randomBytes(4)) },
         existingContracts: [secondaryRecord]
       })
     }

@@ -3,7 +3,6 @@ import {
   alph,
   defaultInitialAsset,
   randomAssetAddress,
-  createPubkeyResolver,
   DefaultGroup,
   buildProject,
   createSecondaryRegistrar,
@@ -26,7 +25,6 @@ describe("test secondary registrar", () => {
 
   const primaryRegistrarId = randomContractId()
   const registrarFixture = createSecondaryRegistrar(primaryRegistrarId)
-  const resolverFixture = createPubkeyResolver(registrarFixture)
 
   const name = encoder.encode("test")
   const node = keccak256(name).slice(2)
@@ -47,11 +45,10 @@ describe("test secondary registrar", () => {
         name: binToHex(name),
         owner: nodeOwner,
         payer: nodeOwner,
-        resolver: resolverFixture.contractId,
         credentialTokenId,
         ttl
       },
-      existingContracts: [...resolverFixture.states(), ...extraContracts]
+      existingContracts: [...registrarFixture.states(), ...extraContracts]
     })
   }
 
@@ -63,7 +60,6 @@ describe("test secondary registrar", () => {
     const testResult = await register(nodeOwner, credentialTokenId, ttl)
     const recordState = getContractState<SecondaryRecordTypes.Fields>(testResult.contracts, secondaryRecordId)
     expect(recordState.fields.owner).toEqual(nodeOwner)
-    expect(recordState.fields.resolver).toEqual(resolverFixture.contractId)
     expect(recordState.fields.ttl).toEqual(ttl)
 
     const contractOutput = testResult.txOutputs.find((o) => o.address === addressFromContractId(secondaryRecordId))!
@@ -75,7 +71,7 @@ describe("test secondary registrar", () => {
 
   test('remove the expired record and create a new record', async () => {
     const nodeOwner = randomAssetAddress()
-    const secondaryRecord = createSecondaryRecord(addressFromContractId(secondaryRecordId), registrarFixture.contractId, nodeOwner, '', 100n)
+    const secondaryRecord = createSecondaryRecord(addressFromContractId(secondaryRecordId), registrarFixture.contractId, nodeOwner, 100n)
     const invalidCredentialTokenId = getCredentialTokenId(99n)
     expectAssertionError(register(nodeOwner, invalidCredentialTokenId, 99n, [secondaryRecord]), registrarFixture.address, Number(ErrorCodes.InvalidCredentialToken))
 

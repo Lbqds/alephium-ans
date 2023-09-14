@@ -69,7 +69,6 @@ class Factory extends ContractFactory<
           name: HexString;
           owner: Address;
           payer: Address;
-          resolver: HexString;
           credentialTokenId: HexString;
           ttl: bigint;
         }
@@ -85,7 +84,7 @@ export const SecondaryRegistrar = new Factory(
   Contract.fromJson(
     SecondaryRegistrarContractJson,
     "",
-    "79f37858d89182a31a8c048de0c440991b53a442f4bc44b016d27cd101330990"
+    "d3f8cf640dd37f61478fd72992fa9af50bb9247fb4fe010284a6903f500f1df1"
   )
 );
 

@@ -4,7 +4,6 @@ Contract SecondaryRegistrar(primaryRegistrar: PrimaryRegistrar, recordTemplateId
     name: ByteVec,
     owner: Address,
     payer: Address,
-    resolver: Resolver,
     credentialTokenId: ByteVec,
     ttl: U256
   ) -> () {
@@ -21,10 +20,10 @@ Contract SecondaryRegistrar(primaryRegistrar: PrimaryRegistrar, recordTemplateId
     if (contractExists!(secondaryRecordId)) {
       let record = SecondaryRecord(secondaryRecordId)
       assert!(record.getTTL() < ttl, ErrorCodes.InvalidCredentialToken)
-      record.destroy(node)
+      record.destroy()
     }
 
-    let (encodedImmutableFields, encodedMutableFields) = SecondaryRecord.encodeFields!(selfContractId!(), owner, resolver, ttl, payer)
+    let (encodedImmutableFields, encodedMutableFields) = SecondaryRecord.encodeFields!(selfContractId!(), owner, ttl, payer)
     copyCreateSubContract!{payer -> ALPH: 1 alph}(
       node,
       recordTemplateId,

@@ -1,12 +1,11 @@
 {
   "version": "v2.5.5",
   "name": "RegisterSecondaryRecord",
-  "bytecodeTemplate": "01010300010013b4170016007a13c40de0b6b3a7640000a2{3}0da3{1}16001600{2}{3}{4}13060c{0}0100",
+  "bytecodeTemplate": "01010300010012b4170016007a13c40de0b6b3a7640000a2{2}0da3{1}16001600{2}{3}110c{0}0100",
   "fieldsSig": {
     "names": [
       "registrar",
       "name",
-      "resolver",
       "credentialTokenId",
       "ttl"
     ],
@@ -14,11 +13,9 @@
       "ByteVec",
       "ByteVec",
       "ByteVec",
-      "ByteVec",
       "U256"
     ],
     "isMutable": [
-      false,
       false,
       false,
       false,

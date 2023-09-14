@@ -1,7 +1,6 @@
 Abstract Contract RecordBase(
   registrar: ByteVec,
   mut owner: Address,
-  mut resolver: Resolver,
   mut ttl: U256,
   refundAddress: Address
 ) extends Constants() implements Record {
@@ -13,16 +12,6 @@ Abstract Contract RecordBase(
   pub fn setOwner(newOwner: Address) -> () {
     checkCaller!(callerAddress!() == owner, ErrorCodes.InvalidCaller)
     owner = newOwner
-  }
-
-  pub fn getResolver() -> Resolver {
-    return resolver
-  }
-
-  @using(updateFields = true)
-  pub fn setResolver(newResolver: Resolver) -> () {
-    checkCaller!(callerAddress!() == owner, ErrorCodes.InvalidCaller)
-    resolver = newResolver
   }
 
   pub fn getRefundAddress() -> Address {
@@ -40,11 +29,8 @@ Abstract Contract RecordBase(
   }
 
   @using(assetsInContract = true)
-  pub fn destroy(node: ByteVec) -> () {
+  pub fn destroy() -> () {
     checkCaller!(callerContractId!() == registrar, ErrorCodes.InvalidCaller)
-    if (contractId!(resolver) != #) {
-      resolver.removeNode(node, refundAddress)
-    }
     destroySelf!(refundAddress)
   }
 }

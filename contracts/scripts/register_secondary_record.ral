@@ -1,4 +1,4 @@
-TxScript RegisterSecondaryRecord(registrar: SecondaryRegistrar, name: ByteVec, resolver: Resolver, credentialTokenId: ByteVec, ttl: U256) {
+TxScript RegisterSecondaryRecord(registrar: SecondaryRegistrar, name: ByteVec, credentialTokenId: ByteVec, ttl: U256) {
   let owner = callerAddress!()
-  registrar.register{owner -> ALPH: 1 alph, credentialTokenId: 1}(name, owner, owner, resolver, credentialTokenId, ttl)
+  registrar.register{owner -> ALPH: 1 alph, credentialTokenId: 1}(name, owner, owner, credentialTokenId, ttl)
 }

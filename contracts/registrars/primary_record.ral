@@ -1,11 +1,10 @@
 Contract PrimaryRecord(
   registrar: ByteVec,
   mut owner: Address,
-  mut resolver: Resolver,
   mut ttl: U256,
   refundAddress: Address,
   mut recordTokenId: ByteVec
-) extends Constants(), RecordBase(registrar, owner, resolver, ttl, refundAddress) {
+) extends Constants(), RecordBase(registrar, owner, ttl, refundAddress) {
   @using(updateFields = true)
   pub fn setRecordTokenId(newRecordTokenId: ByteVec) -> () {
     checkCaller!(callerContractId!() == registrar, ErrorCodes.InvalidCaller)

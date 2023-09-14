@@ -78,13 +78,7 @@ class Factory extends ContractFactory<
     register: async (
       params: TestContractParams<
         PrimaryRegistrarTypes.Fields,
-        {
-          name: HexString;
-          owner: Address;
-          payer: Address;
-          resolver: HexString;
-          duration: bigint;
-        }
+        { name: HexString; owner: Address; payer: Address; duration: bigint }
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "register", params);
@@ -145,7 +139,7 @@ export const PrimaryRegistrar = new Factory(
   Contract.fromJson(
     PrimaryRegistrarContractJson,
     "",
-    "970287b3242d8fcef96351713b92e7a8eca96882f1765892b77352d3187c8154"
+    "a42cd36a3c0b7556391103643a9078ac6da04820afa7a219a7c138b9ac8b7a9f"
   )
 );
 

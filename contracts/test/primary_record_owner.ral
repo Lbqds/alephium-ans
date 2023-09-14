@@ -1,6 +1,6 @@
 Contract PrimaryRecordOwner(record: PrimaryRecord) {
   @using(checkExternalCaller = false)
-  pub fn destroyRecord(node: ByteVec) -> () {
-    record.destroy(node)
+  pub fn destroyRecord() -> () {
+    record.destroy()
   }
 }

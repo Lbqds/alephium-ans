@@ -7,8 +7,6 @@ export * from "./PrimaryRecord";
 export * from "./PrimaryRegistrar";
 export * from "./SecondaryRecord";
 export * from "./SecondaryRegistrar";
-export * from "./PubkeyInfo";
-export * from "./PubkeyResolver";
 export * from "./PrimaryRecordOwner";
 export * from "./SecondaryRecordOwner";
 export * from "./scripts";

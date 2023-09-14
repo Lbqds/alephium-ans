@@ -50,9 +50,9 @@ class Factory extends ContractFactory<
 
   tests = {
     destroyRecord: async (
-      params: TestContractParams<
-        SecondaryRecordOwnerTypes.Fields,
-        { node: HexString }
+      params: Omit<
+        TestContractParams<SecondaryRecordOwnerTypes.Fields, never>,
+        "testArgs"
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "destroyRecord", params);
@@ -65,7 +65,7 @@ export const SecondaryRecordOwner = new Factory(
   Contract.fromJson(
     SecondaryRecordOwnerContractJson,
     "",
-    "fc58df069b4a1490e256beae9da64a9d7fdf32b31f1c3ceecfe2953cc6f6ce27"
+    "99fc32e3a0a97f34c6a3754c4d84c34fb3a04e14774499644fb847da54971eaf"
   )
 );
 

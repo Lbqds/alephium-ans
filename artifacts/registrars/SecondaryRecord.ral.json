@@ -1,26 +1,23 @@
 {
   "version": "v2.5.5",
   "name": "SecondaryRecord",
-  "bytecode": "050809121b40244044405440644074010000000102a00002010000000102a00102010000000102ce0102010000000102a00202010201010011b3ce00410c7ba0011400424c061600ce010e0ca0010100ce01b0010001010007b4a000450c7b1600a100010001010007b4a000450c7b1600a101010001010007b3ce00410c7b1600a102",
-  "codeHash": "a114be7923fdbe534dc536a8c58562f8323a263159364344f123d68f6ec8b41f",
+  "bytecode": "040609121b402a403a404a010000000102a00002010000000102ce0102010000000102a00102010200000007b3ce00410c7bce01b0010001010007b4a000450c7b1600a100010001010007b3ce00410c7b1600a101",
+  "codeHash": "448b509e9eedd98126536fe682ba37c5c53f7f035125eeec0a6de2f3240236de",
   "fieldsSig": {
     "names": [
       "registrar",
       "owner",
-      "resolver",
       "ttl",
       "refundAddress"
     ],
     "types": [
       "ByteVec",
       "Address",
-      "ByteVec",
       "U256",
       "Address"
     ],
     "isMutable": [
       false,
-      true,
       true,
       true,
       false
@@ -38,18 +35,6 @@
       "paramIsMutable": [],
       "returnTypes": [
         "Address"
-      ]
-    },
-    {
-      "name": "getResolver",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": false,
-      "isPublic": true,
-      "paramNames": [],
-      "paramTypes": [],
-      "paramIsMutable": [],
-      "returnTypes": [
-        "ByteVec"
       ]
     },
     {
@@ -81,15 +66,9 @@
       "usePreapprovedAssets": false,
       "useAssetsInContract": true,
       "isPublic": true,
-      "paramNames": [
-        "node"
-      ],
-      "paramTypes": [
-        "ByteVec"
-      ],
-      "paramIsMutable": [
-        false
-      ],
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
       "returnTypes": []
     },
     {
@@ -102,22 +81,6 @@
       ],
       "paramTypes": [
         "Address"
-      ],
-      "paramIsMutable": [
-        false
-      ],
-      "returnTypes": []
-    },
-    {
-      "name": "setResolver",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": false,
-      "isPublic": true,
-      "paramNames": [
-        "newResolver"
-      ],
-      "paramTypes": [
-        "ByteVec"
       ],
       "paramIsMutable": [
         false

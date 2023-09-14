@@ -1,3 +1,0 @@
-Interface Resolver {
-  pub fn removeNode(node: ByteVec, refundAddress: Address) -> ()
-}

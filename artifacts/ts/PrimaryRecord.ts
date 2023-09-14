@@ -32,7 +32,6 @@ export namespace PrimaryRecordTypes {
   export type Fields = {
     registrar: HexString;
     owner: Address;
-    resolver: HexString;
     ttl: bigint;
     refundAddress: Address;
     recordTokenId: HexString;
@@ -44,10 +43,6 @@ export namespace PrimaryRecordTypes {
     getOwner: {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<Address>;
-    };
-    getResolver: {
-      params: Omit<CallContractParams<{}>, "args">;
-      result: CallContractResult<HexString>;
     };
     getRefundAddress: {
       params: Omit<CallContractParams<{}>, "args">;
@@ -109,14 +104,6 @@ class Factory extends ContractFactory<
     ): Promise<TestContractResult<Address>> => {
       return testMethod(this, "getOwner", params);
     },
-    getResolver: async (
-      params: Omit<
-        TestContractParams<PrimaryRecordTypes.Fields, never>,
-        "testArgs"
-      >
-    ): Promise<TestContractResult<HexString>> => {
-      return testMethod(this, "getResolver", params);
-    },
     getRefundAddress: async (
       params: Omit<
         TestContractParams<PrimaryRecordTypes.Fields, never>,
@@ -134,7 +121,10 @@ class Factory extends ContractFactory<
       return testMethod(this, "getTTL", params);
     },
     destroy: async (
-      params: TestContractParams<PrimaryRecordTypes.Fields, { node: HexString }>
+      params: Omit<
+        TestContractParams<PrimaryRecordTypes.Fields, never>,
+        "testArgs"
+      >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "destroy", params);
     },
@@ -145,14 +135,6 @@ class Factory extends ContractFactory<
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "setOwner", params);
-    },
-    setResolver: async (
-      params: TestContractParams<
-        PrimaryRecordTypes.Fields,
-        { newResolver: HexString }
-      >
-    ): Promise<TestContractResult<null>> => {
-      return testMethod(this, "setResolver", params);
     },
     setTTL: async (
       params: TestContractParams<PrimaryRecordTypes.Fields, { newTTL: bigint }>
@@ -183,7 +165,7 @@ export const PrimaryRecord = new Factory(
   Contract.fromJson(
     PrimaryRecordContractJson,
     "",
-    "1e790b6768b90c85668bcc837fabd84ed985066500ab390b834833fc9892d895"
+    "aa1d4ba6eebaa0ceb8e30484d08992702eacbf1351b182dfb009b8894bbba37c"
   )
 );
 
@@ -205,17 +187,6 @@ export class PrimaryRecordInstance extends ContractInstance {
         PrimaryRecord,
         this,
         "getOwner",
-        params === undefined ? {} : params,
-        getContractByCodeHash
-      );
-    },
-    getResolver: async (
-      params?: PrimaryRecordTypes.CallMethodParams<"getResolver">
-    ): Promise<PrimaryRecordTypes.CallMethodResult<"getResolver">> => {
-      return callMethod(
-        PrimaryRecord,
-        this,
-        "getResolver",
         params === undefined ? {} : params,
         getContractByCodeHash
       );
