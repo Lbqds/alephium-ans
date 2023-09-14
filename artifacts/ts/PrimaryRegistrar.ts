@@ -42,7 +42,10 @@ export namespace PrimaryRegistrarTypes {
     owner: Address;
     ttl: bigint;
   }>;
-  export type NameRenewEvent = ContractEvent<{ name: HexString; ttl: bigint }>;
+  export type NameRenewedEvent = ContractEvent<{
+    name: HexString;
+    ttl: bigint;
+  }>;
 }
 
 class Factory extends ContractFactory<
@@ -53,7 +56,7 @@ class Factory extends ContractFactory<
     return this.contract.getInitialFieldsWithDefaultValues() as PrimaryRegistrarTypes.Fields;
   }
 
-  eventIndex = { NameRegistered: 0, NameRenew: 1 };
+  eventIndex = { NameRegistered: 0, NameRenewed: 1 };
   consts = {
     MinRentDuration: BigInt(2592000000),
     ErrorCodes: {
@@ -62,9 +65,8 @@ class Factory extends ContractFactory<
       ExpectAssetAddress: BigInt(2),
       NameHasBeenRegistered: BigInt(3),
       ContractNotExists: BigInt(4),
-      PrimaryRecordNotExists: BigInt(5),
-      NameHasExpired: BigInt(6),
-      InvalidCredentialTokenId: BigInt(7),
+      NameHasExpired: BigInt(5),
+      InvalidCredentialToken: BigInt(6),
     },
   };
 
@@ -143,7 +145,7 @@ export const PrimaryRegistrar = new Factory(
   Contract.fromJson(
     PrimaryRegistrarContractJson,
     "",
-    "8a549a925b9a0066b714f5f01f8a730a40af76a3bebfcffafae1eeb900f43eb2"
+    "970287b3242d8fcef96351713b92e7a8eca96882f1765892b77352d3187c8154"
   )
 );
 
@@ -174,15 +176,15 @@ export class PrimaryRegistrarInstance extends ContractInstance {
     );
   }
 
-  subscribeNameRenewEvent(
-    options: EventSubscribeOptions<PrimaryRegistrarTypes.NameRenewEvent>,
+  subscribeNameRenewedEvent(
+    options: EventSubscribeOptions<PrimaryRegistrarTypes.NameRenewedEvent>,
     fromCount?: number
   ): EventSubscription {
     return subscribeContractEvent(
       PrimaryRegistrar.contract,
       this,
       options,
-      "NameRenew",
+      "NameRenewed",
       fromCount
     );
   }
@@ -190,7 +192,7 @@ export class PrimaryRegistrarInstance extends ContractInstance {
   subscribeAllEvents(
     options: EventSubscribeOptions<
       | PrimaryRegistrarTypes.NameRegisteredEvent
-      | PrimaryRegistrarTypes.NameRenewEvent
+      | PrimaryRegistrarTypes.NameRenewedEvent
     >,
     fromCount?: number
   ): EventSubscription {

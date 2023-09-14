@@ -52,9 +52,8 @@ class Factory extends ContractFactory<
       ExpectAssetAddress: BigInt(2),
       NameHasBeenRegistered: BigInt(3),
       ContractNotExists: BigInt(4),
-      PrimaryRecordNotExists: BigInt(5),
-      NameHasExpired: BigInt(6),
-      InvalidCredentialTokenId: BigInt(7),
+      NameHasExpired: BigInt(5),
+      InvalidCredentialToken: BigInt(6),
     },
   };
 
@@ -86,7 +85,7 @@ export const SecondaryRegistrar = new Factory(
   Contract.fromJson(
     SecondaryRegistrarContractJson,
     "",
-    "b43c1d3f90bb76d958b2650f389b2ee36bc78a543612e4a3c073380961664586"
+    "79f37858d89182a31a8c048de0c440991b53a442f4bc44b016d27cd101330990"
   )
 );
 

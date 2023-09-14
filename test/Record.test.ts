@@ -45,9 +45,9 @@ describe("test record", () => {
     expect(destroyEvent.fields.address).toEqual(primaryRecord.address)
   })
 
-  test('destroy primary record', async () => {
+  test('destroy secondary record', async () => {
     const contractAddress = randomContractAddress()
-    const secondaryRecord = createSecondaryRecord(randomContractAddress(), '', '', contractAddress)
+    const secondaryRecord = createSecondaryRecord(randomContractAddress(), contractAddress)
     const secondaryRecordOwner = createSecondaryRecordOwner(secondaryRecord, contractAddress)
 
     async function destroy(caller: Address) {

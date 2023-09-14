@@ -128,24 +128,17 @@
           }
         },
         {
-          "name": "PrimaryRecordNotExists",
+          "name": "NameHasExpired",
           "value": {
             "type": "U256",
             "value": "5"
           }
         },
         {
-          "name": "NameHasExpired",
+          "name": "InvalidCredentialToken",
           "value": {
             "type": "U256",
             "value": "6"
-          }
-        },
-        {
-          "name": "InvalidCredentialTokenId",
-          "value": {
-            "type": "U256",
-            "value": "7"
           }
         }
       ]

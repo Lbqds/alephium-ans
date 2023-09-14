@@ -1,19 +1,20 @@
-import { addressFromContractId, binToHex, Contract, ContractState, subContractId, Token, web3, ContractDestroyedEvent } from "@alephium/web3"
+import { addressFromContractId, binToHex, ContractState, subContractId, web3 } from "@alephium/web3"
 import {
   alph,
   defaultInitialAsset,
   randomAssetAddress,
-  createAccountResolver,
+  createPubkeyResolver,
   DefaultGroup,
   buildProject,
   createSecondaryRegistrar,
   getContractState,
   createSecondaryRecord,
-  expectVMAssertionError
+  getRecordTokenPath,
+  ErrorCodes
 } from "./fixtures/ANSFixture"
 import { keccak256 } from "ethers/lib/utils"
-import { AccountInfo, AccountInfoTypes, SecondaryRecordTypes, SecondaryRegistrar, SecondaryRegistrarTypes } from "../artifacts/ts"
-import { randomContractId } from "@alephium/web3-test"
+import { SecondaryRecordTypes, SecondaryRegistrar } from "../artifacts/ts"
+import { expectAssertionError, randomContractId } from "@alephium/web3-test"
 
 describe("test secondary registrar", () => {
   const encoder = new TextEncoder()
@@ -23,35 +24,32 @@ describe("test secondary registrar", () => {
     await buildProject()
   })
 
-  function createAccountInfo(resolver: string, contractAddress: string): AccountInfoTypes.State {
-    return AccountInfo.stateForTest(
-      { resolver, pubkey: '', addresses: '' },
-      defaultInitialAsset,
-      contractAddress,
-    )
-  }
-
   const primaryRegistrarId = randomContractId()
   const registrarFixture = createSecondaryRegistrar(primaryRegistrarId)
-  const resolverFixture = createAccountResolver(registrarFixture)
+  const resolverFixture = createPubkeyResolver(registrarFixture)
 
   const name = encoder.encode("test")
-  const label = keccak256(name).slice(2)
-  const node = keccak256(Buffer.from(label, 'hex')).slice(2)
-  const primaryRecordId = subContractId(primaryRegistrarId, node, DefaultGroup)
+  const node = keccak256(name).slice(2)
   const secondaryRecordId = subContractId(registrarFixture.contractId, node, DefaultGroup)
 
-  async function register(nodeOwner: string, extraContracts: ContractState[] = [], tokens: Token[] = [{ id: primaryRecordId, amount: 1n }]) {
+  function getCredentialTokenId(ttl: bigint): string {
+    const path = getRecordTokenPath(node, ttl)
+    return subContractId(primaryRegistrarId, path, DefaultGroup)
+  }
+
+  async function register(nodeOwner: string, credentialTokenId: string, ttl: bigint, extraContracts: ContractState[] = []) {
     return SecondaryRegistrar.tests.register({
       address: registrarFixture.address,
       initialFields: registrarFixture.initialFields(),
       initialAsset: defaultInitialAsset,
-      inputAssets: [{ address: nodeOwner, asset: { alphAmount: alph(2), tokens: tokens } }],
+      inputAssets: [{ address: nodeOwner, asset: { alphAmount: alph(2), tokens: [{ id: credentialTokenId, amount: 1n }] } }],
       testArgs: {
         name: binToHex(name),
         owner: nodeOwner,
         payer: nodeOwner,
-        resolver: resolverFixture.contractId
+        resolver: resolverFixture.contractId,
+        credentialTokenId,
+        ttl
       },
       existingContracts: [...resolverFixture.states(), ...extraContracts]
     })
@@ -59,36 +57,32 @@ describe("test secondary registrar", () => {
 
   test('register', async () => {
     const nodeOwner = randomAssetAddress()
-    const testResult = await register(nodeOwner)
+    const ttl = 100n
+    const credentialTokenId = getCredentialTokenId(ttl)
+
+    const testResult = await register(nodeOwner, credentialTokenId, ttl)
     const recordState = getContractState<SecondaryRecordTypes.Fields>(testResult.contracts, secondaryRecordId)
     expect(recordState.fields.owner).toEqual(nodeOwner)
     expect(recordState.fields.resolver).toEqual(resolverFixture.contractId)
+    expect(recordState.fields.ttl).toEqual(ttl)
 
     const contractOutput = testResult.txOutputs.find((o) => o.address === addressFromContractId(secondaryRecordId))!
     expect(contractOutput.tokens).toEqual([])
 
-    expect(testResult.events.length).toEqual(2)
-
-    const event = testResult.events.find(e => e.name === 'NameRegistered')! as SecondaryRegistrarTypes.NameRegisteredEvent
-    expect(event.fields).toEqual({ name: binToHex(name), owner: nodeOwner })
-
-    expectVMAssertionError(register(nodeOwner, [], []), 'NoTokenBalanceForTheAddress')
+    expectAssertionError(register(nodeOwner, randomContractId(), ttl), registrarFixture.address, Number(ErrorCodes.InvalidCredentialToken))
+    expectAssertionError(register(nodeOwner, credentialTokenId, ttl + 1n), registrarFixture.address, Number(ErrorCodes.InvalidCredentialToken))
   })
 
-  test('remove the old record', async () => {
+  test('remove the expired record and create a new record', async () => {
     const nodeOwner = randomAssetAddress()
-    const secondaryRecord = createSecondaryRecord(addressFromContractId(secondaryRecordId), registrarFixture.contractId, resolverFixture.contractId)
-    const accountInfoId = subContractId(resolverFixture.contractId, node, DefaultGroup)
-    const accountInfo = createAccountInfo(resolverFixture.contractId, addressFromContractId(accountInfoId))
-    const testResult = await register(nodeOwner, [secondaryRecord, accountInfo])
+    const secondaryRecord = createSecondaryRecord(addressFromContractId(secondaryRecordId), registrarFixture.contractId, nodeOwner, '', 100n)
+    const invalidCredentialTokenId = getCredentialTokenId(99n)
+    expectAssertionError(register(nodeOwner, invalidCredentialTokenId, 99n, [secondaryRecord]), registrarFixture.address, Number(ErrorCodes.InvalidCredentialToken))
 
-    expect(testResult.events.length).toEqual(5)
-    const contractDestroyedEvents = testResult.events.filter((e) => e.eventIndex === Contract.ContractDestroyedEventIndex) as ContractDestroyedEvent[]
-    expect(contractDestroyedEvents.find((e) => e.fields.address === secondaryRecord.address) !== undefined).toEqual(true)
-    expect(contractDestroyedEvents.find((e) => e.fields.address === accountInfo.address) !== undefined).toEqual(true)
-    expect(testResult.events.find((e) => e.name === 'AccountInfoRemoved') !== undefined).toEqual(true)
-
-    const nameRegisteredEvent = testResult.events.find(e => e.name === 'NameRegistered')! as SecondaryRegistrarTypes.NameRegisteredEvent
-    expect(nameRegisteredEvent.fields).toEqual({ name: binToHex(name), owner: nodeOwner })
+    const ttl = 101n
+    const credentialTokenId = getCredentialTokenId(ttl)
+    const testResult = await register(nodeOwner, credentialTokenId, ttl, [secondaryRecord])
+    const newSecondaryRecord = getContractState<SecondaryRecordTypes.Fields>(testResult.contracts, secondaryRecordId)
+    expect(newSecondaryRecord.fields.ttl).toEqual(ttl)
   })
 })

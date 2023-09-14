@@ -14,12 +14,14 @@ Contract SecondaryRegistrar(primaryRegistrar: PrimaryRegistrar, recordTemplateId
     let node = keccak256!(name)
     let recordTokenPath = node ++ u256To32Byte!(ttl)
     let recordTokenId = subContractIdOf!(primaryRegistrar, recordTokenPath)
-    assert!(recordTokenId == credentialTokenId, ErrorCodes.InvalidCredentialTokenId)
-    assert!(tokenRemaining!(payer, recordTokenId) == 1, ErrorCodes.PrimaryRecordNotExists)
+    assert!(recordTokenId == credentialTokenId, ErrorCodes.InvalidCredentialToken)
+    assert!(tokenRemaining!(payer, recordTokenId) == 1, ErrorCodes.InvalidCredentialToken)
 
     let secondaryRecordId = subContractId!(node)
     if (contractExists!(secondaryRecordId)) {
-      SecondaryRecord(secondaryRecordId).destroy(node)
+      let record = SecondaryRecord(secondaryRecordId)
+      assert!(record.getTTL() < ttl, ErrorCodes.InvalidCredentialToken)
+      record.destroy(node)
     }
 
     let (encodedImmutableFields, encodedMutableFields) = SecondaryRecord.encodeFields!(selfContractId!(), owner, resolver, ttl, payer)

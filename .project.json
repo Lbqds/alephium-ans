@@ -11,7 +11,7 @@
   "infos": {
     "Constants": {
       "sourceFile": "constants.ral",
-      "sourceCodeHash": "3449d2553a9be72265557b27fb1b0326dd5297de98e6268ed387feda554c2d5f",
+      "sourceCodeHash": "2c261ace228dd3ede9a56cd677bf3c87f7f85b272b608f6bda864f8fe96c9bf5",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "",
       "warnings": []
@@ -39,9 +39,9 @@
     },
     "PrimaryRegistrar": {
       "sourceFile": "registrars/primary_registrar.ral",
-      "sourceCodeHash": "c517b31d2d40e74656a0249855ace928f5546012f9b0bc5b4857b1629cf9d7e8",
+      "sourceCodeHash": "b3b27911a19b6b8aafcb4ff24e44205d2fd43260c3ae2e880a25d9221d7f3216",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "8a549a925b9a0066b714f5f01f8a730a40af76a3bebfcffafae1eeb900f43eb2",
+      "codeHashDebug": "970287b3242d8fcef96351713b92e7a8eca96882f1765892b77352d3187c8154",
       "warnings": []
     },
     "PubkeyInfo": {
@@ -95,7 +95,7 @@
     },
     "Registrar": {
       "sourceFile": "registrar.ral",
-      "sourceCodeHash": "c35101bbffc2bca1d53371e7338ccc96bc21603f91b0705fcf8ccc34939f3772",
+      "sourceCodeHash": "404524c508e724e41256231cda2f62c17b9a11593cb530ef71f96a541a7c56a5",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "",
       "warnings": []
@@ -130,9 +130,9 @@
     },
     "SecondaryRegistrar": {
       "sourceFile": "registrars/secondary_registrar.ral",
-      "sourceCodeHash": "eafbab02da6b369b6b9795d0cb4c75fc9466e8162b407cdaf2e2515c69c10339",
+      "sourceCodeHash": "35d4240d0edcc3bcfc4881614fa318d9adfd2f496dd0767ad74ec1193a24c45e",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "b43c1d3f90bb76d958b2650f389b2ee36bc78a543612e4a3c073380961664586",
+      "codeHashDebug": "79f37858d89182a31a8c048de0c440991b53a442f4bc44b016d27cd101330990",
       "warnings": []
     }
   }

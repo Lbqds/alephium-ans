@@ -25,19 +25,15 @@ Contract PrimaryRegistrar(
   fn preRegister(node: ByteVec, currentTs: U256) -> () {
     let recordId = subContractId!(node)
     if (contractExists!(recordId)) {
-      let record = Record(recordId)
+      let record = PrimaryRecord(recordId)
       let ttl = record.getTTL()
-      if (currentTs < ttl) {
-        panic!(ErrorCodes.NameHasBeenRegistered)
-      } else {
-        let recordToken = RecordToken(subContractId!(node ++ u256To32Byte!(ttl)))
-        recordToken.destroy(record.getRefundAddress())
-        record.destroy(node)
-      }
+      assert!(currentTs >= ttl, ErrorCodes.NameHasBeenRegistered)
+      RecordToken(record.getRecordTokenId()).destroy(record.getRefundAddress())
+      record.destroy(node)
     }
   }
 
-  @using(preapprovedAssets = true, checkExternalCaller = false)
+  @using(preapprovedAssets = true, assetsInContract = true, checkExternalCaller = false)
   pub fn register(
     name: ByteVec,
     owner: Address,
@@ -76,7 +72,7 @@ Contract PrimaryRegistrar(
     emit NameRegistered(name, owner, ttl)
   }
 
-  @using(preapprovedAssets = true)
+  @using(preapprovedAssets = true, assetsInContract = true)
   pub fn renew(name: ByteVec, payer: Address, duration: U256) -> () {
     assert!(isAssetAddress!(payer), ErrorCodes.ExpectAssetAddress)
     assert!(duration >= MinRentDuration, ErrorCodes.InvalidArgs)
@@ -87,11 +83,11 @@ Contract PrimaryRegistrar(
 
     let currentTs = blockTimeStamp!()
     let currentTTL = record.getTTL()
-    assert!(currentTs >= currentTTL, ErrorCodes.NameHasExpired)
+    assert!(currentTs < currentTTL, ErrorCodes.NameHasExpired)
 
     transferTokenToSelf!(payer, ALPH, cost(duration))
 
-    let recordTokenId = subContractId!(node ++ u256To32Byte!(record.getTTL()))
+    let recordTokenId = record.getRecordTokenId()
     burnToken!(payer, recordTokenId, 1)
     RecordToken(recordTokenId).destroy(payer)
 
@@ -101,7 +97,7 @@ Contract PrimaryRegistrar(
     record.setTTL(newTTL)
     record.setRecordTokenId(newRecordTokenId)
 
-    emit NameRenew(name, newTTL)
+    emit NameRenewed(name, newTTL)
   }
 
   @using(preapprovedAssets = true, assetsInContract = true)

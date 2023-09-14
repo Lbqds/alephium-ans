@@ -5,8 +5,7 @@ Abstract Contract Constants() {
     ExpectAssetAddress     = 2
     NameHasBeenRegistered  = 3
     ContractNotExists      = 4
-    PrimaryRecordNotExists = 5
-    NameHasExpired         = 6
-    InvalidCredentialTokenId = 7
+    NameHasExpired         = 5
+    InvalidCredentialToken = 6
   }
 }
