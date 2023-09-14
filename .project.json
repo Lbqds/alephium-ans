@@ -32,9 +32,9 @@
     },
     "PrimaryRegistrar": {
       "sourceFile": "registrars/primary_registrar.ral",
-      "sourceCodeHash": "e2e04b68b853d76997888420d8827104cce7fd326dc3d3ed8d665b4ead8f8bf2",
+      "sourceCodeHash": "e3e9e0a1cfa0bd10a88954776758286481172e5b1c5378918cb6394ca64ef718",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "6fb73d6ec3d165e1eeb312b29f8ab01bda3aac1e4d74243c9731f10de2ed8e26",
+      "codeHashDebug": "2ff150df9d0eea8e2babccfdae15a3167ca3ed4d16cd3018bad9b4105805fe19",
       "warnings": []
     },
     "Record": {

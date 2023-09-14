@@ -1,10 +1,9 @@
 Contract PrimaryRegistrar(
   mut registrarOwner: Address,
   recordTemplateId: ByteVec,
-  credentialTokenTemplateId: ByteVec
+  credentialTokenTemplateId: ByteVec,
+  minRegistrationDuration: U256
 ) extends Constants() implements Registrar {
-  const MinRegistrationDuration = 2592000000 // 3 months in ms
-
   fn cost(duration: U256) -> U256 {
     return 1e-15 alph * duration
   }
@@ -60,7 +59,7 @@ Contract PrimaryRegistrar(
   ) -> () {
     assert!(size!(name) != 0, ErrorCodes.InvalidArgs)
     assert!(isAssetAddress!(payer), ErrorCodes.ExpectAssetAddress)
-    assert!(duration >= MinRegistrationDuration, ErrorCodes.InvalidArgs)
+    assert!(duration >= minRegistrationDuration, ErrorCodes.InvalidArgs)
 
     let node = keccak256!(name)
     let currentTs = blockTimeStamp!()
@@ -82,7 +81,7 @@ Contract PrimaryRegistrar(
   @using(preapprovedAssets = true, assetsInContract = true)
   pub fn renew(name: ByteVec, payer: Address, duration: U256) -> () {
     assert!(isAssetAddress!(payer), ErrorCodes.ExpectAssetAddress)
-    assert!(duration >= MinRegistrationDuration, ErrorCodes.InvalidArgs)
+    assert!(duration >= minRegistrationDuration, ErrorCodes.InvalidArgs)
 
     let node = keccak256!(name)
     let record = Record(subContractId!(node))

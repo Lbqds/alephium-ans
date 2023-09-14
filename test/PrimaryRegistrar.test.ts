@@ -12,13 +12,12 @@ import {
   DefaultGasFee,
   createCredentialToken,
   getCredentialTokenPath,
-  expectVMAssertionError
+  expectVMAssertionError,
+  MinRegistrationDuration
 } from "./fixtures/ANSFixture"
 import { keccak256 } from "ethers/lib/utils"
 import { RecordTypes, PrimaryRegistrar, PrimaryRegistrarTypes } from "../artifacts/ts"
 import { expectAssertionError, randomContractId } from "@alephium/web3-test"
-
-const MinRegistrationDuration = PrimaryRegistrar.consts.MinRegistrationDuration
 
 function cost(duration: bigint): bigint {
   return 1000n * duration

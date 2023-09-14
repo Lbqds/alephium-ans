@@ -33,6 +33,7 @@ export namespace PrimaryRegistrarTypes {
     registrarOwner: Address;
     recordTemplateId: HexString;
     credentialTokenTemplateId: HexString;
+    minRegistrationDuration: bigint;
   };
 
   export type State = ContractState<Fields>;
@@ -58,7 +59,6 @@ class Factory extends ContractFactory<
 
   eventIndex = { NameRegistered: 0, NameRenewed: 1 };
   consts = {
-    MinRegistrationDuration: BigInt(2592000000),
     ErrorCodes: {
       InvalidCaller: BigInt(0),
       InvalidArgs: BigInt(1),
@@ -155,7 +155,7 @@ export const PrimaryRegistrar = new Factory(
   Contract.fromJson(
     PrimaryRegistrarContractJson,
     "",
-    "6fb73d6ec3d165e1eeb312b29f8ab01bda3aac1e4d74243c9731f10de2ed8e26"
+    "2ff150df9d0eea8e2babccfdae15a3167ca3ed4d16cd3018bad9b4105805fe19"
   )
 );
 

@@ -30,6 +30,7 @@ export const MaxGasPerTx = 625000n
 export const DefaultGasFee = GasPrice * MaxGasPerTx
 export const DefaultGroup = 0
 export const MaxTTL = 1n << 255n
+export const MinRegistrationDuration = 2592000000n
 
 export const ErrorCodes = PrimaryRegistrar.consts.ErrorCodes
 
@@ -87,7 +88,8 @@ export function createPrimaryRegistrar(owner: string) {
   const state = PrimaryRegistrar.stateForTest({
     registrarOwner: owner,
     recordTemplateId: primaryRecordTemplate.contractId,
-    credentialTokenTemplateId: credentialTokenTemplate.contractId
+    credentialTokenTemplateId: credentialTokenTemplate.contractId,
+    minRegistrationDuration: MinRegistrationDuration
   }, defaultInitialAsset)
   return new ContractFixture(state, [primaryRecordTemplate, credentialTokenTemplate])
 }

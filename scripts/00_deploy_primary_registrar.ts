@@ -2,6 +2,8 @@ import { Deployer, DeployFunction, Network } from '@alephium/cli'
 import { Settings } from '../alephium.config'
 import { PrimaryRegistrar, PrimaryRegistrarTypes, Record, CredentialToken } from '../artifacts/ts'
 
+const MinRegistrationDuration = 2592000000n
+
 const deployPrimaryRegistrar: DeployFunction<Settings> = async (deployer: Deployer, network: Network<Settings>): Promise<void> => {
   if (deployer.account.group !== network.settings.primaryGroup) {
     return
@@ -13,7 +15,8 @@ const deployPrimaryRegistrar: DeployFunction<Settings> = async (deployer: Deploy
   const initialFields: PrimaryRegistrarTypes.Fields = {
     registrarOwner: network.settings.registrarOwner,
     recordTemplateId: recordTemplateResult.contractInstance.contractId,
-    credentialTokenTemplateId: credentialTokenTemplateResult.contractInstance.contractId
+    credentialTokenTemplateId: credentialTokenTemplateResult.contractInstance.contractId,
+    minRegistrationDuration: MinRegistrationDuration
   }
   const result = await deployer.deployContract(PrimaryRegistrar, { initialFields: initialFields })
   network.settings.primaryRegistrarAddress = result.contractInstance.address
