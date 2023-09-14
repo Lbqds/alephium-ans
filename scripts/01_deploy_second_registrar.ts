@@ -1,7 +1,7 @@
 import { Deployer, DeployFunction, Network } from '@alephium/cli'
 import { contractIdFromAddress, binToHex } from '@alephium/web3'
 import { Settings } from '../alephium.config'
-import { SecondaryRegistrar, SecondaryRegistrarTypes, SecondaryRecord } from '../artifacts/ts'
+import { SecondaryRegistrar, SecondaryRegistrarTypes, Record } from '../artifacts/ts'
 
 const deploySecondaryRegistrar: DeployFunction<Settings> = async (deployer: Deployer, network: Network<Settings>): Promise<void> => {
   if (deployer.account.group === network.settings.primaryGroup) {
@@ -10,7 +10,7 @@ const deploySecondaryRegistrar: DeployFunction<Settings> = async (deployer: Depl
   if (network.settings.primaryRegistrarAddress === undefined) {
     throw new Error(`PrimaryRegistrary not deployed yet`)
   }
-  const recordTemplateResult = await deployer.deployContract(SecondaryRecord, { initialFields: SecondaryRecord.getInitialFieldsWithDefaultValues() })
+  const recordTemplateResult = await deployer.deployContract(Record, { initialFields: Record.getInitialFieldsWithDefaultValues() })
   const initialFields: SecondaryRegistrarTypes.Fields = {
     primaryRegistrar: binToHex(contractIdFromAddress(network.settings.primaryRegistrarAddress)),
     recordTemplateId: recordTemplateResult.contractInstance.contractId

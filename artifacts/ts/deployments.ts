@@ -5,10 +5,10 @@
 import { RunScriptResult, DeployContractExecutionResult } from "@alephium/cli";
 import { NetworkId } from "@alephium/web3";
 import {
-  PrimaryRecord,
-  PrimaryRecordInstance,
-  RecordToken,
-  RecordTokenInstance,
+  Record,
+  RecordInstance,
+  CredentialToken,
+  CredentialTokenInstance,
   PrimaryRegistrar,
   PrimaryRegistrarInstance,
 } from ".";
@@ -17,24 +17,24 @@ import { default as devnetDeployments } from "../.deployments.devnet.json";
 export type Deployments = {
   deployerAddress: string;
   contracts: {
-    PrimaryRecord: DeployContractExecutionResult<PrimaryRecordInstance>;
-    RecordToken: DeployContractExecutionResult<RecordTokenInstance>;
+    Record: DeployContractExecutionResult<RecordInstance>;
+    CredentialToken: DeployContractExecutionResult<CredentialTokenInstance>;
     PrimaryRegistrar: DeployContractExecutionResult<PrimaryRegistrarInstance>;
   };
 };
 
 function toDeployments(json: any): Deployments {
   const contracts = {
-    PrimaryRecord: {
-      ...json.contracts["PrimaryRecord"],
-      contractInstance: PrimaryRecord.at(
-        json.contracts["PrimaryRecord"].contractInstance.address
+    Record: {
+      ...json.contracts["Record"],
+      contractInstance: Record.at(
+        json.contracts["Record"].contractInstance.address
       ),
     },
-    RecordToken: {
-      ...json.contracts["RecordToken"],
-      contractInstance: RecordToken.at(
-        json.contracts["RecordToken"].contractInstance.address
+    CredentialToken: {
+      ...json.contracts["CredentialToken"],
+      contractInstance: CredentialToken.at(
+        json.contracts["CredentialToken"].contractInstance.address
       ),
     },
     PrimaryRegistrar: {

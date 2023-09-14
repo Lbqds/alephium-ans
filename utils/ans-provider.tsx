@@ -4,7 +4,7 @@ import { createContext, useContext } from "react";
 import { ReactNode } from "react";
 import configuration from "../alephium.config";
 import { default as allDeployments } from "../artifacts/.deployments.devnet.json"
-import { PrimaryRecord, PrimaryRecordTypes } from "../artifacts/ts";
+import { Record, RecordTypes } from "../artifacts/ts";
 const uts46 = require("idna-uts46-hx/uts46bundle.js")
 
 // namehash("alph")
@@ -46,7 +46,7 @@ function loadConfig(networkId: NetworkId): NetworkConfig {
 
 export interface ANS {
   isAvailable(node: string): Promise<boolean>
-  getPrimaryRecord(node: string): Promise<PrimaryRecordTypes.Fields>
+  getPrimaryRecord(node: string): Promise<RecordTypes.Fields>
 }
 
 // @ts-ignore
@@ -94,9 +94,9 @@ const defaultANS: ANS = {
     }
   },
 
-  async getPrimaryRecord(name: string): Promise<PrimaryRecordTypes.Fields> {
+  async getPrimaryRecord(name: string): Promise<RecordTypes.Fields> {
     const recordContractAddress = getPrimaryRecordContractAddress(name)
-    const recordInstance = PrimaryRecord.at(recordContractAddress)
+    const recordInstance = Record.at(recordContractAddress)
     const state = await recordInstance.fetchState()
     return state.fields
   },
