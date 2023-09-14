@@ -1,9 +1,9 @@
-Abstract Contract RecordBase(
+Contract Record(
   registrar: ByteVec,
   mut owner: Address,
   mut ttl: U256,
   refundAddress: Address
-) extends Constants() implements Record {
+) extends Constants() {
   pub fn getOwner() -> Address {
     return owner
   }

@@ -30,7 +30,7 @@ import { getContractByCodeHash } from "./contracts";
 // Custom types for the contract
 export namespace CredentialTokenTypes {
   export type Fields = {
-    record: HexString;
+    registrar: HexString;
     name: HexString;
   };
 

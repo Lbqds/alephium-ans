@@ -14,13 +14,11 @@ import { randomBytes } from "crypto"
 import * as base58 from 'bs58'
 import {
   PrimaryRegistrar,
-  PrimaryRecordTypes,
-  PrimaryRecord,
-  SecondaryRecordTypes,
-  SecondaryRecord,
+  Record,
+  RecordTypes,
   SecondaryRegistrar,
-  RecordTokenTypes,
-  RecordToken
+  CredentialToken,
+  CredentialTokenTypes
 } from "../../artifacts/ts"
 import { randomContractAddress } from "@alephium/web3-test"
 
@@ -57,29 +55,13 @@ export class ContractFixture<T extends Fields> {
   }
 }
 
-export function createPrimaryRecord(
-  address: Address,
-  registrar: string,
-  owner = randomAssetAddress(),
-  ttl = 0n,
-  recordTokenId = ''
-): ContractState<PrimaryRecordTypes.Fields> {
-  return PrimaryRecord.stateForTest({
-    registrar,
-    owner,
-    refundAddress: owner,
-    ttl,
-    recordTokenId
-  }, undefined, address)
-}
-
-export function createSecondaryRecord(
+export function createRecord(
   address: Address,
   registrar: string,
   owner = randomAssetAddress(),
   ttl = 0n
-): ContractState<SecondaryRecordTypes.Fields> {
-  return SecondaryRecord.stateForTest({
+): ContractState<RecordTypes.Fields> {
+  return Record.stateForTest({
     registrar,
     owner,
     refundAddress: owner,
@@ -87,12 +69,12 @@ export function createSecondaryRecord(
   }, undefined, address)
 }
 
-export function createRecordToken(
+export function createCredentialToken(
   registrar: HexString,
   name: HexString,
   address = randomContractAddress()
-): ContractState<RecordTokenTypes.Fields> {
-  return RecordToken.stateForTest({ registrar, name }, undefined, address)
+): ContractState<CredentialTokenTypes.Fields> {
+  return CredentialToken.stateForTest({ registrar, name }, undefined, address)
 }
 
 export function subContractAddress(parentId: string, path: string, groupIndex: number): string {
@@ -100,18 +82,18 @@ export function subContractAddress(parentId: string, path: string, groupIndex: n
 }
 
 export function createPrimaryRegistrar(owner: string) {
-  const primaryRecordTemplate = createPrimaryRecord(randomContractAddress(), '')
-  const recordTokenTemplate = createRecordToken('', '')
+  const primaryRecordTemplate = createRecord(randomContractAddress(), '')
+  const credentialTokenTemplate = createCredentialToken('', '')
   const state = PrimaryRegistrar.stateForTest({
     registrarOwner: owner,
     recordTemplateId: primaryRecordTemplate.contractId,
-    recordTokenTemplateId: recordTokenTemplate.contractId
+    credentialTokenTemplateId: credentialTokenTemplate.contractId
   }, defaultInitialAsset)
-  return new ContractFixture(state, [primaryRecordTemplate, recordTokenTemplate])
+  return new ContractFixture(state, [primaryRecordTemplate, credentialTokenTemplate])
 }
 
 export function createSecondaryRegistrar(primaryRegistrarId: string) {
-  const template = createSecondaryRecord(randomContractAddress(), '')
+  const template = createRecord(randomContractAddress(), '')
   const state = SecondaryRegistrar.stateForTest({
     primaryRegistrar: primaryRegistrarId,
     recordTemplateId: template.contractId
@@ -149,13 +131,13 @@ export async function expectVMAssertionError(promise: Promise<any>, errorCode: s
     await promise
   } catch (error) {
     if (error instanceof Error) {
-      expect(error.message).toEqual(`[API Error] - VM execution error: ${errorCode}`)
+      expect(error.message.startsWith(`[API Error] - VM execution error: ${errorCode}`)).toEqual(true)
       return
     }
     throw error
   }
 }
 
-export function getRecordTokenPath(node: HexString, ttl: bigint): HexString {
+export function getCredentialTokenPath(node: HexString, ttl: bigint): HexString {
   return node + ttl.toString(16).padStart(64, '0')
 }

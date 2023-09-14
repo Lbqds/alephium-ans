@@ -3,10 +3,8 @@
 /* eslint-disable */
 
 export * from "./CredentialToken";
-export * from "./PrimaryRecord";
 export * from "./PrimaryRegistrar";
-export * from "./SecondaryRecord";
+export * from "./Record";
 export * from "./SecondaryRegistrar";
-export * from "./PrimaryRecordOwner";
-export * from "./SecondaryRecordOwner";
+export * from "./RecordTest";
 export * from "./scripts";

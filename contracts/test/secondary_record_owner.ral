@@ -1,6 +1,0 @@
-Contract SecondaryRecordOwner(record: SecondaryRecord) {
-  @using(checkExternalCaller = false)
-  pub fn destroyRecord() -> () {
-    record.destroy()
-  }
-}

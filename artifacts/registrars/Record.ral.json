@@ -1,29 +1,32 @@
 {
   "version": "v2.5.5",
-  "name": "CredentialToken",
-  "bytecode": "030509121a40224031010000000102ce0102010000000102ce01020100000001020c020100000001020d02010201010007b3ce00410c7b1600b0",
-  "codeHash": "a664b4bd3070d857687a38de41f41a4372307d5c98a98a787e2185689799bfdb",
+  "name": "Record",
+  "bytecode": "040609194022402b403b404a010000000102a00002010001010007b4a000450c7b1600a100010000000102ce0102010000000102a00102010001010007b3ce00410c7b1600a101010200000007b3ce00410c7bce01b0",
+  "codeHash": "c491c4b60fa500e922d11c3682710d871cce49a8c33a3d69e4339b3f3522f661",
   "fieldsSig": {
     "names": [
       "registrar",
-      "name",
-      "__stdInterfaceId"
+      "owner",
+      "ttl",
+      "refundAddress"
     ],
     "types": [
       "ByteVec",
-      "ByteVec",
-      "ByteVec"
+      "Address",
+      "U256",
+      "Address"
     ],
     "isMutable": [
       false,
-      false,
+      true,
+      true,
       false
     ]
   },
   "eventsSig": [],
   "functions": [
     {
-      "name": "getSymbol",
+      "name": "getOwner",
       "usePreapprovedAssets": false,
       "useAssetsInContract": false,
       "isPublic": true,
@@ -31,52 +34,16 @@
       "paramTypes": [],
       "paramIsMutable": [],
       "returnTypes": [
-        "ByteVec"
+        "Address"
       ]
     },
     {
-      "name": "getName",
+      "name": "setOwner",
       "usePreapprovedAssets": false,
       "useAssetsInContract": false,
-      "isPublic": true,
-      "paramNames": [],
-      "paramTypes": [],
-      "paramIsMutable": [],
-      "returnTypes": [
-        "ByteVec"
-      ]
-    },
-    {
-      "name": "getDecimals",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": false,
-      "isPublic": true,
-      "paramNames": [],
-      "paramTypes": [],
-      "paramIsMutable": [],
-      "returnTypes": [
-        "U256"
-      ]
-    },
-    {
-      "name": "getTotalSupply",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": false,
-      "isPublic": true,
-      "paramNames": [],
-      "paramTypes": [],
-      "paramIsMutable": [],
-      "returnTypes": [
-        "U256"
-      ]
-    },
-    {
-      "name": "destroy",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": true,
       "isPublic": true,
       "paramNames": [
-        "refundAddress"
+        "newOwner"
       ],
       "paramTypes": [
         "Address"
@@ -84,6 +51,56 @@
       "paramIsMutable": [
         false
       ],
+      "returnTypes": []
+    },
+    {
+      "name": "getRefundAddress",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "Address"
+      ]
+    },
+    {
+      "name": "getTTL",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "setTTL",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
+        "newTTL"
+      ],
+      "paramTypes": [
+        "U256"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "destroy",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": true,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
       "returnTypes": []
     }
   ],
@@ -143,6 +160,5 @@
         }
       ]
     }
-  ],
-  "stdInterfaceId": "0001"
+  ]
 }

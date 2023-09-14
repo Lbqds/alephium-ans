@@ -1,7 +1,0 @@
-Contract SecondaryRecord(
-  registrar: ByteVec,
-  mut owner: Address,
-  mut ttl: U256,
-  refundAddress: Address
-) extends Constants(), RecordBase(registrar, owner, ttl, refundAddress) {
-}

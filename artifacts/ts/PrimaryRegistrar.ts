@@ -99,13 +99,29 @@ class Factory extends ContractFactory<
     ): Promise<TestContractResult<bigint>> => {
       return testMethod(this, "cost", params);
     },
-    createCredentialToken: async (
+    getCredentialTokenPath: async (
       params: TestContractParams<
         PrimaryRegistrarTypes.Fields,
-        { path: HexString; name: HexString; payer: Address }
+        { name: HexString; caller: Address }
       >
     ): Promise<TestContractResult<HexString>> => {
-      return testMethod(this, "createCredentialToken", params);
+      return testMethod(this, "getCredentialTokenPath", params);
+    },
+    mintCredentialToken: async (
+      params: TestContractParams<
+        PrimaryRegistrarTypes.Fields,
+        { name: HexString; payer: Address }
+      >
+    ): Promise<TestContractResult<null>> => {
+      return testMethod(this, "mintCredentialToken", params);
+    },
+    burnCredentialToken: async (
+      params: TestContractParams<
+        PrimaryRegistrarTypes.Fields,
+        { name: HexString; payer: Address }
+      >
+    ): Promise<TestContractResult<null>> => {
+      return testMethod(this, "burnCredentialToken", params);
     },
     preRegister: async (
       params: TestContractParams<
@@ -139,7 +155,7 @@ export const PrimaryRegistrar = new Factory(
   Contract.fromJson(
     PrimaryRegistrarContractJson,
     "",
-    "a42cd36a3c0b7556391103643a9078ac6da04820afa7a219a7c138b9ac8b7a9f"
+    "6fb73d6ec3d165e1eeb312b29f8ab01bda3aac1e4d74243c9731f10de2ed8e26"
   )
 );
 

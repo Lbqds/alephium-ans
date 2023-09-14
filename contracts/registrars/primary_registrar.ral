@@ -9,10 +9,21 @@ Contract PrimaryRegistrar(
     return 1e-15 alph * duration
   }
 
+  fn getCredentialTokenPath(name: ByteVec, caller: Address) -> ByteVec {
+    let node = keccak256!(name)
+    let record = Record(subContractId!(node))
+    checkCaller!(caller == record.getOwner(), ErrorCodes.InvalidCaller)
+
+    let ttl = record.getTTL()
+    assert!(blockTimeStamp!() < ttl, ErrorCodes.NameHasExpired)
+    return node ++ u256To32Byte!(ttl)
+  }
+
   @using(preapprovedAssets = true)
-  fn createCredentialToken(path: ByteVec, name: ByteVec, payer: Address) -> ByteVec {
+  pub fn mintCredentialToken(name: ByteVec, payer: Address) -> () {
+    let path = getCredentialTokenPath(name, callerAddress!())
     let (tokenImmFields, tokenMutFields) = CredentialToken.encodeFields!(selfContractId!(), name) // TODO: add the ANS prefix
-    return copyCreateSubContractWithToken!{payer -> ALPH: 1 alph}(
+    copyCreateSubContractWithToken!{payer -> ALPH: 1 alph}(
       path,
       credentialTokenTemplateId,
       tokenImmFields,
@@ -22,13 +33,20 @@ Contract PrimaryRegistrar(
     )
   }
 
+  @using(preapprovedAssets = true)
+  pub fn burnCredentialToken(name: ByteVec, payer: Address) -> () {
+    let path = getCredentialTokenPath(name, callerAddress!())
+    let credentialTokenId = subContractId!(path)
+    burnToken!(payer, credentialTokenId, 1)
+    CredentialToken(credentialTokenId).destroy(payer)
+  }
+
   fn preRegister(node: ByteVec, currentTs: U256) -> () {
     let recordId = subContractId!(node)
     if (contractExists!(recordId)) {
-      let record = PrimaryRecord(recordId)
+      let record = Record(recordId)
       let ttl = record.getTTL()
       assert!(currentTs >= ttl, ErrorCodes.NameHasBeenRegistered)
-      CredentialToken(record.getCredentialTokenId()).destroy(record.getRefundAddress())
       record.destroy()
     }
   }
@@ -51,16 +69,7 @@ Contract PrimaryRegistrar(
     transferTokenToSelf!(payer, ALPH, cost(duration))
 
     let ttl = currentTs + duration
-    let credentialTokenPath = node ++ u256To32Byte!(ttl)
-    let credentialTokenId = createCredentialToken{payer -> ALPH: 1 alph}(credentialTokenPath, name, payer)
-
-    let (recordImmFields, recordMutFields) = PrimaryRecord.encodeFields!(
-      selfContractId!(),
-      owner,
-      ttl,
-      payer,
-      credentialTokenId
-    )
+    let (recordImmFields, recordMutFields) = Record.encodeFields!(selfContractId!(), owner, ttl, payer)
     copyCreateSubContract!{payer -> ALPH: 1 alph}(
       node,
       recordTemplateId,
@@ -76,7 +85,7 @@ Contract PrimaryRegistrar(
     assert!(duration >= MinRentDuration, ErrorCodes.InvalidArgs)
 
     let node = keccak256!(name)
-    let record = PrimaryRecord(subContractId!(node))
+    let record = Record(subContractId!(node))
     checkCaller!(callerAddress!() == record.getOwner(), ErrorCodes.InvalidCaller)
 
     let currentTs = blockTimeStamp!()
@@ -85,15 +94,8 @@ Contract PrimaryRegistrar(
 
     transferTokenToSelf!(payer, ALPH, cost(duration))
 
-    let credentialTokenId = record.getCredentialTokenId()
-    burnToken!(payer, credentialTokenId, 1)
-    CredentialToken(credentialTokenId).destroy(payer)
-
     let newTTL = currentTTL + duration
-    let credentialTokenPath = node ++ u256To32Byte!(newTTL)
-    let newCredentialTokenId = createCredentialToken{payer -> ALPH: 1 alph}(credentialTokenPath, name, payer)
     record.setTTL(newTTL)
-    record.setCredentialTokenId(newCredentialTokenId)
 
     emit NameRenewed(name, newTTL)
   }

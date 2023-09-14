@@ -7,12 +7,12 @@ import {
   buildProject,
   createSecondaryRegistrar,
   getContractState,
-  createSecondaryRecord,
-  getRecordTokenPath,
+  createRecord,
+  getCredentialTokenPath,
   ErrorCodes
 } from "./fixtures/ANSFixture"
 import { keccak256 } from "ethers/lib/utils"
-import { SecondaryRecordTypes, SecondaryRegistrar } from "../artifacts/ts"
+import { RecordTypes, SecondaryRegistrar } from "../artifacts/ts"
 import { expectAssertionError, randomContractId } from "@alephium/web3-test"
 
 describe("test secondary registrar", () => {
@@ -31,7 +31,7 @@ describe("test secondary registrar", () => {
   const secondaryRecordId = subContractId(registrarFixture.contractId, node, DefaultGroup)
 
   function getCredentialTokenId(ttl: bigint): string {
-    const path = getRecordTokenPath(node, ttl)
+    const path = getCredentialTokenPath(node, ttl)
     return subContractId(primaryRegistrarId, path, DefaultGroup)
   }
 
@@ -58,7 +58,7 @@ describe("test secondary registrar", () => {
     const credentialTokenId = getCredentialTokenId(ttl)
 
     const testResult = await register(nodeOwner, credentialTokenId, ttl)
-    const recordState = getContractState<SecondaryRecordTypes.Fields>(testResult.contracts, secondaryRecordId)
+    const recordState = getContractState<RecordTypes.Fields>(testResult.contracts, secondaryRecordId)
     expect(recordState.fields.owner).toEqual(nodeOwner)
     expect(recordState.fields.ttl).toEqual(ttl)
 
@@ -71,14 +71,14 @@ describe("test secondary registrar", () => {
 
   test('remove the expired record and create a new record', async () => {
     const nodeOwner = randomAssetAddress()
-    const secondaryRecord = createSecondaryRecord(addressFromContractId(secondaryRecordId), registrarFixture.contractId, nodeOwner, 100n)
+    const secondaryRecord = createRecord(addressFromContractId(secondaryRecordId), registrarFixture.contractId, nodeOwner, 100n)
     const invalidCredentialTokenId = getCredentialTokenId(99n)
     expectAssertionError(register(nodeOwner, invalidCredentialTokenId, 99n, [secondaryRecord]), registrarFixture.address, Number(ErrorCodes.InvalidCredentialToken))
 
     const ttl = 101n
     const credentialTokenId = getCredentialTokenId(ttl)
     const testResult = await register(nodeOwner, credentialTokenId, ttl, [secondaryRecord])
-    const newSecondaryRecord = getContractState<SecondaryRecordTypes.Fields>(testResult.contracts, secondaryRecordId)
+    const newSecondaryRecord = getContractState<RecordTypes.Fields>(testResult.contracts, secondaryRecordId)
     expect(newSecondaryRecord.fields.ttl).toEqual(ttl)
   })
 })

@@ -16,14 +16,14 @@ Contract SecondaryRegistrar(primaryRegistrar: PrimaryRegistrar, recordTemplateId
     assert!(credentialTokenId == expectedCredentialTokenId, ErrorCodes.InvalidCredentialToken)
     assert!(tokenRemaining!(payer, credentialTokenId) == 1, ErrorCodes.InvalidCredentialToken)
 
-    let secondaryRecordId = subContractId!(node)
-    if (contractExists!(secondaryRecordId)) {
-      let record = SecondaryRecord(secondaryRecordId)
+    let recordId = subContractId!(node)
+    if (contractExists!(recordId)) {
+      let record = Record(recordId)
       assert!(record.getTTL() < ttl, ErrorCodes.InvalidCredentialToken)
       record.destroy()
     }
 
-    let (encodedImmutableFields, encodedMutableFields) = SecondaryRecord.encodeFields!(selfContractId!(), owner, ttl, payer)
+    let (encodedImmutableFields, encodedMutableFields) = Record.encodeFields!(selfContractId!(), owner, ttl, payer)
     copyCreateSubContract!{payer -> ALPH: 1 alph}(
       node,
       recordTemplateId,

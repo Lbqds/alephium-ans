@@ -5,12 +5,10 @@
 import { Contract, ContractFactory } from "@alephium/web3";
 import {
   CredentialToken,
-  PrimaryRecord,
   PrimaryRegistrar,
-  SecondaryRecord,
+  Record,
   SecondaryRegistrar,
-  PrimaryRecordOwner,
-  SecondaryRecordOwner,
+  RecordTest,
 } from ".";
 
 let contracts: ContractFactory<any>[] | undefined = undefined;
@@ -18,12 +16,10 @@ export function getContractByCodeHash(codeHash: string): Contract {
   if (contracts === undefined) {
     contracts = [
       CredentialToken,
-      PrimaryRecord,
       PrimaryRegistrar,
-      SecondaryRecord,
+      Record,
       SecondaryRegistrar,
-      PrimaryRecordOwner,
-      SecondaryRecordOwner,
+      RecordTest,
     ];
   }
   const c = contracts.find(

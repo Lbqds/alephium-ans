@@ -8,14 +8,15 @@ import {
   createPrimaryRegistrar,
   getContractState,
   ErrorCodes,
-  createPrimaryRecord,
+  createRecord,
   DefaultGasFee,
-  createRecordToken,
-  getRecordTokenPath
+  createCredentialToken,
+  getCredentialTokenPath,
+  expectVMAssertionError
 } from "./fixtures/ANSFixture"
 import { keccak256 } from "ethers/lib/utils"
-import { PrimaryRecordTypes, PrimaryRegistrar, PrimaryRegistrarTypes } from "../artifacts/ts"
-import { expectAssertionError } from "@alephium/web3-test"
+import { RecordTypes, PrimaryRegistrar, PrimaryRegistrarTypes } from "../artifacts/ts"
+import { expectAssertionError, randomContractId } from "@alephium/web3-test"
 
 const MinRentDuration = PrimaryRegistrar.consts.MinRentDuration
 
@@ -40,7 +41,7 @@ describe("test primary registrar", () => {
     const recordId = subContractId(registrarFixture.contractId, node, DefaultGroup)
 
     async function register(nodeOwner: string, duration: bigint, currentTs: number, extraContracts: ContractState[] = []) {
-      const alphAmount = alph(2) + cost(duration) + DUST_AMOUNT + DefaultGasFee
+      const alphAmount = alph(1) + cost(duration) + DUST_AMOUNT + DefaultGasFee
       return PrimaryRegistrar.tests.register({
         address: registrarFixture.address,
         initialFields: registrarFixture.initialFields(),
@@ -63,22 +64,14 @@ describe("test primary registrar", () => {
     const registrarState = getContractState<PrimaryRegistrarTypes.Fields>(testResult.contracts, registrarFixture.contractId)
     expect(registrarState.asset.alphAmount).toEqual(ONE_ALPH + cost(MinRentDuration))
 
-    const recordState = getContractState<PrimaryRecordTypes.Fields>(testResult.contracts, recordId)
+    const recordState = getContractState<RecordTypes.Fields>(testResult.contracts, recordId)
     expect(recordState.fields.owner).toEqual(nodeOwner)
     expect(recordState.fields.ttl).toEqual(MinRentDuration)
-
-    const recordTokenPath = getRecordTokenPath(node, MinRentDuration)
-    const recordTokenId = subContractId(registrarFixture.contractId, recordTokenPath, DefaultGroup)
-    expect(recordState.fields.recordTokenId).toEqual(recordTokenId)
-
-    const assetOutput = testResult.txOutputs.find((o) => o.address === nodeOwner)!
-    const recordToken = assetOutput.tokens?.find((t) => t.id === recordTokenId)
-    expect(recordToken).toEqual({ id: recordTokenId, amount: 1n })
 
     const event = testResult.events.find(e => e.name === 'NameRegistered')! as PrimaryRegistrarTypes.NameRegisteredEvent
     expect(event.fields).toEqual({ name: binToHex(name), owner: nodeOwner, ttl: MinRentDuration })
 
-    const record = createPrimaryRecord(
+    const record = createRecord(
       addressFromContractId(recordId),
       registrarFixture.contractId,
       randomAssetAddress(),
@@ -95,16 +88,12 @@ describe("test primary registrar", () => {
     const node = keccak256(name).slice(2)
     const recordId = subContractId(registrarFixture.contractId, node, DefaultGroup)
     const prevNodeOwner = randomAssetAddress()
-    const expiredRecordTokenId = subContractId(registrarFixture.contractId, getRecordTokenPath(node, 100n), DefaultGroup)
-    const expiredRecord = createPrimaryRecord(
+    const expiredRecord = createRecord(
       addressFromContractId(recordId),
       registrarFixture.contractId,
       prevNodeOwner,
-      100n,
-      expiredRecordTokenId
+      100n
     )
-    const expiredRecordToken = createRecordToken(registrarFixture.contractId, binToHex(name), addressFromContractId(expiredRecordTokenId))
-
     async function register(nodeOwner: string, duration: bigint) {
       const alphAmount = alph(2) + cost(duration) + DUST_AMOUNT + DefaultGasFee
       return PrimaryRegistrar.tests.register({
@@ -118,7 +107,7 @@ describe("test primary registrar", () => {
           payer: nodeOwner,
           duration: duration
         },
-        existingContracts: [...registrarFixture.states(), expiredRecord, expiredRecordToken],
+        existingContracts: [...registrarFixture.states(), expiredRecord],
         blockTimeStamp: 101
       })
     }
@@ -129,26 +118,16 @@ describe("test primary registrar", () => {
     const registrarState = getContractState<PrimaryRegistrarTypes.Fields>(testResult.contracts, registrarFixture.contractId)
     expect(registrarState.asset.alphAmount).toEqual(ONE_ALPH + cost(MinRentDuration))
 
-    const recordState = getContractState<PrimaryRecordTypes.Fields>(testResult.contracts, recordId)
+    const recordState = getContractState<RecordTypes.Fields>(testResult.contracts, recordId)
     expect(recordState.fields.owner).toEqual(nodeOwner)
     const ttl = MinRentDuration + 101n
     expect(recordState.fields.ttl).toEqual(ttl)
 
-    const recordTokenPath = getRecordTokenPath(node, ttl)
-    const recordTokenId = subContractId(registrarFixture.contractId, recordTokenPath, DefaultGroup)
-    expect(recordState.fields.recordTokenId).toEqual(recordTokenId)
-
-    const assetOutput = testResult.txOutputs.find((o) => o.address === nodeOwner)!
-    const recordToken = assetOutput.tokens?.find((t) => t.id === recordTokenId)
-    expect(recordToken).toEqual({ id: recordTokenId, amount: 1n })
-
     const event = testResult.events.find(e => e.name === 'NameRegistered')! as PrimaryRegistrarTypes.NameRegisteredEvent
     expect(event.fields).toEqual({ name: binToHex(name), owner: nodeOwner, ttl })
 
-    expect(testResult.contracts.find((c) => c.contractId === expiredRecordTokenId)).toEqual(undefined)
-
     const prevNodeOwnerOutput = testResult.txOutputs.find((o) => o.address === prevNodeOwner)!
-    expect(prevNodeOwnerOutput.alphAmount).toEqual(alph(2))
+    expect(prevNodeOwnerOutput.alphAmount).toEqual(alph(1))
   })
 
   test('renew', async () => {
@@ -159,13 +138,13 @@ describe("test primary registrar", () => {
     const node = keccak256(name).slice(2)
     const recordId = subContractId(registrarFixture.contractId, node, DefaultGroup)
 
-    async function renew(nodeOwner: string, duration: bigint, currentTs: number, recordTokenId: string, contractStates: ContractState[] = []) {
+    async function renew(nodeOwner: string, duration: bigint, currentTs: number, contractStates: ContractState[] = []) {
       const alphAmount = alph(1) + cost(duration) + DUST_AMOUNT + DefaultGasFee
       return PrimaryRegistrar.tests.renew({
         address: registrarFixture.address,
         initialFields: registrarFixture.initialFields(),
         initialAsset: defaultInitialAsset,
-        inputAssets: [{ address: nodeOwner, asset: { alphAmount, tokens: [{ id: recordTokenId, amount: 1n }] } }],
+        inputAssets: [{ address: nodeOwner, asset: { alphAmount } }],
         testArgs: {
           name: binToHex(name),
           payer: nodeOwner,
@@ -176,41 +155,113 @@ describe("test primary registrar", () => {
       })
     }
 
-    function getRecord(ttl: bigint): [ContractState, ContractState] {
-      const recordTokenId = subContractId(registrarFixture.contractId, getRecordTokenPath(node, BigInt(ttl)), DefaultGroup)
-      const record = createPrimaryRecord(
-        addressFromContractId(recordId),
-        registrarFixture.contractId,
-        nodeOwner,
-        ttl,
-        recordTokenId
-      )
-      const recordToken = createRecordToken(registrarFixture.contractId, binToHex(name), addressFromContractId(recordTokenId))
-      return [record, recordToken]
+    function getRecord(ttl: bigint): ContractState {
+      return createRecord(addressFromContractId(recordId), registrarFixture.contractId, nodeOwner, ttl)
     }
 
     const nodeOwner = randomAssetAddress()
-    const [record, prevRecordToken] = getRecord(100n)
-    expectAssertionError(renew(nodeOwner, MinRentDuration, 101, prevRecordToken.contractId, [record, prevRecordToken]), registrarFixture.address, Number(ErrorCodes.NameHasExpired))
+    const record = getRecord(100n)
+    expectAssertionError(renew(nodeOwner, MinRentDuration, 101, [record]), registrarFixture.address, Number(ErrorCodes.NameHasExpired))
 
-    const testResult = await renew(nodeOwner, MinRentDuration, 99, prevRecordToken.contractId, [record, prevRecordToken])
+    const testResult = await renew(nodeOwner, MinRentDuration, 99, [record])
     const registrarState = getContractState<PrimaryRegistrarTypes.Fields>(testResult.contracts, registrarFixture.contractId)
     expect(registrarState.asset.alphAmount).toEqual(ONE_ALPH + cost(MinRentDuration))
 
     const ttl = 100n + MinRentDuration
-    const recordTokenId = subContractId(registrarFixture.contractId, getRecordTokenPath(node, ttl), DefaultGroup)
-
-    const recordState = getContractState<PrimaryRecordTypes.Fields>(testResult.contracts, recordId)
+    const recordState = getContractState<RecordTypes.Fields>(testResult.contracts, recordId)
     expect(recordState.fields.ttl).toEqual(ttl)
-    expect(recordState.fields.recordTokenId).toEqual(recordTokenId)
-
-    const assetOutput = testResult.txOutputs.find((o) => o.address === nodeOwner)!
-    const recordToken = assetOutput.tokens?.find((t) => t.id === recordTokenId)
-    expect(recordToken).toEqual({ id: recordTokenId, amount: 1n })
 
     const event = testResult.events.find(e => e.name === 'NameRenewed')! as PrimaryRegistrarTypes.NameRenewedEvent
     expect(event.fields).toEqual({ name: binToHex(name), ttl })
+  })
 
-    expect(testResult.contracts.find((c) => c.contractId === prevRecordToken.contractId)).toEqual(undefined)
+  test('mint credential token', async () => {
+    const registrarOwner = randomAssetAddress()
+    const registrarFixture = createPrimaryRegistrar(registrarOwner)
+    const nodeOwner = randomAssetAddress()
+
+    const name = encoder.encode("test")
+    const node = keccak256(name).slice(2)
+    const recordId = subContractId(registrarFixture.contractId, node, DefaultGroup)
+
+    function getRecordAndCredentialToken(ttl: bigint): [ContractState, ContractState] {
+      const credentialTokenId = subContractId(registrarFixture.contractId, getCredentialTokenPath(node, BigInt(ttl)), DefaultGroup)
+      const record = createRecord(
+        addressFromContractId(recordId),
+        registrarFixture.contractId,
+        nodeOwner,
+        ttl
+      )
+      const credentialToken = createCredentialToken(registrarFixture.contractId, binToHex(name), addressFromContractId(credentialTokenId))
+      return [record, credentialToken]
+    }
+
+    async function mintCredentialToken(nodeOwner: string, currentTs: number, contractStates: ContractState[] = []) {
+      return PrimaryRegistrar.tests.mintCredentialToken({
+        address: registrarFixture.address,
+        initialFields: registrarFixture.initialFields(),
+        initialAsset: defaultInitialAsset,
+        inputAssets: [{ address: nodeOwner, asset: { alphAmount: alph(2) } }],
+        testArgs: {
+          name: binToHex(name),
+          payer: nodeOwner
+        },
+        existingContracts: [...registrarFixture.states(), ...contractStates],
+        blockTimeStamp: currentTs
+      })
+    }
+
+    const [record, credentialToken] = getRecordAndCredentialToken(100n)
+    expectAssertionError(mintCredentialToken(randomAssetAddress(), 99, [record]), registrarFixture.address, Number(ErrorCodes.InvalidCaller))
+    expectAssertionError(mintCredentialToken(nodeOwner, 101, [record]), registrarFixture.address, Number(ErrorCodes.NameHasExpired))
+
+    const testResult = await mintCredentialToken(nodeOwner, 99, [record])
+    const assetOutput = testResult.txOutputs.find((o) => o.address === nodeOwner)!
+    expect(assetOutput.tokens).toEqual([{ id: credentialToken.contractId, amount: 1n }])
+  })
+
+  test('burn credential token', async () => {
+    const registrarOwner = randomAssetAddress()
+    const registrarFixture = createPrimaryRegistrar(registrarOwner)
+    const nodeOwner = randomAssetAddress()
+
+    const name = encoder.encode("test")
+    const node = keccak256(name).slice(2)
+    const recordId = subContractId(registrarFixture.contractId, node, DefaultGroup)
+
+    function getRecordAndCredentialToken(ttl: bigint): [ContractState, ContractState] {
+      const credentialTokenId = subContractId(registrarFixture.contractId, getCredentialTokenPath(node, BigInt(ttl)), DefaultGroup)
+      const record = createRecord(
+        addressFromContractId(recordId),
+        registrarFixture.contractId,
+        nodeOwner,
+        ttl
+      )
+      const credentialToken = createCredentialToken(registrarFixture.contractId, binToHex(name), addressFromContractId(credentialTokenId))
+      return [record, credentialToken]
+    }
+
+    async function burnCredentialToken(nodeOwner: string, currentTs: number, credentialTokenId: string, contractStates: ContractState[] = []) {
+      return PrimaryRegistrar.tests.burnCredentialToken({
+        address: registrarFixture.address,
+        initialFields: registrarFixture.initialFields(),
+        initialAsset: defaultInitialAsset,
+        inputAssets: [{ address: nodeOwner, asset: { alphAmount: alph(1), tokens: [{ id: credentialTokenId, amount: 1n }] } }],
+        testArgs: {
+          name: binToHex(name),
+          payer: nodeOwner
+        },
+        existingContracts: [...registrarFixture.states(), ...contractStates],
+        blockTimeStamp: currentTs
+      })
+    }
+
+    const [record, credentialToken] = getRecordAndCredentialToken(100n)
+    expectAssertionError(burnCredentialToken(randomAssetAddress(), 99, credentialToken.contractId, [record, credentialToken]), registrarFixture.address, Number(ErrorCodes.InvalidCaller))
+    expectAssertionError(burnCredentialToken(nodeOwner, 101, credentialToken.contractId, [record, credentialToken]), registrarFixture.address, Number(ErrorCodes.NameHasExpired))
+    expectVMAssertionError(burnCredentialToken(nodeOwner, 99, randomContractId(), [record, credentialToken]), 'NotEnoughApprovedBalance')
+
+    const testResult = await burnCredentialToken(nodeOwner, 99, credentialToken.contractId, [record, credentialToken])
+    expect(testResult.contracts.find((c) => c.contractId === credentialToken.contractId)).toEqual(undefined)
   })
 })

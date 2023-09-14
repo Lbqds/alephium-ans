@@ -1,0 +1,32 @@
+{
+  "version": "v2.5.5",
+  "name": "RecordOwner",
+  "bytecode": "01010c0100000000040c0cce000105",
+  "codeHash": "765329ee59e40f9d7108081a0fd0d70e5b44f2bd8eddedee1c4539bd479f36a3",
+  "fieldsSig": {
+    "names": [
+      "record"
+    ],
+    "types": [
+      "ByteVec"
+    ],
+    "isMutable": [
+      false
+    ]
+  },
+  "eventsSig": [],
+  "functions": [
+    {
+      "name": "destroyRecord",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": []
+    }
+  ],
+  "constants": [],
+  "enums": []
+}

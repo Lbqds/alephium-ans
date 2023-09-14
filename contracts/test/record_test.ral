@@ -1,4 +1,4 @@
-Contract PrimaryRecordOwner(record: PrimaryRecord) {
+Contract RecordTest(record: Record) {
   @using(checkExternalCaller = false)
   pub fn destroyRecord() -> () {
     record.destroy()

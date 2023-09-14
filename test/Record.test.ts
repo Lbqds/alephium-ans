@@ -2,10 +2,9 @@ import { Address, Contract, ContractDestroyedEvent, ContractState, ONE_ALPH, web
 import {
   randomAssetAddress,
   buildProject,
-  createPrimaryRecord,
-  createSecondaryRecord
+  createRecord
 } from "./fixtures/ANSFixture"
-import { PrimaryRecordOwner, PrimaryRecordTypes, SecondaryRecordOwner, SecondaryRecordTypes } from "../artifacts/ts"
+import { RecordTypes, RecordTest } from "../artifacts/ts"
 import { randomContractAddress } from "@alephium/web3-test"
 
 describe("test record", () => {
@@ -15,51 +14,27 @@ describe("test record", () => {
     await buildProject()
   })
 
-  function createPrimaryRecordOwner(primaryRecord: ContractState<PrimaryRecordTypes.Fields>, address: Address) {
-    return PrimaryRecordOwner.stateForTest({ record: primaryRecord.contractId }, undefined, address)
+  function createRecordTest(record: ContractState<RecordTypes.Fields>, address: Address) {
+    return RecordTest.stateForTest({ record: record.contractId }, undefined, address)
   }
 
-  function createSecondaryRecordOwner(secondaryRecord: ContractState<SecondaryRecordTypes.Fields>, address: Address) {
-    return SecondaryRecordOwner.stateForTest({ record: secondaryRecord.contractId }, undefined, address)
-  }
-
-  test('destroy primary record', async () => {
+  test('destroy record', async () => {
     const contractAddress = randomContractAddress()
-    const primaryRecord = createPrimaryRecord(randomContractAddress(), contractAddress)
-    const primaryRecordOwner = createPrimaryRecordOwner(primaryRecord, contractAddress)
+    const record = createRecord(randomContractAddress(), contractAddress)
+    const recordTest = createRecordTest(record, contractAddress)
 
     async function destroy(caller: Address) {
-      return await PrimaryRecordOwner.tests.destroyRecord({
-        address: primaryRecordOwner.address,
-        initialFields: primaryRecordOwner.fields,
-        initialAsset: { alphAmount: ONE_ALPH, tokens: [{ id: primaryRecord.contractId, amount: 1n }] },
+      return await RecordTest.tests.destroyRecord({
+        address: recordTest.address,
+        initialFields: recordTest.fields,
+        initialAsset: { alphAmount: ONE_ALPH, tokens: [{ id: record.contractId, amount: 1n }] },
         inputAssets: [{ address: caller, asset: { alphAmount: ONE_ALPH } }],
-        existingContracts: [primaryRecord]
+        existingContracts: [record]
       })
     }
 
     const result = await destroy(randomAssetAddress())
     const destroyEvent = result.events.find((e) => e.eventIndex === Contract.ContractDestroyedEventIndex)! as ContractDestroyedEvent
-    expect(destroyEvent.fields.address).toEqual(primaryRecord.address)
-  })
-
-  test('destroy secondary record', async () => {
-    const contractAddress = randomContractAddress()
-    const secondaryRecord = createSecondaryRecord(randomContractAddress(), contractAddress)
-    const secondaryRecordOwner = createSecondaryRecordOwner(secondaryRecord, contractAddress)
-
-    async function destroy(caller: Address) {
-      return await SecondaryRecordOwner.tests.destroyRecord({
-        address: secondaryRecordOwner.address,
-        initialFields: secondaryRecordOwner.fields,
-        initialAsset: { alphAmount: ONE_ALPH },
-        inputAssets: [{ address: caller, asset: { alphAmount: ONE_ALPH } }],
-        existingContracts: [secondaryRecord]
-      })
-    }
-
-    const result = await destroy(randomAssetAddress())
-    const destroyEvent = result.events.find((e) => e.eventIndex === Contract.ContractDestroyedEventIndex)! as ContractDestroyedEvent
-    expect(destroyEvent.fields.address).toEqual(secondaryRecord.address)
+    expect(destroyEvent.fields.address).toEqual(record.address)
   })
 })

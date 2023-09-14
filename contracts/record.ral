@@ -1,6 +1,0 @@
-Interface Record {
-  pub fn getOwner() -> Address
-  pub fn getRefundAddress() -> Address
-  pub fn getTTL() -> U256
-  pub fn destroy() -> ()
-}
