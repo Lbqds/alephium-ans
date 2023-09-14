@@ -228,7 +228,7 @@
   ],
   "constants": [
     {
-      "name": "MinRentDuration",
+      "name": "MinRegistrationDuration",
       "value": {
         "type": "U256",
         "value": "2592000000"

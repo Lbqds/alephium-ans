@@ -5,6 +5,6 @@
 export * from "./CredentialToken";
 export * from "./PrimaryRegistrar";
 export * from "./Record";
-export * from "./SecondaryRegistrar";
 export * from "./RecordTest";
+export * from "./SecondaryRegistrar";
 export * from "./scripts";

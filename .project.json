@@ -32,7 +32,7 @@
     },
     "PrimaryRegistrar": {
       "sourceFile": "registrars/primary_registrar.ral",
-      "sourceCodeHash": "10cb72831fc5ffa3da3f4e6d974fac0fa604640f7c42df2221d201d3dc6a758a",
+      "sourceCodeHash": "e2e04b68b853d76997888420d8827104cce7fd326dc3d3ed8d665b4ead8f8bf2",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "6fb73d6ec3d165e1eeb312b29f8ab01bda3aac1e4d74243c9731f10de2ed8e26",
       "warnings": []

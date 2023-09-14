@@ -18,7 +18,7 @@ import { keccak256 } from "ethers/lib/utils"
 import { RecordTypes, PrimaryRegistrar, PrimaryRegistrarTypes } from "../artifacts/ts"
 import { expectAssertionError, randomContractId } from "@alephium/web3-test"
 
-const MinRentDuration = PrimaryRegistrar.consts.MinRentDuration
+const MinRegistrationDuration = PrimaryRegistrar.consts.MinRegistrationDuration
 
 function cost(duration: bigint): bigint {
   return 1000n * duration
@@ -59,17 +59,17 @@ describe("test primary registrar", () => {
     }
 
     const nodeOwner = randomAssetAddress()
-    const testResult = await register(nodeOwner, MinRentDuration, 0)
+    const testResult = await register(nodeOwner, MinRegistrationDuration, 0)
 
     const registrarState = getContractState<PrimaryRegistrarTypes.Fields>(testResult.contracts, registrarFixture.contractId)
-    expect(registrarState.asset.alphAmount).toEqual(ONE_ALPH + cost(MinRentDuration))
+    expect(registrarState.asset.alphAmount).toEqual(ONE_ALPH + cost(MinRegistrationDuration))
 
     const recordState = getContractState<RecordTypes.Fields>(testResult.contracts, recordId)
     expect(recordState.fields.owner).toEqual(nodeOwner)
-    expect(recordState.fields.ttl).toEqual(MinRentDuration)
+    expect(recordState.fields.ttl).toEqual(MinRegistrationDuration)
 
     const event = testResult.events.find(e => e.name === 'NameRegistered')! as PrimaryRegistrarTypes.NameRegisteredEvent
-    expect(event.fields).toEqual({ name: binToHex(name), owner: nodeOwner, ttl: MinRentDuration })
+    expect(event.fields).toEqual({ name: binToHex(name), owner: nodeOwner, ttl: MinRegistrationDuration })
 
     const record = createRecord(
       addressFromContractId(recordId),
@@ -77,7 +77,7 @@ describe("test primary registrar", () => {
       randomAssetAddress(),
       100n
     )
-    expectAssertionError(register(nodeOwner, MinRentDuration, 99, [record]), registrarFixture.address, Number(ErrorCodes.NameHasBeenRegistered))
+    expectAssertionError(register(nodeOwner, MinRegistrationDuration, 99, [record]), registrarFixture.address, Number(ErrorCodes.NameHasBeenRegistered))
   })
 
   test('register with an expired name', async () => {
@@ -113,14 +113,14 @@ describe("test primary registrar", () => {
     }
 
     const nodeOwner = randomAssetAddress()
-    const testResult = await register(nodeOwner, MinRentDuration)
+    const testResult = await register(nodeOwner, MinRegistrationDuration)
 
     const registrarState = getContractState<PrimaryRegistrarTypes.Fields>(testResult.contracts, registrarFixture.contractId)
-    expect(registrarState.asset.alphAmount).toEqual(ONE_ALPH + cost(MinRentDuration))
+    expect(registrarState.asset.alphAmount).toEqual(ONE_ALPH + cost(MinRegistrationDuration))
 
     const recordState = getContractState<RecordTypes.Fields>(testResult.contracts, recordId)
     expect(recordState.fields.owner).toEqual(nodeOwner)
-    const ttl = MinRentDuration + 101n
+    const ttl = MinRegistrationDuration + 101n
     expect(recordState.fields.ttl).toEqual(ttl)
 
     const event = testResult.events.find(e => e.name === 'NameRegistered')! as PrimaryRegistrarTypes.NameRegisteredEvent
@@ -161,13 +161,13 @@ describe("test primary registrar", () => {
 
     const nodeOwner = randomAssetAddress()
     const record = getRecord(100n)
-    expectAssertionError(renew(nodeOwner, MinRentDuration, 101, [record]), registrarFixture.address, Number(ErrorCodes.NameHasExpired))
+    expectAssertionError(renew(nodeOwner, MinRegistrationDuration, 101, [record]), registrarFixture.address, Number(ErrorCodes.NameHasExpired))
 
-    const testResult = await renew(nodeOwner, MinRentDuration, 99, [record])
+    const testResult = await renew(nodeOwner, MinRegistrationDuration, 99, [record])
     const registrarState = getContractState<PrimaryRegistrarTypes.Fields>(testResult.contracts, registrarFixture.contractId)
-    expect(registrarState.asset.alphAmount).toEqual(ONE_ALPH + cost(MinRentDuration))
+    expect(registrarState.asset.alphAmount).toEqual(ONE_ALPH + cost(MinRegistrationDuration))
 
-    const ttl = 100n + MinRentDuration
+    const ttl = 100n + MinRegistrationDuration
     const recordState = getContractState<RecordTypes.Fields>(testResult.contracts, recordId)
     expect(recordState.fields.ttl).toEqual(ttl)
 

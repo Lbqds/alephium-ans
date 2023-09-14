@@ -7,8 +7,8 @@ import {
   CredentialToken,
   PrimaryRegistrar,
   Record,
-  SecondaryRegistrar,
   RecordTest,
+  SecondaryRegistrar,
 } from ".";
 
 let contracts: ContractFactory<any>[] | undefined = undefined;
@@ -18,8 +18,8 @@ export function getContractByCodeHash(codeHash: string): Contract {
       CredentialToken,
       PrimaryRegistrar,
       Record,
-      SecondaryRegistrar,
       RecordTest,
+      SecondaryRegistrar,
     ];
   }
   const c = contracts.find(

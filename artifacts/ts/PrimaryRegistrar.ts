@@ -58,7 +58,7 @@ class Factory extends ContractFactory<
 
   eventIndex = { NameRegistered: 0, NameRenewed: 1 };
   consts = {
-    MinRentDuration: BigInt(2592000000),
+    MinRegistrationDuration: BigInt(2592000000),
     ErrorCodes: {
       InvalidCaller: BigInt(0),
       InvalidArgs: BigInt(1),
